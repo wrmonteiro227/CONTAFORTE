@@ -3,866 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Axon Vault - Terminal de Segurança</title>
-    
-    <meta name="theme-color" content="#020506">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Axon Vault">
-    
-    <link id="apple-icon" rel="apple-touch-icon" href="">
-    <link id="pwa-manifest" rel="manifest">
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>Beat & Letra - Meu Estúdio</title>
     <style>
-        :root {
-            --bg-deep: #020506;
-            --header-bg: rgba(10, 15, 20, 0.8);
-            --metal-base: rgba(15, 23, 26, 0.7);
-            --metal-highlight: rgba(30, 41, 59, 0.9);
-            --cyan-glow: #00f3ff;
-            --green-glow: #00ff88;
-            --danger: #ff2a2a;
-            --text-main: #e2e8f0;
-            --text-muted: #4b5e65; 
-        }
+        /* Importando uma fonte estilosa do Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none;
+            font-family: 'Inter', sans-serif;
         }
 
         body {
-            background-color: var(--bg-deep);
-            background-image: 
-                radial-gradient(circle at 50% 50%, #0a181d 0%, var(--bg-deep) 100%),
-                linear-gradient(rgba(0, 243, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 243, 255, 0.02) 1px, transparent 1px);
-            background-size: 100% 100%, 40px 40px, 40px 40px;
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
+            background-color: #121212;
+            color: #f5f5f5;
             display: flex;
-            flex-direction: column; 
-            overflow-x: hidden;
+            flex-direction: column;
+            height: 100vh;
         }
 
-        /* NOVO: Fundo com a foto do cofre */
-        .bg-image {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-size: cover;
-            background-position: center;
-            opacity: 0.15; /* Ajuste a transparência da foto aqui (Ex: 0.20, 0.30) */
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .hud-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            box-shadow: inset 0 0 150px rgba(0,0,0,1);
-            pointer-events: none;
-            z-index: 1; 
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            background-size: 100% 2px, 3px 100%;
-        }
-
-        .app-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 70px;
-            background: var(--header-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--metal-highlight);
+        header {
+            background-color: #1e1e1e;
+            padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 40px;
-            z-index: 100;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-bottom: 2px solid #8a2be2; /* Detalhe roxo neon */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
-        @supports (padding-top: env(safe-area-inset-top)) {
-            .app-header {
-                padding-top: env(safe-area-inset-top);
-                height: calc(70px + env(safe-area-inset-top));
-            }
-            .dashboard-container {
-                padding-top: calc(100px + env(safe-area-inset-top));
-            }
-        }
-
-        .header-logo {
-            font-size: 1.4rem;
-            font-weight: 800;
-            letter-spacing: 3px;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
-        }
-
-        .header-logo span {
-            color: var(--cyan-glow);
-        }
-
-        .header-profile {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: rgba(0,0,0,0.3);
-            padding: 8px 15px;
-            border-radius: 50px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .profile-info {
-            text-align: right;
-        }
-
-        .profile-name {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .profile-status {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--green-glow);
-            text-transform: uppercase;
-        }
-
-        .profile-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #000;
-            border: 2px solid var(--green-glow);
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .profile-avatar::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 2px;
-            background: var(--green-glow);
-            box-shadow: 0 0 10px var(--green-glow);
-            animation: avatar-scan 3s linear infinite;
-        }
-        @keyframes avatar-scan {
-            0% { top: -5%; }
-            100% { top: 105%; }
-        }
-
-        .profile-avatar img {
-            width: 80%;
-            opacity: 0.7;
-        }
-
-        .dashboard-container {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 100px 20px 40px 20px; 
-            z-index: 2;
-        }
-
-        .vault-core {
-            position: relative;
-            width: 100%;
-            max-width: 950px;
-            background: var(--metal-base);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: 
-                0 30px 70px -15px rgba(0, 0, 0, 0.9),
-                inset 0 1px 0 rgba(255,255,255,0.08),
-                inset 0 0 25px rgba(0, 243, 255, 0.03);
-            border: 1px solid var(--metal-highlight);
-            
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 40px;
-        }
-
-        @media (min-width: 768px) {
-            .vault-core {
-                grid-template-columns: 1fr 1fr;
-                align-items: stretch;
-            }
-            .vault-left {
-                border-right: 1px solid var(--metal-highlight);
-                padding-right: 30px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-            }
-            .vault-right {
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-            }
-        }
-
-        .vault-door {
-            position: relative;
-            width: 260px;
-            height: 260px;
-            border-radius: 50%;
-            background: conic-gradient(from 0deg, rgba(30, 41, 59, 0.5), rgba(10, 15, 20, 0.8), rgba(30, 41, 59, 0.5));
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 
-                0 15px 40px rgba(0,0,0,0.6),
-                inset 0 0 20px #000,
-                0 0 0 8px rgba(10, 15, 20, 0.9),
-                0 0 0 10px var(--metal-highlight);
-            margin: 0 auto;
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .vault-door::before {
-            content: '';
-            position: absolute;
-            width: 290px;
-            height: 290px;
-            border-radius: 50%;
-            border: 2px dashed rgba(75, 94, 101, 0.3);
-            animation: rotate-slow 30s linear infinite;
-        }
-
-        @keyframes rotate-slow {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .vault-door.processing {
-            transform: scale(1.05) rotate(15deg);
-        }
-
-        .vault-door.processing::before {
-            border-color: var(--cyan-glow);
-            opacity: 0.6;
-            animation: rotate-fast 1.5s linear infinite;
-        }
-
-        @keyframes rotate-fast {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .balance-container {
-            position: relative;
-            width: 220px;
-            height: 220px;
-            background: rgba(5, 8, 10, 0.9);
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            box-shadow: inset 0 0 30px rgba(0, 243, 255, 0.15);
-            border: 3px solid rgba(15, 23, 26, 0.9);
-            z-index: 2;
-        }
-
-        .balance-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
+        header h1 {
+            font-size: 24px;
+            color: #8a2be2;
             font-weight: 600;
+            letter-spacing: 1px;
         }
 
-        .balance-display {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 2.3rem;
-            color: var(--cyan-glow);
-            text-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
-            letter-spacing: -1px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            padding: 5px 15px;
-            border-radius: 10px;
-            text-align: center;
-            width: 100%;
-        }
-
-        .balance-display:hover {
-            background: rgba(0, 243, 255, 0.15);
-            transform: scale(1.03);
-        }
-
-        .terminal-input {
-            width: 100%;
-            margin-bottom: 15px;
-        }
-
-        .input-wrapper {
-            position: relative;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid var(--metal-highlight);
-            border-radius: 12px;
+        .controls {
             display: flex;
-            align-items: center;
-            padding: 5px;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-        }
-
-        .input-wrapper.focus {
-            border-color: var(--cyan-glow);
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2), inset 0 0 10px rgba(0,0,0,0.5);
-        }
-
-        .currency-symbol {
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--text-muted);
-            font-size: 1.15rem;
-            padding: 0 15px;
+            gap: 10px;
+            width: 60%;
         }
 
         input[type="text"] {
             flex: 1;
-            background: transparent;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background-color: #2a2a2a;
+            color: #fff;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border: 1px solid #8a2be2;
+        }
+
+        button {
+            padding: 12px 25px;
+            border-radius: 8px;
             border: none;
-            color: var(--text-main);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.3rem;
-            padding: 10px 0;
+            background-color: #8a2be2;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: #9b45e4;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            gap: 20px;
+            height: calc(100vh - 80px);
+        }
+
+        .player-container {
+            flex: 1;
+            background-color: #1e1e1e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .iframe-wrapper {
+            flex: 1;
+            width: 100%;
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .lyrics-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #1e1e1e;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .lyrics-container h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #bbb;
+        }
+
+        textarea {
+            flex: 1;
+            width: 100%;
+            background-color: transparent;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            line-height: 1.6;
+            resize: none;
             outline: none;
         }
 
-        input[type="text"]::placeholder {
-            color: rgba(75, 94, 101, 0.5);
+        textarea::placeholder {
+            color: #555;
         }
 
-        .action-btn {
-            background: linear-gradient(135deg, var(--green-glow), #00d672);
-            color: #000;
-            border: none;
-            padding: 0 25px;
-            height: 45px;
-            border-radius: 8px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 800;
-            font-size: 1rem;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        /* Scrollbar customizada */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8a2be2;
         }
 
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.5);
+        /* Responsividade para telas menores */
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            .controls {
+                width: 100%;
+            }
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
         }
-
-        .action-btn:active {
-            transform: translateY(1px);
-        }
-
-        .action-btn:disabled {
-            background: var(--metal-highlight);
-            color: var(--text-muted);
-            box-shadow: none;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .error-msg {
-            color: var(--danger);
-            font-size: 0.8rem;
-            min-height: 20px;
-            margin-top: 10px;
-            padding-left: 5px;
-            text-shadow: 0 0 8px rgba(255, 42, 42, 0.4);
-        }
-
-        .history-panel {
-            width: 100%;
-            flex: 1;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--metal-highlight);
-            border-radius: 12px;
-            padding: 10px;
-            max-height: 200px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
-        }
-
-        .history-panel::-webkit-scrollbar { width: 6px; }
-        .history-panel::-webkit-scrollbar-track { background: transparent; }
-        .history-panel::-webkit-scrollbar-thumb { background: rgba(75, 94, 101, 0.5); border-radius: 10px; }
-        .history-panel::-webkit-scrollbar-thumb:hover { background: rgba(0, 243, 255, 0.3); }
-
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.01);
-            border-radius: 8px;
-            border: 1px solid transparent;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-
-        .history-item:hover {
-            background: rgba(255, 255, 255, 0.03);
-            border-color: rgba(255,255,255,0.05);
-        }
-
-        .history-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .history-date {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            font-family: 'Inter', sans-serif;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .history-amount {
-            color: var(--green-glow);
-            font-weight: 700;
-            font-size: 1rem;
-        }
-
-        .history-amount.negative {
-            color: var(--danger);
-            text-shadow: 0 0 8px rgba(255, 42, 42, 0.3);
-        }
-
-        .history-actions {
-            display: flex;
-            gap: 8px;
-            margin-left: 15px;
-        }
-
-        .icon-btn {
-            background: rgba(30, 41, 59, 0.6);
-            border: 1px solid rgba(255,255,255,0.05);
-            color: #fff;
-            opacity: 0.6;
-            padding: 8px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .icon-btn:hover {
-            opacity: 1;
-            background: var(--metal-highlight);
-            transform: scale(1.05);
-        }
-        
-        .icon-btn.delete:hover {
-            color: var(--danger);
-            border-color: rgba(255, 42, 42, 0.4);
-            background: rgba(255, 42, 42, 0.15);
-        }
-
-        .platform-sync {
-            width: 100%;
-            margin-top: 30px;
-            padding-top: 25px;
-            border-top: 1px solid var(--metal-highlight);
-            text-align: center;
-        }
-
-        .download-grid {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .dl-btn {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            color: var(--text-muted);
-            padding: 10px 20px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            cursor: pointer; 
-        }
-
-        .dl-btn:hover {
-            color: var(--cyan-glow);
-            background: rgba(0, 243, 255, 0.05);
-            border-color: rgba(0, 243, 255, 0.3);
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
-            transform: translateY(-1px);
-        }
-
-        .btn-install-pwa {
-            background: rgba(0, 243, 255, 0.1);
-            border-color: var(--cyan-glow);
-            color: var(--cyan-glow);
-        }
-
     </style>
 </head>
 <body>
 
-    <div class="bg-image" id="bgImage"></div>
-    <div class="hud-overlay"></div>
-
-    <header class="app-header">
-        <div class="header-logo">🔐 AXON<span>VAULT</span></div>
-        
-        <div class="header-profile">
-            <div class="profile-info">
-                <div class="profile-name">OPERATOR_WR</div>
-                <div class="profile-status">Terminal Seguro v3.1</div>
-            </div>
-            <div class="profile-avatar">
-                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmZiI+PHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bTAgM2MyLjc2IDAgNSA1IDIgMHMtMi4yNCA1LTUgNXoiLz48L3N2Zz4=" alt="Avatar">
-            </div>
+    <header>
+        <h1>🎙️ Beat & Letra</h1>
+        <div class="controls">
+            <input type="text" id="yt-link" placeholder="Cole o link do YouTube aqui (ex: https://youtube.com/watch?v=...)">
+            <button onclick="carregarBeat()">Dar Play</button>
         </div>
     </header>
 
-    <main class="dashboard-container">
-        <div class="vault-core">
-            
-            <div class="vault-left">
-                <div class="vault-door" id="vaultMechanism">
-                    <div class="balance-container">
-                        <div class="balance-label">Ativos Totais</div>
-                        <div class="balance-display" id="balanceDisplay" onclick="editMainBalance()" title="Clique para ajuste manual do saldo total">R$ 0,00</div>
-                    </div>
-                </div>
+    <div class="main-content">
+        <!-- Lado Esquerdo: Player de Vídeo -->
+        <div class="player-container">
+            <div class="iframe-wrapper" id="video-wrapper">
+                <p>O beat vai tocar aqui...</p>
             </div>
-
-            <div class="vault-right">
-                <div class="terminal-input">
-                    <div class="input-wrapper" id="inputWrapper">
-                        <span class="currency-symbol">R$</span>
-                        <input type="text" id="depositInput" placeholder="0.00" autocomplete="off">
-                        <button class="action-btn" id="depositBtn" onclick="handleDeposit()">Guardar</button>
-                    </div>
-                    <div class="error-msg" id="errorMsg"></div>
-                </div>
-
-                <div class="history-panel" id="historyPanel">
-                    </div>
-
-                <div class="platform-sync">
-                    <div class="download-grid">
-                        <button class="dl-btn btn-install-pwa" onclick="triggerInstallPrompt()">📲 INSTALAR APP (TELA INICIAL)</button>
-                        <button class="dl-btn" onclick="downloadAppScript('Windows')">BAIXAR ARQUIVO LOCAL</button>
-                    </div>
-                </div>
-            </div>
-
         </div>
-    </main>
+
+        <!-- Lado Direito: Bloco de Notas -->
+        <div class="lyrics-container">
+            <h2>Suas Letras (Salvas automaticamente)</h2>
+            <textarea id="bloco-de-letras" placeholder="Comece a soltar as rimas aqui..."></textarea>
+        </div>
+    </div>
 
     <script>
-        // =========================================================================================
-        // CONFIGURAÇÃO DA IMAGEM DO COFRE
-        // Cole o link da sua imagem upada (Imgur, Postimages, Discord) dentro das aspas abaixo:
-        const LINK_DA_IMAGEM_DO_COFRE = "https://files.catbox.moe/13rjd0.png";
-        // =========================================================================================
-
-        // Aplica a imagem no fundo do site
-        if(LINK_DA_IMAGEM_DO_COFRE && LINK_DA_IMAGEM_DO_COFRE !== "COLE_O_LINK_DA_SUA_IMAGEM_AQUI") {
-            document.getElementById('bgImage').style.backgroundImage = `url('${LINK_DA_IMAGEM_DO_COFRE}')`;
-            document.getElementById('apple-icon').href = LINK_DA_IMAGEM_DO_COFRE;
+        // Função para extrair o ID do vídeo do link do YouTube
+        function extrairIdYoutube(url) {
+            const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+            const match = url.match(regex);
+            return (match && match[1]) ? match[1] : null;
         }
 
-        // --- INJEÇÃO DINÂMICA DO PWA MANIFEST COM A IMAGEM ESCOLHIDA ---
-        const manifestConfig = {
-            "name": "Axon Vault",
-            "short_name": "AxonVault",
-            "start_url": window.location.href, 
-            "display": "standalone", 
-            "background_color": "#020506",
-            "theme_color": "#020506",
-            "icons": [{
-                "src": (LINK_DA_IMAGEM_DO_COFRE !== "COLE_O_LINK_DA_SUA_IMAGEM_AQUI") ? LINK_DA_IMAGEM_DO_COFRE : "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBmaWxsPSIjMDIwNTA2Ij48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEwMCIgZmlsbD0iIzAyMDUwNiIgc3Ryb2tlPSIjMDBmM2ZmIiBzdHJva2Utd2lkdGg9IjEwIi8+PGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwZmY4OCIgc3Ryb2tlLXdpZHRoPSIyMCIvPjxyZWN0IHg9IjIzNiIgeT0iMTA2IiB3aWR0aD0iNDAiIGhlaWdodD0iNjAiIGZpbGw9IiMwMGYzZmYiLz48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjUwIiBmaWxsPSIjMDBmM2ZmIi8+PC9zdmc+",
-                "sizes": "512x512",
-                "type": (LINK_DA_IMAGEM_DO_COFRE.includes('.png')) ? "image/png" : "image/jpeg"
-            }]
-        };
-        const manifestBlob = new Blob([JSON.stringify(manifestConfig)], {type: 'application/json'});
-        document.getElementById('pwa-manifest').setAttribute('href', URL.createObjectURL(manifestBlob));
+        // Função para carregar o vídeo no iframe
+        function carregarBeat() {
+            const inputLink = document.getElementById('yt-link').value;
+            const videoId = extrairIdYoutube(inputLink);
+            const wrapper = document.getElementById('video-wrapper');
 
-        // --- LÓGICA DE INSTALAÇÃO DO APP NATIVO ---
-        let deferredInstallPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredInstallPrompt = e; 
-        });
-
-        function triggerInstallPrompt() {
-            if (deferredInstallPrompt) {
-                deferredInstallPrompt.prompt();
-                deferredInstallPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('App Axon Vault instalado com sucesso.');
-                    }
-                    deferredInstallPrompt = null;
-                });
+            if (videoId) {
+                // Cria o iframe do YouTube
+                wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
             } else {
-                alert("COMO INSTALAR O APP NA TELA INICIAL:\n\n📱 No iOS (Safari): Toque no ícone de Compartilhar (Quadrado com seta para cima) na barra inferior e selecione 'Adicionar à Tela de Início'.\n\n🤖 No Android (Chrome): Toque nos 3 pontinhos no canto superior direito e selecione 'Adicionar à tela inicial'.\n\n💻 No PC: Clique no ícone de instalação na barra de endereços do seu navegador.");
+                alert("Mano, não consegui ler esse link. Tem certeza que é um link válido do YouTube?");
             }
         }
 
-        // --- LÓGICA CONSOLIDADA DE VALIDAÇÃO, ARMAZENAMENTO E REGEX (INTACTA) ---
-        let currentBalance = 0;
-        let depositHistory = []; 
+        // --- SISTEMA DE SALVAMENTO AUTOMÁTICO DAS LETRAS ---
+        const textarea = document.getElementById('bloco-de-letras');
 
-        const balanceElement = document.getElementById('balanceDisplay');
-        const inputElement = document.getElementById('depositInput');
-        const errorElement = document.getElementById('errorMsg');
-        const btnElement = document.getElementById('depositBtn');
-        const inputWrapper = document.getElementById('inputWrapper');
-        const vaultMechanism = document.getElementById('vaultMechanism');
-        const historyPanel = document.getElementById('historyPanel');
-
-        inputElement.addEventListener('focus', () => inputWrapper.classList.add('focus'));
-        inputElement.addEventListener('blur', () => inputWrapper.classList.remove('focus'));
-
-        function init() {
-            const savedHistory = localStorage.getItem('axonVaultHistory');
-            const savedBalance = localStorage.getItem('axonVaultBalance');
-            
-            if (savedHistory) {
-                depositHistory = JSON.parse(savedHistory);
-                recalculateBalance();
-            } else if (savedBalance) {
-                currentBalance = parseFloat(savedBalance);
-                depositHistory.push({
-                    id: Date.now(),
-                    amount: currentBalance,
-                    date: new Date().toLocaleString('pt-BR'),
-                    label: 'Saldo Inicial Carregado'
-                });
-                saveData();
+        // Quando a página carrega, recupera a letra salva (se houver)
+        window.onload = function() {
+            const letraSalva = localStorage.getItem('minhasRimas');
+            if (letraSalva) {
+                textarea.value = letraSalva;
             }
-            updateDisplay();
-            renderHistory();
-        }
+        };
 
-        function formatCurrency(value) {
-            return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        }
-
-        function updateDisplay() {
-            balanceElement.innerText = formatCurrency(currentBalance);
-        }
-
-        function saveData() {
-            localStorage.setItem('axonVaultBalance', currentBalance.toString());
-            localStorage.setItem('axonVaultHistory', JSON.stringify(depositHistory));
-        }
-
-        function recalculateBalance() {
-            currentBalance = depositHistory.reduce((acc, curr) => acc + curr.amount, 0);
-        }
-
-        function handleDeposit() {
-            const rawValue = inputElement.value.trim();
-            errorElement.innerText = '';
-
-            const validationRegex = /^\-?\d+(\.\d{1,2})?$/; 
-            const sanitizedValue = rawValue.replace(',', '.');
-
-            if (!validationRegex.test(sanitizedValue) || parseFloat(sanitizedValue) === 0) {
-                errorElement.innerText = 'ERRO: Formato inválido. Use números (Ex: 1500.50)';
-                return;
-            }
-
-            const depositAmount = parseFloat(sanitizedValue);
-
-            btnElement.disabled = true;
-            btnElement.innerText = 'Criptografando...';
-            vaultMechanism.classList.add('processing');
-            balanceElement.style.color = '#fff';
-
-            setTimeout(() => {
-                const newRecord = {
-                    id: Date.now(),
-                    amount: depositAmount,
-                    date: new Date().toLocaleString('pt-BR'),
-                    label: 'Aporte de Ativos'
-                };
-                
-                depositHistory.unshift(newRecord);
-                recalculateBalance();
-                saveData();
-                
-                inputElement.value = '';
-                updateDisplay();
-                renderHistory();
-                
-                vaultMechanism.classList.remove('processing');
-                balanceElement.style.color = 'var(--cyan-glow)';
-                
-                balanceElement.style.transform = 'scale(1.08)';
-                setTimeout(() => { balanceElement.style.transform = 'scale(1)'; }, 200);
-
-                btnElement.disabled = false;
-                btnElement.innerText = 'Guardar';
-            }, 700); 
-        }
-
-        function renderHistory() {
-            historyPanel.innerHTML = '';
-            if (depositHistory.length === 0) {
-                historyPanel.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:0.8rem; padding: 25px; font-style:italic;">Nenhum registro no ledger local.</div>';
-                return;
-            }
-
-            depositHistory.forEach(record => {
-                const isNegative = record.amount < 0;
-                const div = document.createElement('div');
-                div.className = 'history-item';
-                div.innerHTML = `
-                    <div class="history-info">
-                        <span class="history-amount ${isNegative ? 'negative' : ''}">${formatCurrency(record.amount)}</span>
-                        <span class="history-date" title="${record.label || 'Registro'} • ${record.date}">${record.label || 'Registro'} • ${record.date}</span>
-                    </div>
-                    <div class="history-actions">
-                        <button class="icon-btn" onclick="editRecord(${record.id})" title="Editar Entrada">✏️</button>
-                        <button class="icon-btn delete" onclick="deleteRecord(${record.id})" title="Apagar Entrada (Irreversível)">🗑️</button>
-                    </div>
-                `;
-                historyPanel.appendChild(div);
-            });
-        }
-
-        function editRecord(id) {
-            const record = depositHistory.find(r => r.id === id);
-            if (!record) return;
-
-            const newVal = prompt("Editar valor do aporte (use ponto para centavos):", record.amount);
-            if (newVal === null) return; 
-
-            const sanitizedValue = newVal.replace(',', '.').trim();
-            const validationRegex = /^\-?\d+(\.\d{1,2})?$/;
-
-            if (!validationRegex.test(sanitizedValue)) {
-                alert("Operação bloqueada: Formato numérico inválido detectado.");
-                return;
-            }
-
-            record.amount = parseFloat(sanitizedValue);
-            record.date = new Date().toLocaleString('pt-BR') + ' (Editado)'; 
-            recalculateBalance();
-            saveData();
-            updateDisplay();
-            renderHistory();
-        }
-
-        function deleteRecord(id) {
-            if (!confirm("CONFIRMAÇÃO NECESSÁRIA: Deseja apagar permanentemente este registro do ledger? O saldo total será ajustado.")) return;
-            
-            depositHistory = depositHistory.filter(r => r.id !== id);
-            recalculateBalance();
-            saveData();
-            updateDisplay();
-            renderHistory();
-        }
-
-        function editMainBalance() {
-            const newVal = prompt("AJUSTE DE EMERGÊNCIA: Digite o novo Saldo Total Absoluto do Cofre:", currentBalance);
-            if (newVal === null) return;
-
-            const sanitizedValue = newVal.replace(',', '.').trim();
-            const validationRegex = /^\-?\d+(\.\d{1,2})?$/;
-
-            if (!validationRegex.test(sanitizedValue) || parseFloat(sanitizedValue) < 0) {
-                alert("Operação bloqueada: Valor de saldo total inválido.");
-                return;
-            }
-
-            const newTotal = parseFloat(sanitizedValue);
-            const difference = newTotal - currentBalance;
-
-            if (difference !== 0) {
-                depositHistory.unshift({
-                    id: Date.now(),
-                    amount: difference,
-                    date: new Date().toLocaleString('pt-BR'),
-                    label: 'Ajuste Manual de Balanço'
-                });
-                recalculateBalance();
-                saveData();
-                updateDisplay();
-                renderHistory();
-            }
-        }
-
-        function downloadAppScript(platform) {
-            errorElement.innerText = `Sincronizando Terminal ${platform}...`;
-            
-            setTimeout(() => {
-                const htmlContent = document.documentElement.outerHTML;
-                const blob = new Blob([htmlContent], { type: 'text/html' });
-                const lnk = document.createElement('a');
-                lnk.href = URL.createObjectURL(blob);
-                const filename = `AxonVault_${platform}_Standalone.html`;
-                lnk.download = filename;
-                document.body.appendChild(lnk);
-                lnk.click();
-                document.body.removeChild(lnk);
-                
-                errorElement.style.color = 'var(--green-glow)';
-                errorElement.innerText = `Terminal ${platform} exportado com sucesso.`;
-                setTimeout(() => {
-                    errorElement.style.color = 'var(--danger)';
-                    errorElement.innerText = '';
-                }, 3000);
-
-            }, 1000); 
-        }
-
-        inputElement.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') handleDeposit();
+        // Toda vez que você digitar, ele salva no navegador
+        textarea.addEventListener('input', function() {
+            localStorage.setItem('minhasRimas', textarea.value);
         });
 
-        init();
     </script>
 </body>
 </html>
