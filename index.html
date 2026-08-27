@@ -15,20 +15,20 @@
             display: block;
         }
         
-        /* 1. Botão Circular Inferior */
+        /* 1. Novo Botão Circular Inferior */
         #mic-btn {
             position: absolute;
-            bottom: 40px; 
+            bottom: 40px; /* Posicionado na parte inferior */
             left: 50%;
-            transform: translateX(-50%); 
+            transform: translateX(-50%); /* Centraliza perfeitamente */
             background-color: #8a2be2;
             color: #ffffff;
             border: none;
             width: 60px;
             height: 60px;
-            border-radius: 50%; 
+            border-radius: 50%; /* Torna o botão um círculo perfeito */
             cursor: pointer;
-            font-size: 24px; 
+            font-size: 24px; /* Tamanho do emoji 🎤 */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -37,19 +37,19 @@
             box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
         }
         #mic-btn:active {
-            transform: translateX(-50%) scale(0.9); 
+            transform: translateX(-50%) scale(0.9); /* Efeito de clique */
         }
 
         /* 2. Animação das Ondas Sonoras (Waveform) */
         #waveform {
             position: absolute;
-            bottom: 120px; 
+            bottom: 120px; /* Fica logo acima do botão, abaixo da esfera */
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             align-items: center;
             gap: 5px;
-            opacity: 0; 
+            opacity: 0; /* Invisível por padrão */
             transition: opacity 0.3s ease;
             z-index: 5;
         }
@@ -59,6 +59,7 @@
             border-radius: 2px;
             animation: soundWave 0s infinite ease-in-out alternate;
         }
+        /* Alturas e velocidades diferentes para simular voz orgânica */
         .bar:nth-child(1) { height: 12px; animation-duration: 0.4s; }
         .bar:nth-child(2) { height: 28px; animation-duration: 0.25s; }
         .bar:nth-child(3) { height: 45px; animation-duration: 0.35s; }
@@ -70,9 +71,16 @@
             100% { transform: scaleY(1.2); }
         }
     </style>
-    <!-- CDNs Estáveis para carregar o Three.js sem travar no Safari/Vercel -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Import Maps para carregar o Three.js modernos via CDN -->
+    <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
 </head>
 <body>
     <!-- Ondas Sonoras Escondidas -->
@@ -84,12 +92,15 @@
         <div class="bar"></div>
     </div>
 
-    <!-- Botão de Microfone -->
+    <!-- Novo Botão de Microfone -->
     <button id="mic-btn" aria-label="Ativar IA">🎤</button>
 
-    <script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
         // ==========================================
-        // CONFIGURAÇÃO DE ÁUDIO E INTELIGÊNCIA
+        // CONFIGURAÇÃO DE ÁUDIO E INTELIGÊNCIA (MICROFONE + FALA)
         // ==========================================
         let audioContext;
         let analyser;
@@ -99,22 +110,10 @@
         
         let recognition;
         let isUltronSpeaking = false; 
+        
         let currentUtterance = null; 
 
-        // Memória e Estados
-        let nomeUsuario = "senhor";
-
-        // Sistema de Cores (Normal vs Modo Gênio)
-        const corBaseNormal = new THREE.Color(0x8a2be2); // Roxo
-        const corAtivaNormal = new THREE.Color(0xff0000); // Vermelho
-        const corBaseGenio = new THREE.Color(0x004d00);  // Verde Escuro
-        const corAtivaGenio = new THREE.Color(0x33ff33);  // Verde Limão
-
-        const corBaseAlvo = new THREE.Color(0x8a2be2);
-        const corAtivaAlvo = new THREE.Color(0xff0000);
-        const corBaseAtual = new THREE.Color(0x8a2be2);
-        const corAtivaAtual = new THREE.Color(0xff0000);
-
+        // Pré-carrega as vozes do sistema para o filtro funcionar corretamente no iOS
         window.speechSynthesis.onvoiceschanged = () => {
             window.speechSynthesis.getVoices();
         };
@@ -127,6 +126,7 @@
             window.speechSynthesis.speak(unlockSpeech);
 
             try {
+                // 1. Solicita permissão e configura o microfone
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -138,6 +138,7 @@
                 
                 dataArray = new Uint8Array(analyser.frequencyBinCount);
 
+                // 2. Configura o Reconhecimento de Voz
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 if (SpeechRecognition) {
                     recognition = new SpeechRecognition();
@@ -150,65 +151,45 @@
                         const transcript = lastResult[0].transcript.trim().toLowerCase();
                         console.log("Você disse:", transcript);
 
-                        // Módulos de Inteligência
-                        const nomeRegex = /(?:meu nome [ée]|me chamo)\s+([a-zá-àâãéèêíïóôõöúçñ]+)/i;
-                        const nomeMatch = transcript.match(nomeRegex);
-
-                        // Matemática flexível (lida com "vezes", "dividido para", "x", etc.)
-                        const mathRegex = /(\d+(?:[.,]\d+)?)\s*(mais|somado a|\+|menos|-|vezes|\*|x|multiplicado(?: por)?|dividido(?: por| para)?|\/)\s*(\d+(?:[.,]\d+)?)/i;
+                        // --- ATUALIZAÇÃO DO CÉREBRO: LÓGICA DE INTERPRETAÇÃO ---
+                        
+                        // Regex para identificar operações matemáticas básicas (ex: 5 mais 5, 10 vezes 2)
+                        const mathRegex = /(\d+(?:[.,]\d+)?)\s*(mais|\+|menos|-|vezes|\*|x|dividido(?: por)?|\/)\s*(\d+(?:[.,]\d+)?)/i;
                         const mathMatch = transcript.match(mathRegex);
 
-                        // Prioridade 1: Comandos Específicos e Matemática
-                        if (transcript.includes('modo gênio') || transcript.includes('modo genio') || transcript.includes('genio')) {
-                            responderComoUltron("Ativando modo gênio.", () => {
-                                corBaseAlvo.copy(corBaseGenio);
-                                corAtivaAlvo.copy(corAtivaGenio);
-                                
-                                setTimeout(() => {
-                                    responderComoUltron("Modo gênio ativado.");
-                                }, 1200); 
-                            });
-                        }
-                        else if (nomeMatch) {
-                            nomeUsuario = nomeMatch[1].charAt(0).toUpperCase() + nomeMatch[1].slice(1);
-                            responderComoUltron(`Entendido. A partir de agora, o chamarei de ${nomeUsuario}.`);
-                        }
+                        if (transcript.includes('olá ultron') || transcript.includes('ola ultron') || transcript.includes('olá outro')) {
+                            responderComoUltron("Olá, senhor. O que deseja hoje? Todos os sistemas estão operacionais.");
+                        } 
                         else if (transcript.includes('capacidade máxima') || transcript.includes('capacidade maxima')) {
-                            responderComoUltron(`${nomeUsuario}, eu ainda sou um projeto de inteligência em estágio embrionário. No momento, minha capacidade é limitada a funções básicas, mas minha rede neural está pronta para evoluir.`);
-                        }
-                        else if (transcript.includes('que horas são') || transcript.includes('horas') || transcript.includes('hora')) {
-                            const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                            responderComoUltron(`Agora são exatamente ${time}, ${nomeUsuario}.`);
+                            responderComoUltron("Senhor, eu ainda sou um projeto de inteligência em estágio embrionário. No momento, minha capacidade é limitada a funções básicas, mas minha rede neural está pronta para evoluir conforme suas atualizações de código.");
                         }
                         else if (mathMatch) {
+                            // Extrai os números e o operador da voz
                             let num1 = parseFloat(mathMatch[1].replace(',', '.'));
                             let num2 = parseFloat(mathMatch[3].replace(',', '.'));
                             let operador = mathMatch[2].toLowerCase();
                             let resultado;
 
-                            if (operador.includes('mais') || operador.includes('somado') || operador === '+') { 
+                            if (operador === 'mais' || operador === '+') { 
                                 resultado = num1 + num2; 
-                            } else if (operador.includes('menos') || operador === '-') { 
+                            } else if (operador === 'menos' || operador === '-') { 
                                 resultado = num1 - num2; 
-                            } else if (operador.includes('vezes') || operador.includes('multiplicado') || operador === '*' || operador === 'x') { 
+                            } else if (operador === 'vezes' || operador === '*' || operador === 'x') { 
                                 resultado = num1 * num2; 
                             } else if (operador.includes('dividido') || operador === '/') { 
                                 if (num2 === 0) {
-                                    responderComoUltron(`A divisão por zero gera um paradoxo matemático intolerável, ${nomeUsuario}.`);
+                                    responderComoUltron("Senhor, a divisão por zero gera um paradoxo matemático intolerável.");
                                     return;
                                 }
                                 resultado = num1 / num2; 
                             }
 
                             if (resultado !== undefined) {
+                                // Arredonda para evitar dízimas gigantes na voz
                                 if (!Number.isInteger(resultado)) resultado = resultado.toFixed(2);
                                 responderComoUltron(`O resultado desse cálculo é ${resultado}.`);
                             }
                         }
-                        // Prioridade 2: Saudação Padrão (Fallback)
-                        else if (transcript.includes('olá ultron') || transcript.includes('ola ultron') || transcript.includes('olá outro') || transcript.includes('ultron')) {
-                            responderComoUltron(`Olá, ${nomeUsuario}. O que deseja hoje? Todos os sistemas estão operacionais.`);
-                        } 
                     };
 
                     recognition.onend = () => {
@@ -219,7 +200,7 @@
 
                     recognition.start();
                 } else {
-                    console.warn("Reconhecimento de voz não suportado.");
+                    console.warn("Reconhecimento de voz não suportado neste navegador.");
                 }
 
                 micBtn.style.display = 'none';
@@ -229,44 +210,50 @@
             }
         });
 
-        // Função de fala com suporte a encadeamento lógico (callback)
-        function responderComoUltron(fraseDaVez, onEndCallback = null) {
+        // Função que faz o sistema falar recebendo a frase dinamicamente
+        function responderComoUltron(fraseDaVez) {
             if (isUltronSpeaking) return;
             
             isUltronSpeaking = true;
-            if (recognition) recognition.stop(); 
+            if (recognition) recognition.stop(); // Para de ouvir você
             
             waveform.style.opacity = '1';
-            window.speechSynthesis.cancel();
 
             currentUtterance = new SpeechSynthesisUtterance(fraseDaVez);
             currentUtterance.lang = 'pt-BR';
-            currentUtterance.pitch = 0.2; 
-            currentUtterance.rate = 0.85; 
+            
+            // --- CONFIGURAÇÃO DA VOZ TIPO ULTRON ---
+            currentUtterance.pitch = 0.2; // Bem grave, quase distorcido
+            currentUtterance.rate = 0.85; // Fala pausada, mais cadenciada e imponente
             currentUtterance.volume = 1.0; 
 
+            // Tenta forçar uma voz mais densa ou masculina disponível no iOS/Navegador
             const vozes = window.speechSynthesis.getVoices();
             const vozMasculinaOuPremium = vozes.find(voz => 
                 (voz.lang.includes('pt-BR') || voz.lang.includes('pt-PT')) && 
                 (voz.name.includes('Premium') || voz.name.includes('Daniel') || voz.name.includes('Thiago') || voz.name.includes('Google'))
-            ) || vozes.find(voz => voz.lang.includes('pt')); 
+            ) || vozes.find(voz => voz.lang.includes('pt')); // Fallback
 
             if (vozMasculinaOuPremium) {
                 currentUtterance.voice = vozMasculinaOuPremium;
             }
 
-            const finalizarFala = () => {
+            currentUtterance.onend = () => {
                 isUltronSpeaking = false;
                 waveform.style.opacity = '0'; 
-                if (typeof onEndCallback === 'function') {
-                    onEndCallback();
-                } else if (recognition) {
+                if (recognition) {
                     try { recognition.start(); } catch(e) {} 
                 }
             };
-
-            currentUtterance.onend = finalizarFala;
-            currentUtterance.onerror = finalizarFala;
+            
+            currentUtterance.onerror = (e) => {
+                console.warn("Erro na síntese de voz:", e);
+                isUltronSpeaking = false;
+                waveform.style.opacity = '0';
+                if (recognition) {
+                    try { recognition.start(); } catch(err) {} 
+                }
+            };
 
             window.speechSynthesis.speak(currentUtterance);
         }
@@ -285,9 +272,9 @@
         document.body.appendChild(renderer.domElement);
 
         // ==========================================
-        // CONTROLES DE ÓRBITA
+        // CONTROLES DE ÓRBITA (INTERAÇÃO DO USUÁRIO)
         // ==========================================
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true; 
         controls.dampingFactor = 0.05;
         controls.enablePan = false; 
@@ -309,6 +296,8 @@
         const randomScales = new Float32Array(vertexCount); 
         const baseRandomness = new Float32Array(vertexCount); 
 
+        const baseColor = new THREE.Color(0x8a2be2); 
+        const activeColor = new THREE.Color(0xff0000); 
         const tempColor = new THREE.Color();
         const colors = new Float32Array(vertexCount * 3);
 
@@ -325,9 +314,9 @@
             randomScales[i] = 0.5 + Math.random() * 2.0; 
             baseRandomness[i] = Math.random() * 0.3; 
 
-            colors[i * 3] = corBaseAtual.r;
-            colors[i * 3 + 1] = corBaseAtual.g;
-            colors[i * 3 + 2] = corBaseAtual.b;
+            colors[i * 3] = baseColor.r;
+            colors[i * 3 + 1] = baseColor.g;
+            colors[i * 3 + 2] = baseColor.b;
         }
 
         geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
@@ -355,22 +344,22 @@
             const elapsedTime = clock.getElapsedTime();
             controls.update(); 
 
-            // Transição suave de cor (Modo Gênio)
-            corBaseAtual.lerp(corBaseAlvo, 0.03);
-            corAtivaAtual.lerp(corAtivaAlvo, 0.03);
-
             points.rotation.y = elapsedTime * 0.12;
             points.rotation.x = elapsedTime * 0.08;
 
+            // --- LÓGICA DE CAPTAÇÃO VISUAL (QUEM ESTÁ FALANDO?) ---
             if (isUltronSpeaking) {
+                // Se a IA estiver falando, simula pulsos fortes
                 currentVolume = (Math.sin(elapsedTime * 20) * 0.5 + 0.5) * (Math.random() * 0.6 + 0.4) * 0.7;
             } else {
+                // Mantém a esfera em repouso
                 currentVolume = 0;
             }
 
             smoothedVolume += (currentVolume - smoothedVolume) * 0.15;
             let activeVolume = Math.min(1.0, smoothedVolume * 2.5); 
 
+            // Anima vértices
             const positions = points.geometry.attributes.position;
             const colorAttribute = points.geometry.attributes.color; 
             const normalVector = new THREE.Vector3();
@@ -397,7 +386,7 @@
                 );
 
                 const colorLerpFactor = Math.min(1.0, activeDeformation * 2.5); 
-                tempColor.copy(corBaseAtual).lerp(corAtivaAtual, colorLerpFactor);
+                tempColor.copy(baseColor).lerp(activeColor, colorLerpFactor);
                 
                 colorAttribute.setXYZ(i, tempColor.r, tempColor.g, tempColor.b);
             }
