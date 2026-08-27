@@ -8,14 +8,13 @@
         body {
             margin: 0;
             overflow: hidden;
-            background-color: #05020a; /* Fundo extremamente escuro, roxo quase preto */
+            background-color: #05020a;
             font-family: sans-serif;
         }
         canvas {
             display: block;
         }
         
-        /* 1. Novo Botão Circular Inferior */
         #mic-btn {
             position: absolute;
             bottom: 40px; 
@@ -40,7 +39,6 @@
             transform: translateX(-50%) scale(0.9); 
         }
 
-        /* 2. Animação das Ondas Sonoras (Waveform) */
         #waveform {
             position: absolute;
             bottom: 120px; 
@@ -70,7 +68,6 @@
             100% { transform: scaleY(1.2); }
         }
     </style>
-    <!-- Import Maps para carregar o Three.js modernos via CDN -->
     <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
     <script type="importmap">
         {
@@ -82,7 +79,6 @@
     </script>
 </head>
 <body>
-    <!-- Ondas Sonoras Escondidas -->
     <div id="waveform">
         <div class="bar"></div>
         <div class="bar"></div>
@@ -91,7 +87,6 @@
         <div class="bar"></div>
     </div>
 
-    <!-- Novo Botão de Microfone -->
     <button id="mic-btn" aria-label="Ativar IA">🎤</button>
 
     <script type="module">
@@ -99,7 +94,7 @@
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
         // ==========================================
-        // CONFIGURAÇÃO DE ÁUDIO E INTELIGÊNCIA (MICROFONE + FALA)
+        // 1. ESTADOS GLOBAIS E CORES
         // ==========================================
         let audioContext;
         let analyser;
@@ -107,40 +102,81 @@
         let currentVolume = 0;
         let smoothedVolume = 0;
         
-        let recognition;
+        let recognition = null;
         let isUltronSpeaking = false; 
         let currentUtterance = null; 
 
-        // --- SISTEMA DE MEMÓRIA ---
-        let nomeUsuario = "senhor"; // Nome padrão
+        let nomeUsuario = "senhor";
 
-        // --- SISTEMA DE CORES E TEMAS (MODO GÊNIO) ---
-        // Cores do Modo Padrão
-        const corBaseNormal = new THREE.Color(0x8a2be2); // Roxo
-        const corAtivaNormal = new THREE.Color(0xff0000); // Vermelho
-        
-        // Cores do Modo Gênio
-        const corBaseGenio = new THREE.Color(0x004d00); // Verde Escuro
-        const corAtivaGenio = new THREE.Color(0x33ff33); // Verde Limão/Claro
+        // Cores padrão e modo gênio
+        const corBaseNormal = new THREE.Color(0x8a2be2); 
+        const corAtivaNormal = new THREE.Color(0xff0000); 
+        const corBaseGenio = new THREE.Color(0x004d00); 
+        const corAtivaGenio = new THREE.Color(0x33ff33); 
 
-        // Variáveis dinâmicas para a animação de transição (Lerp)
-        let corBaseAlvo = new THREE.Color(0x8a2be2);
-        let corAtivaAlvo = new THREE.Color(0xff0000);
-        let corBaseAtual = new THREE.Color(0x8a2be2);
-        let corAtivaAtual = new THREE.Color(0xff0000);
-
-        window.speechSynthesis.onvoiceschanged = () => {
-            window.speechSynthesis.getVoices();
-        };
+        const corBaseAlvo = new THREE.Color(0x8a2be2);
+        const corAtivaAlvo = new THREE.Color(0xff0000);
+        const corBaseAtual = new THREE.Color(0x8a2be2);
+        const corAtivaAtual = new THREE.Color(0xff0000);
 
         const micBtn = document.getElementById('mic-btn');
         const waveform = document.getElementById('waveform'); 
-        
-        micBtn.addEventListener('click', async () => {
-            const unlockSpeech = new SpeechSynthesisUtterance('');
-            window.speechSynthesis.speak(unlockSpeech);
 
+        // ==========================================
+        // 2. FUNÇÃO DE FALA ROBUSTA
+        // ==========================================
+        function responderComoUltron(fraseDaVez, onEndCallback = null) {
+            if (isUltronSpeaking) return;
+            
+            isUltronSpeaking = true;
+            if (recognition) {
+                try { recognition.stop(); } catch(e) {}
+            }
+            
+            waveform.style.opacity = '1';
+
+            window.speechSynthesis.cancel(); // Limpa filas pendentes no iOS
+
+            currentUtterance = new SpeechSynthesisUtterance(fraseDaVez);
+            currentUtterance.lang = 'pt-BR';
+            currentUtterance.pitch = 0.2; 
+            currentUtterance.rate = 0.85; 
+            currentUtterance.volume = 1.0; 
+
+            const vozes = window.speechSynthesis.getVoices();
+            const vozMasculinaOuPremium = vozes.find(voz => 
+                (voz.lang.includes('pt-BR') || voz.lang.includes('pt-PT')) && 
+                (voz.name.includes('Premium') || voz.name.includes('Daniel') || voz.name.includes('Thiago') || voz.name.includes('Google'))
+            ) || vozes.find(voz => voz.lang.includes('pt')); 
+
+            if (vozMasculinaOuPremium) {
+                currentUtterance.voice = vozMasculinaOuPremium;
+            }
+
+            const finalizarFala = () => {
+                isUltronSpeaking = false;
+                waveform.style.opacity = '0'; 
+                if (typeof onEndCallback === 'function') {
+                    onEndCallback();
+                } else if (recognition) {
+                    try { recognition.start(); } catch(e) {} 
+                }
+            };
+
+            currentUtterance.onend = finalizarFala;
+            currentUtterance.onerror = finalizarFala;
+
+            window.speechSynthesis.speak(currentUtterance);
+        }
+
+        // ==========================================
+        // 3. ATIVAÇÃO DO MICROFONE E RECONHECIMENTO
+        // ==========================================
+        micBtn.addEventListener('click', async () => {
             try {
+                const unlockSpeech = new SpeechSynthesisUtterance('');
+                window.speechSynthesis.speak(unlockSpeech);
+
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -162,42 +198,40 @@
                     recognition.onresult = (event) => {
                         const lastResult = event.results[event.results.length - 1];
                         const transcript = lastResult[0].transcript.trim().toLowerCase();
-                        console.log("Você disse:", transcript);
+                        console.log("Comando detectado:", transcript);
 
-                        // --- ATUALIZAÇÃO DO CÉREBRO: LÓGICAS E MÓDULOS ---
-                        
-                        // 1. Módulo de Memória (Captura o nome)
                         const nomeRegex = /(?:meu nome [ée]|me chamo)\s+([a-zá-àâãéèêíïóôõöúçñ]+)/i;
                         const nomeMatch = transcript.match(nomeRegex);
 
-                        // 2. Módulo de Matemática Expandido
                         const mathRegex = /(\d+(?:[.,]\d+)?)\s*(mais|somado a|\+|menos|-|vezes|\*|x|multiplicado(?: por)?|dividido(?: por| para)?|\/)\s*(\d+(?:[.,]\d+)?)/i;
                         const mathMatch = transcript.match(mathRegex);
 
-                        // --- ROTINAS DE RESPOSTA (PRIORIDADE INVERTIDA) ---
-                        
-                        // Prioridade 1: Comandos Diretos
-                        if (transcript.includes('ativar modo gênio') || transcript.includes('ativar modo genio')) {
+                        // Prioridade 1: Modo Gênio
+                        if (transcript.includes('modo gênio') || transcript.includes('modo genio') || transcript.includes('modo gênio') || transcript.includes('genio')) {
                             responderComoUltron("Ativando modo gênio.", () => {
                                 corBaseAlvo.copy(corBaseGenio);
                                 corAtivaAlvo.copy(corAtivaGenio);
                                 
                                 setTimeout(() => {
                                     responderComoUltron("Modo gênio ativado.");
-                                }, 1500); 
+                                }, 1200); 
                             });
                         }
+                        // Prioridade 2: Nome
                         else if (nomeMatch) {
                             nomeUsuario = nomeMatch[1].charAt(0).toUpperCase() + nomeMatch[1].slice(1);
                             responderComoUltron(`Entendido. A partir de agora, o chamarei de ${nomeUsuario}.`);
                         }
-                        else if (transcript.includes('capacidade máxima') || transcript.includes('capacidade maxima')) {
+                        // Prioridade 3: Capacidade
+                        else if (transcript.includes('capacidade')) {
                             responderComoUltron(`${nomeUsuario}, eu ainda sou um projeto de inteligência em estágio embrionário. No momento, minha capacidade é limitada a funções básicas, mas minha rede neural está pronta para evoluir.`);
                         }
-                        else if (transcript.includes('que horas são') || transcript.includes('horas')) {
+                        // Prioridade 4: Horas
+                        else if (transcript.includes('horas') || transcript.includes('hora')) {
                             const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                             responderComoUltron(`Agora são exatamente ${time}, ${nomeUsuario}.`);
                         }
+                        // Prioridade 5: Matemática
                         else if (mathMatch) {
                             let num1 = parseFloat(mathMatch[1].replace(',', '.'));
                             let num2 = parseFloat(mathMatch[3].replace(',', '.'));
@@ -223,8 +257,8 @@
                                 responderComoUltron(`O resultado desse cálculo é ${resultado}.`);
                             }
                         }
-                        // Prioridade 2: Saudação Simples (Só executa se nenhum comando acima for ativado)
-                        else if (transcript.includes('olá ultron') || transcript.includes('ola ultron') || transcript.includes('olá outro')) {
+                        // Prioridade 6: Saudação Base
+                        else if (transcript.includes('ultron') || transcript.includes('outro') || transcript.includes('olá') || transcript.includes('ola')) {
                             responderComoUltron(`Olá, ${nomeUsuario}. O que deseja hoje? Todos os sistemas estão operacionais.`);
                         } 
                     };
@@ -236,68 +270,17 @@
                     };
 
                     recognition.start();
-                } else {
-                    console.warn("Reconhecimento de voz não suportado.");
                 }
 
                 micBtn.style.display = 'none';
             } catch (err) {
-                console.error('Erro ao acessar APIs:', err);
-                alert('É necessário permitir o uso do microfone.');
+                console.error('Erro na inicialização de hardware:', err);
+                alert('Erro ao inicializar microfone.');
             }
         });
 
-        // Função que faz o sistema falar. Adicionado onEndCallback para sequências lógicas
-        function responderComoUltron(fraseDaVez, onEndCallback = null) {
-            if (isUltronSpeaking) return;
-            
-            isUltronSpeaking = true;
-            if (recognition) recognition.stop(); 
-            
-            waveform.style.opacity = '1';
-
-            currentUtterance = new SpeechSynthesisUtterance(fraseDaVez);
-            currentUtterance.lang = 'pt-BR';
-            
-            currentUtterance.pitch = 0.2; 
-            currentUtterance.rate = 0.85; 
-            currentUtterance.volume = 1.0; 
-
-            const vozes = window.speechSynthesis.getVoices();
-            const vozMasculinaOuPremium = vozes.find(voz => 
-                (voz.lang.includes('pt-BR') || voz.lang.includes('pt-PT')) && 
-                (voz.name.includes('Premium') || voz.name.includes('Daniel') || voz.name.includes('Thiago') || voz.name.includes('Google'))
-            ) || vozes.find(voz => voz.lang.includes('pt')); 
-
-            if (vozMasculinaOuPremium) {
-                currentUtterance.voice = vozMasculinaOuPremium;
-            }
-
-            currentUtterance.onend = () => {
-                isUltronSpeaking = false;
-                waveform.style.opacity = '0'; 
-                
-                // Se houver uma ação encadeada (como no Modo Gênio), executa. Senão, volta a ouvir.
-                if (onEndCallback) {
-                    onEndCallback();
-                } else if (recognition) {
-                    try { recognition.start(); } catch(e) {} 
-                }
-            };
-            
-            currentUtterance.onerror = (e) => {
-                isUltronSpeaking = false;
-                waveform.style.opacity = '0';
-                if (recognition) {
-                    try { recognition.start(); } catch(err) {} 
-                }
-            };
-
-            window.speechSynthesis.speak(currentUtterance);
-        }
-
         // ==========================================
-        // 1. SETUP DE CENA, CÂMERA E RENDERER
+        // 4. SETUP DE CENA, CÂMERA E RENDERER
         // ==========================================
         const scene = new THREE.Scene();
         
@@ -309,9 +292,6 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         document.body.appendChild(renderer.domElement);
 
-        // ==========================================
-        // CONTROLES DE ÓRBITA (INTERAÇÃO DO USUÁRIO)
-        // ==========================================
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true; 
         controls.dampingFactor = 0.05;
@@ -320,7 +300,7 @@
         controls.maxDistance = 20; 
 
         // ==========================================
-        // 2. GEOMETRIA E MATERIAL (A ESFERA)
+        // 5. GEOMETRIA E PARTICULAS
         // ==========================================
         const radius = 2.2;
         const detail = 18; 
@@ -333,9 +313,8 @@
         const randomOffsets = new Float32Array(vertexCount);
         const randomScales = new Float32Array(vertexCount); 
         const baseRandomness = new Float32Array(vertexCount); 
-
-        const tempColor = new THREE.Color();
         const colors = new Float32Array(vertexCount * 3);
+        const tempColor = new THREE.Color();
 
         for (let i = 0; i < vertexCount; i++) {
             const x = positionAttribute.getX(i);
@@ -350,10 +329,9 @@
             randomScales[i] = 0.5 + Math.random() * 2.0; 
             baseRandomness[i] = Math.random() * 0.3; 
 
-            // Inicializa com as cores atuais (Roxo Base)
-            colors[i * 3] = corBaseAtual.r;
-            colors[i * 3 + 1] = corBaseAtual.g;
-            colors[i * 3 + 2] = corBaseAtual.b;
+            colors[i * 3] = corBaseNormal.r;
+            colors[i * 3 + 1] = corBaseNormal.g;
+            colors[i * 3 + 2] = corBaseNormal.b;
         }
 
         geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
@@ -371,7 +349,7 @@
         scene.add(points);
 
         // ==========================================
-        // 3. ANIMAÇÃO (PULSAÇÃO E ROTAÇÃO)
+        // 6. LOOP DE RENDERIZAÇÃO E ANIMAÇÃO
         // ==========================================
         const clock = new THREE.Clock();
 
@@ -381,10 +359,9 @@
             const elapsedTime = clock.getElapsedTime();
             controls.update(); 
 
-            // --- LÓGICA DE TRANSIÇÃO DE CORES (MODO GÊNIO) ---
-            // Faz a cor atual derreter suavemente (Lerp 0.02) em direção à cor alvo
-            corBaseAtual.lerp(corBaseAlvo, 0.02);
-            corAtivaAtual.lerp(corAtivaAlvo, 0.02);
+            // Interpolação suave para troca de cor
+            corBaseAtual.lerp(corBaseAlvo, 0.03);
+            corAtivaAtual.lerp(corAtivaAlvo, 0.03);
 
             points.rotation.y = elapsedTime * 0.12;
             points.rotation.x = elapsedTime * 0.08;
@@ -413,7 +390,6 @@
                 
                 const baseDeformation = (0.08 + baseRandomness[i]) * noise;
                 const activeDeformation = activeVolume * 0.45 * noise * randomScales[i]; 
-                
                 const totalDeformation = baseDeformation + activeDeformation;
                 
                 positions.setXYZ(
@@ -423,7 +399,6 @@
                     oz + normalVector.z * totalDeformation
                 );
 
-                // Aplica o Lerp na malha usando as cores dinâmicas atuais
                 const colorLerpFactor = Math.min(1.0, activeDeformation * 2.5); 
                 tempColor.copy(corBaseAtual).lerp(corAtivaAtual, colorLerpFactor);
                 
@@ -438,9 +413,6 @@
 
         animate();
 
-        // ==========================================
-        // 4. RESPONSIVIDADE DE TELA
-        // ==========================================
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
