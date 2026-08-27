@@ -68,15 +68,9 @@
             100% { transform: scaleY(1.2); }
         }
     </style>
-    <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-            }
-        }
-    </script>
+    <!-- Carregamento Estável do Three.js e OrbitControls via CDN Tradicional -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
     <div id="waveform">
@@ -89,10 +83,7 @@
 
     <button id="mic-btn" aria-label="Ativar IA">🎤</button>
 
-    <script type="module">
-        import * as THREE from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
+    <script>
         // ==========================================
         // 1. ESTADOS GLOBAIS E CORES
         // ==========================================
@@ -108,7 +99,6 @@
 
         let nomeUsuario = "senhor";
 
-        // Cores padrão e modo gênio
         const corBaseNormal = new THREE.Color(0x8a2be2); 
         const corAtivaNormal = new THREE.Color(0xff0000); 
         const corBaseGenio = new THREE.Color(0x004d00); 
@@ -134,8 +124,7 @@
             }
             
             waveform.style.opacity = '1';
-
-            window.speechSynthesis.cancel(); // Limpa filas pendentes no iOS
+            window.speechSynthesis.cancel();
 
             currentUtterance = new SpeechSynthesisUtterance(fraseDaVez);
             currentUtterance.lang = 'pt-BR';
@@ -206,8 +195,7 @@
                         const mathRegex = /(\d+(?:[.,]\d+)?)\s*(mais|somado a|\+|menos|-|vezes|\*|x|multiplicado(?: por)?|dividido(?: por| para)?|\/)\s*(\d+(?:[.,]\d+)?)/i;
                         const mathMatch = transcript.match(mathRegex);
 
-                        // Prioridade 1: Modo Gênio
-                        if (transcript.includes('modo gênio') || transcript.includes('modo genio') || transcript.includes('modo gênio') || transcript.includes('genio')) {
+                        if (transcript.includes('modo gênio') || transcript.includes('modo genio') || transcript.includes('genio')) {
                             responderComoUltron("Ativando modo gênio.", () => {
                                 corBaseAlvo.copy(corBaseGenio);
                                 corAtivaAlvo.copy(corAtivaGenio);
@@ -217,21 +205,17 @@
                                 }, 1200); 
                             });
                         }
-                        // Prioridade 2: Nome
                         else if (nomeMatch) {
                             nomeUsuario = nomeMatch[1].charAt(0).toUpperCase() + nomeMatch[1].slice(1);
                             responderComoUltron(`Entendido. A partir de agora, o chamarei de ${nomeUsuario}.`);
                         }
-                        // Prioridade 3: Capacidade
                         else if (transcript.includes('capacidade')) {
                             responderComoUltron(`${nomeUsuario}, eu ainda sou um projeto de inteligência em estágio embrionário. No momento, minha capacidade é limitada a funções básicas, mas minha rede neural está pronta para evoluir.`);
                         }
-                        // Prioridade 4: Horas
                         else if (transcript.includes('horas') || transcript.includes('hora')) {
                             const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                             responderComoUltron(`Agora são exatamente ${time}, ${nomeUsuario}.`);
                         }
-                        // Prioridade 5: Matemática
                         else if (mathMatch) {
                             let num1 = parseFloat(mathMatch[1].replace(',', '.'));
                             let num2 = parseFloat(mathMatch[3].replace(',', '.'));
@@ -240,7 +224,7 @@
 
                             if (operador.includes('mais') || operador.includes('somado') || operador === '+') { 
                                 resultado = num1 + num2; 
-                            } else if (operador === 'menos' || operador === '-') { 
+                            } else if (operador.includes('menos') || operador === '-') { 
                                 resultado = num1 - num2; 
                             } else if (operador.includes('vezes') || operador.includes('multiplicado') || operador === '*' || operador === 'x') { 
                                 resultado = num1 * num2; 
@@ -257,7 +241,6 @@
                                 responderComoUltron(`O resultado desse cálculo é ${resultado}.`);
                             }
                         }
-                        // Prioridade 6: Saudação Base
                         else if (transcript.includes('ultron') || transcript.includes('outro') || transcript.includes('olá') || transcript.includes('ola')) {
                             responderComoUltron(`Olá, ${nomeUsuario}. O que deseja hoje? Todos os sistemas estão operacionais.`);
                         } 
@@ -292,7 +275,7 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         document.body.appendChild(renderer.domElement);
 
-        const controls = new OrbitControls(camera, renderer.domElement);
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true; 
         controls.dampingFactor = 0.05;
         controls.enablePan = false; 
@@ -359,7 +342,6 @@
             const elapsedTime = clock.getElapsedTime();
             controls.update(); 
 
-            // Interpolação suave para troca de cor
             corBaseAtual.lerp(corBaseAlvo, 0.03);
             corAtivaAtual.lerp(corAtivaAlvo, 0.03);
 
