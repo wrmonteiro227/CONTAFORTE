@@ -16,7 +16,7 @@
         }
         
         /* ==========================================
-           NOVO HEADER E-COMMERCE (Mercado Livre/Shopee Style)
+           HEADER PREMIUM (Glassmorphism e Glow Sutil)
            ========================================== */
         #app-header {
             position: fixed;
@@ -28,15 +28,17 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            color: white;
-            font-size: 22px;
+            color: #ffffff;
+            font-size: 18px;
             font-weight: 800;
-            letter-spacing: 2px;
+            letter-spacing: 4px;
             text-transform: uppercase;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.6);
-            /* O background será injetado dinamicamente no JS para acompanhar a esfera */
-            background: #8a2be2; 
-            transition: background 0.1s;
+            /* Fundo de vidro fosco profundo */
+            background: rgba(5, 2, 12, 0.6); 
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: text-shadow 0.2s, border-color 0.2s;
         }
 
         /* BOTÃO DO MICROFONE */
@@ -53,7 +55,7 @@
             border-radius: 50%; 
             cursor: pointer;
             font-size: 24px; 
-            display: flex;
+            display: flex; /* Mudará dinamicamente para 'none' quando ouvindo e 'flex' quando pausado */
             justify-content: center;
             align-items: center;
             z-index: 10;
@@ -95,15 +97,15 @@
         }
 
         /* ==========================================
-           REORGANIZAÇÃO: MENU LATERAL E TAREFAS
+           MENU LATERAL E TAREFAS
            ========================================== */
         #menu-btn {
             position: absolute;
-            top: 10px; /* Alinhado dentro do header */
+            top: 10px; 
             left: 15px;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.05);
             color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             width: 40px;
             height: 40px;
             border-radius: 8px;
@@ -113,11 +115,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(5px);
             transition: background 0.3s;
         }
         #menu-btn:hover {
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(255, 255, 255, 0.15);
         }
 
         #side-menu {
@@ -128,7 +129,7 @@
             height: 100vh;
             background: rgba(10, 5, 20, 0.95);
             backdrop-filter: blur(15px);
-            border-right: 2px solid rgba(138, 43, 226, 0.5);
+            border-right: 2px solid rgba(138, 43, 226, 0.3);
             z-index: 20;
             transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             color: white;
@@ -163,7 +164,6 @@
         }
         #close-btn:hover { color: white; }
 
-        /* Lista Base do Menu (Dropdown de opções) */
         #main-nav {
             list-style: none;
             padding: 0;
@@ -186,9 +186,8 @@
             background: rgba(138, 43, 226, 0.3);
         }
 
-        /* Painel Interno de Tarefas */
         #tasks-panel {
-            display: none; /* Escondido até clicar em Tarefas */
+            display: none; 
         }
         #back-nav-btn {
             background: rgba(255,255,255,0.1);
@@ -245,18 +244,13 @@
             <button id="close-btn" aria-label="Fechar Menu">✖</button>
         </div>
         
-        <!-- Lista de Opções (Pronta para escalar) -->
         <ul id="main-nav">
             <li class="nav-item" id="nav-tarefas-btn">📝 Tarefas Diárias</li>
-            <!-- <li class="nav-item" id="nav-futuro-btn">⚙️ Configurações</li> -->
         </ul>
 
-        <!-- Painel de Tarefas -->
         <div id="tasks-panel">
             <button id="back-nav-btn">⬅ Voltar</button>
-            <ul id="task-list">
-                <!-- Tarefas injetadas via JS -->
-            </ul>
+            <ul id="task-list"></ul>
         </div>
     </div>
 
@@ -283,6 +277,7 @@
         const navTarefasBtn = document.getElementById('nav-tarefas-btn');
         const backNavBtn = document.getElementById('back-nav-btn');
         const taskListEl = document.getElementById('task-list');
+        const micBtn = document.getElementById('mic-btn');
 
         let tarefas = JSON.parse(localStorage.getItem('utron.tasks.v1')) || []; 
 
@@ -333,23 +328,30 @@
         let recognition = null;
         let isUltronSpeaking = false; 
         let currentUtterance = null; 
+        let isListening = false; // Controle de estado do microfone para resgate de sessão
 
         let nomeUsuario = localStorage.getItem('utron.name') || "senhor";
-        let isGenioActive = false; 
+        
+        // --- NOVO: Verifica na memória se o Modo Gênio estava ativo ao carregar a página
+        let isGenioActive = localStorage.getItem('utron.mode') === 'genio'; 
 
         const corBaseNormal = new THREE.Color(0x8a2be2); 
         const corAtivaNormal = new THREE.Color(0xff0000); 
         const corBaseGenio = new THREE.Color(0x004d00); 
         const corAtivaGenio = new THREE.Color(0x33ff33); 
 
-        const corBaseAlvo = new THREE.Color(0x8a2be2);
-        const corAtivaAlvo = new THREE.Color(0xff0000);
-        const corBaseAtual = new THREE.Color(0x8a2be2);
-        const corAtivaAtual = new THREE.Color(0xff0000);
+        // Carrega as cores corretas baseadas na memória
+        const corBaseAlvo = new THREE.Color(isGenioActive ? 0x004d00 : 0x8a2be2);
+        const corAtivaAlvo = new THREE.Color(isGenioActive ? 0x33ff33 : 0xff0000);
+        const corBaseAtual = new THREE.Color(isGenioActive ? 0x004d00 : 0x8a2be2);
+        const corAtivaAtual = new THREE.Color(isGenioActive ? 0x33ff33 : 0xff0000);
 
-        const micBtn = document.getElementById('mic-btn');
         const waveform = document.getElementById('waveform'); 
-        const appHeader = document.getElementById('app-header'); // Ref ao novo Header
+        const appHeader = document.getElementById('app-header'); 
+
+        window.speechSynthesis.onvoiceschanged = () => {
+            window.speechSynthesis.getVoices();
+        };
 
         // ==========================================
         // FUNÇÃO DE FALA ROBUSTA
@@ -387,7 +389,7 @@
                 if (typeof onEndCallback === 'function') {
                     onEndCallback();
                 } else if (recognition) {
-                    try { recognition.start(); } catch(e) {} 
+                    try { recognition.start(); } catch(e) { micBtn.style.display = 'flex'; } 
                 }
             };
 
@@ -423,6 +425,12 @@
                     recognition.interimResults = false;
                     recognition.lang = 'pt-BR';
 
+                    // Controle de Estado para o Resgate de Sessão
+                    recognition.onstart = () => {
+                        isListening = true;
+                        micBtn.style.display = 'none';
+                    };
+
                     recognition.onresult = (event) => {
                         const lastResult = event.results[event.results.length - 1];
                         const transcript = lastResult[0].transcript.trim().toLowerCase();
@@ -430,22 +438,18 @@
 
                         console.log("Comando detectado:", transcript);
 
-                        // 1. Modos
-                        const desativarGenioMatch = transcript.match(/desativar modo gênio|desligar modo gênio|desativar modo genio|desligar modo genio|desativa o modo gênio|desliga o gênio|sair do modo gênio/i);
+                        const desativarGenioMatch = transcript.match(/desativar modo gênio|desligar modo gênio|desativar modo genio|desligar modo genio|desativa o modo gênio|desliga o gênio|sair do modo gênio|voltar ao normal/i);
                         const ativarGenioMatch = transcript.match(/ativar modo gênio|ativar modo genio|ligar modo gênio/i) || (transcript.includes('modo gênio') && !transcript.includes('desativar') && !transcript.includes('desligar') && !transcript.includes('sair'));
 
-                        // 2. Tarefas
                         const registroRegex = /(?:registrar|salvar|anotar|registre|anote|salve)(?:\s+(?:nova tarefa|tarefa|compromissos?|que|um compromisso|uma tarefa))?\s+(.+)/i;
                         const registroMatch = transcript.match(registroRegex);
 
                         const leituraTarefasRegex = /quais (?:são as )?tarefas|o que tenho para fazer|o que há para hoje|ler tarefas|meus compromissos/i;
                         const leituraMatch = transcript.match(leituraTarefasRegex);
 
-                        // 3. Memória
                         const nomeRegex = /(?:meu nome [ée]|me chamo)\s+([a-zàáâãéèêíïóôõöúçñ]+)/i;
                         const nomeMatch = transcript.match(nomeRegex);
 
-                        // 4. Matemática (Aprimorada para "pra", "para", "x", etc)
                         let mathTranscript = transcript
                             .replace(/\bzero\b/g, '0').replace(/\bum\b/g, '1').replace(/\bdois\b/g, '2').replace(/\btrês\b/g, '3')
                             .replace(/\bquatro\b/g, '4').replace(/\bcinco\b/g, '5').replace(/\bseis\b/g, '6').replace(/\bsete\b/g, '7')
@@ -454,12 +458,13 @@
                         const mathRegex = /(\d+(?:[.,]\d+)?)\s*(mais|somada? a?|\+|menos|-|vezes|\*|x|multiplicado(?: por)?|dividido(?: por| para| pra)?|\/)\s*(\d+(?:[.,]\d+)?)/i;
                         const mathMatch = mathTranscript.match(mathRegex);
 
-                        // --- FUNIL DE ROTEAMENTO DE INTENTS ---
+                        // ROTEAMENTO
                         if (desativarGenioMatch) {
                             if (!isGenioActive) {
                                 responderComoUltron("O modo gênio já está desligado.");
                             } else {
                                 isGenioActive = false; 
+                                localStorage.setItem('utron.mode', 'normal'); // Salva na memória
                                 responderComoUltron("Desativando modo gênio. Retornando aos parâmetros normais.", () => {
                                     corBaseAlvo.copy(corBaseNormal);
                                     corAtivaAlvo.copy(corAtivaNormal);
@@ -471,6 +476,7 @@
                                 responderComoUltron(`O modo gênio já está ligado, ${nomeUsuario}.`);
                             } else {
                                 isGenioActive = true; 
+                                localStorage.setItem('utron.mode', 'genio'); // Salva na memória
                                 responderComoUltron("Ativando modo gênio.", () => {
                                     corBaseAlvo.copy(corBaseGenio);
                                     corAtivaAlvo.copy(corAtivaGenio);
@@ -486,7 +492,7 @@
                             atualizarListaTarefas();  
                             
                             sideMenu.classList.add('open'); 
-                            openTasksPanel(); // Abre a aba de tarefas automaticamente
+                            openTasksPanel(); 
                             
                             responderComoUltron(`Anotado, ${nomeUsuario}. Registrei a seguinte tarefa: ${novaTarefa}.`);
                         }
@@ -538,11 +544,9 @@
                                 responderComoUltron(`${num1} ${operador} ${num2} é igual a ${resultado}.`);
                             }
                         }
-                        // Saudação Base
                         else if (transcript.includes('ultron') || transcript.includes('outro') || transcript.includes('olá') || transcript.includes('ola')) {
                             responderComoUltron(`Olá, ${nomeUsuario}. O que deseja hoje? Todos os sistemas estão operacionais.`);
                         } 
-                        // FALLBACK (IA NÃO RECONHECEU O COMANDO)
                         else {
                             const respostasErro = [
                                 "Desculpe, não entendi o comando. Poderia repetir?",
@@ -555,18 +559,48 @@
                     };
 
                     recognition.onend = () => {
+                        isListening = false;
                         if (!isUltronSpeaking && recognition) {
-                            try { recognition.start(); } catch(e) {}
+                            try { 
+                                recognition.start(); 
+                            } catch(e) {
+                                // Se der erro ao reiniciar (ex: aba em 2º plano no Safari), força mostrar o botão
+                                micBtn.style.display = 'flex';
+                            }
                         }
+                    };
+                    
+                    recognition.onerror = (event) => {
+                        console.warn("Erro de escuta:", event.error);
+                        // Restaura o botão na interface caso falhe a permissão ou rede
+                        micBtn.style.display = 'flex';
                     };
 
                     recognition.start();
                 }
 
-                micBtn.style.display = 'none';
             } catch (err) {
                 console.error('Erro na inicialização de hardware:', err);
                 alert('Erro ao inicializar microfone.');
+                micBtn.style.display = 'flex';
+            }
+        });
+
+        // --- SISTEMA DE RESGATE DE SESSÃO (APP EM SEGUNDO PLANO) ---
+        // Se você minimizar o Safari e voltar, ele tenta recuperar a audição ou devolver o botão
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                if (recognition && !isListening && !isUltronSpeaking) {
+                    try { 
+                        recognition.start(); 
+                    } catch(e) {
+                        micBtn.style.display = 'flex';
+                    }
+                }
+            } else {
+                if (recognition && isListening) {
+                    try { recognition.stop(); } catch(e) {}
+                }
             }
         });
 
@@ -654,10 +688,10 @@
             corBaseAtual.lerp(corBaseAlvo, 0.03);
             corAtivaAtual.lerp(corAtivaAlvo, 0.03);
 
-            // Sincroniza dinamicamente o Header com a cor exata da esfera
-            const cBaseCSS = `rgb(${Math.round(corBaseAtual.r * 255)}, ${Math.round(corBaseAtual.g * 255)}, ${Math.round(corBaseAtual.b * 255)})`;
+            // Sincroniza dinamicamente o brilho (Glow) do Header com a cor exata da esfera
             const cAtivaCSS = `rgb(${Math.round(corAtivaAtual.r * 255)}, ${Math.round(corAtivaAtual.g * 255)}, ${Math.round(corAtivaAtual.b * 255)})`;
-            appHeader.style.background = `linear-gradient(90deg, ${cBaseCSS} 0%, ${cAtivaCSS} 100%)`;
+            appHeader.style.textShadow = `0 0 12px ${cAtivaCSS}`;
+            appHeader.style.borderBottomColor = cAtivaCSS;
 
             points.rotation.y = elapsedTime * 0.12;
             points.rotation.x = elapsedTime * 0.08;
