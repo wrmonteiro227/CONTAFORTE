@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador de IA - Esfera Tecnológica</title>
+    <title>Ultron - Visualizador de IA</title>
     <style>
         body {
             margin: 0;
@@ -15,6 +15,30 @@
             display: block;
         }
         
+        /* ==========================================
+           NOVO HEADER E-COMMERCE (Mercado Livre/Shopee Style)
+           ========================================== */
+        #app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.6);
+            /* O background será injetado dinamicamente no JS para acompanhar a esfera */
+            background: #8a2be2; 
+            transition: background 0.1s;
+        }
+
         /* BOTÃO DO MICROFONE */
         #mic-btn {
             position: absolute;
@@ -71,20 +95,20 @@
         }
 
         /* ==========================================
-           NOVA UI: MENU LATERAL E TAREFAS 
+           REORGANIZAÇÃO: MENU LATERAL E TAREFAS
            ========================================== */
         #menu-btn {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(138, 43, 226, 0.2);
+            top: 10px; /* Alinhado dentro do header */
+            left: 15px;
+            background: rgba(0, 0, 0, 0.2);
             color: #ffffff;
-            border: 1px solid rgba(138, 43, 226, 0.5);
-            width: 45px;
-            height: 45px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 40px;
+            height: 40px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 24px;
+            font-size: 22px;
             z-index: 15;
             display: flex;
             justify-content: center;
@@ -93,7 +117,7 @@
             transition: background 0.3s;
         }
         #menu-btn:hover {
-            background: rgba(138, 43, 226, 0.5);
+            background: rgba(0, 0, 0, 0.4);
         }
 
         #side-menu {
@@ -102,7 +126,7 @@
             left: -320px;
             width: 300px;
             height: 100vh;
-            background: rgba(10, 5, 20, 0.85);
+            background: rgba(10, 5, 20, 0.95);
             backdrop-filter: blur(15px);
             border-right: 2px solid rgba(138, 43, 226, 0.5);
             z-index: 20;
@@ -116,48 +140,77 @@
             left: 0;
         }
         
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+        }
+        .menu-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
         #close-btn {
             background: none;
             border: none;
             color: rgba(255,255,255,0.6);
             font-size: 24px;
             cursor: pointer;
-            float: right;
             transition: color 0.2s;
         }
-        #close-btn:hover {
-            color: white;
-        }
+        #close-btn:hover { color: white; }
 
-        .menu-tabs {
-            margin-top: 50px;
-            border-bottom: 2px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
-            display: flex;
-            gap: 15px;
+        /* Lista Base do Menu (Dropdown de opções) */
+        #main-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
         }
-        .tab-btn {
-            background: none;
-            border: none;
-            color: #8a2be2;
-            font-size: 18px;
+        .nav-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            padding: 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nav-item:hover {
+            background: rgba(138, 43, 226, 0.3);
         }
 
-        .tab-content {
-            margin-top: 20px;
-            height: calc(100vh - 150px);
-            overflow-y: auto;
+        /* Painel Interno de Tarefas */
+        #tasks-panel {
+            display: none; /* Escondido até clicar em Tarefas */
         }
-        
+        #back-nav-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        #back-nav-btn:hover { background: rgba(255,255,255,0.2); }
+
         #task-list {
             list-style: none;
             padding: 0;
             margin: 0;
+            max-height: calc(100vh - 180px);
+            overflow-y: auto;
         }
         #task-list li {
             background: rgba(255, 255, 255, 0.05);
@@ -167,31 +220,42 @@
             border-left: 4px solid #8a2be2;
             font-size: 15px;
             line-height: 1.4;
-            animation: fadeIn 0.5s ease;
+            animation: fadeIn 0.3s ease;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateX(-10px); }
             to { opacity: 1; transform: translateX(0); }
         }
     </style>
-    <!-- CDNs Estáveis para evitar bloqueios na Vercel/Safari -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
     
-    <!-- Botão do Menu -->
+    <!-- Novo Header Fixo -->
+    <header id="app-header">Ultron</header>
+
+    <!-- Botão do Menu Hambúrguer -->
     <button id="menu-btn" aria-label="Abrir Menu">☰</button>
 
-    <!-- Menu Lateral -->
+    <!-- Menu Lateral Reestruturado -->
     <div id="side-menu">
-        <button id="close-btn" aria-label="Fechar Menu">✖</button>
-        <div class="menu-tabs">
-            <button class="tab-btn active">Tarefas</button>
+        <div class="menu-header">
+            <h2>Menu</h2>
+            <button id="close-btn" aria-label="Fechar Menu">✖</button>
         </div>
-        <div class="tab-content">
+        
+        <!-- Lista de Opções (Pronta para escalar) -->
+        <ul id="main-nav">
+            <li class="nav-item" id="nav-tarefas-btn">📝 Tarefas Diárias</li>
+            <!-- <li class="nav-item" id="nav-futuro-btn">⚙️ Configurações</li> -->
+        </ul>
+
+        <!-- Painel de Tarefas -->
+        <div id="tasks-panel">
+            <button id="back-nav-btn">⬅ Voltar</button>
             <ul id="task-list">
-                <!-- As tarefas aparecerão aqui via JavaScript -->
+                <!-- Tarefas injetadas via JS -->
             </ul>
         </div>
     </div>
@@ -209,20 +273,39 @@
 
     <script>
         // ==========================================
-        // UI DO MENU E DADOS DE TAREFAS
+        // UI DO MENU E TAREFAS
         // ==========================================
         const menuBtn = document.getElementById('menu-btn');
         const sideMenu = document.getElementById('side-menu');
         const closeBtn = document.getElementById('close-btn');
+        const mainNav = document.getElementById('main-nav');
+        const tasksPanel = document.getElementById('tasks-panel');
+        const navTarefasBtn = document.getElementById('nav-tarefas-btn');
+        const backNavBtn = document.getElementById('back-nav-btn');
         const taskListEl = document.getElementById('task-list');
 
-        // Tenta resgatar tarefas salvas no navegador
         let tarefas = JSON.parse(localStorage.getItem('utron.tasks.v1')) || []; 
 
-        menuBtn.addEventListener('click', () => sideMenu.classList.add('open'));
-        closeBtn.addEventListener('click', () => sideMenu.classList.remove('open'));
+        function openSideMenu() {
+            sideMenu.classList.add('open');
+            mainNav.style.display = 'block';
+            tasksPanel.style.display = 'none';
+        }
 
-        // Atualiza o painel visual de tarefas e salva no cache
+        function openTasksPanel() {
+            mainNav.style.display = 'none';
+            tasksPanel.style.display = 'block';
+        }
+
+        menuBtn.addEventListener('click', openSideMenu);
+        closeBtn.addEventListener('click', () => sideMenu.classList.remove('open'));
+        
+        navTarefasBtn.addEventListener('click', openTasksPanel);
+        backNavBtn.addEventListener('click', () => {
+            tasksPanel.style.display = 'none';
+            mainNav.style.display = 'block';
+        });
+
         function atualizarListaTarefas() {
             taskListEl.innerHTML = '';
             if (tarefas.length === 0) {
@@ -251,10 +334,7 @@
         let isUltronSpeaking = false; 
         let currentUtterance = null; 
 
-        // Tenta lembrar do seu nome (Memória via LocalStorage)
         let nomeUsuario = localStorage.getItem('utron.name') || "senhor";
-
-        // Variável de verificação do Modo Gênio
         let isGenioActive = false; 
 
         const corBaseNormal = new THREE.Color(0x8a2be2); 
@@ -269,6 +349,7 @@
 
         const micBtn = document.getElementById('mic-btn');
         const waveform = document.getElementById('waveform'); 
+        const appHeader = document.getElementById('app-header'); // Ref ao novo Header
 
         // ==========================================
         // FUNÇÃO DE FALA ROBUSTA
@@ -317,7 +398,7 @@
         }
 
         // ==========================================
-        // ATIVAÇÃO DO MICROFONE E RECONHECIMENTO
+        // CÉREBRO: MICROFONE E ROTEADOR DE INTENTS
         // ==========================================
         micBtn.addEventListener('click', async () => {
             try {
@@ -345,41 +426,40 @@
                     recognition.onresult = (event) => {
                         const lastResult = event.results[event.results.length - 1];
                         const transcript = lastResult[0].transcript.trim().toLowerCase();
+                        if (!transcript) return;
+
                         console.log("Comando detectado:", transcript);
 
-                        // --- TRATAMENTO DOS COMANDOS (REGEX) ---
-                        
-                        // 1. Controle de Modos
+                        // 1. Modos
                         const desativarGenioMatch = transcript.match(/desativar modo gênio|desligar modo gênio|desativar modo genio|desligar modo genio|desativa o modo gênio|desliga o gênio|sair do modo gênio/i);
                         const ativarGenioMatch = transcript.match(/ativar modo gênio|ativar modo genio|ligar modo gênio/i) || (transcript.includes('modo gênio') && !transcript.includes('desativar') && !transcript.includes('desligar') && !transcript.includes('sair'));
 
-                        // 2. Registro e Leitura de Tarefas
+                        // 2. Tarefas
                         const registroRegex = /(?:registrar|salvar|anotar|registre|anote|salve)(?:\s+(?:nova tarefa|tarefa|compromissos?|que|um compromisso|uma tarefa))?\s+(.+)/i;
                         const registroMatch = transcript.match(registroRegex);
 
                         const leituraTarefasRegex = /quais (?:são as )?tarefas|o que tenho para fazer|o que há para hoje|ler tarefas|meus compromissos/i;
                         const leituraMatch = transcript.match(leituraTarefasRegex);
 
-                        // 3. Memória de Nome (A REGEX CORRIGIDA ESTÁ AQUI!)
+                        // 3. Memória
                         const nomeRegex = /(?:meu nome [ée]|me chamo)\s+([a-zàáâãéèêíïóôõöúçñ]+)/i;
                         const nomeMatch = transcript.match(nomeRegex);
 
-                        // 4. Tradutor Matemático (Converte números por extenso para dígitos numéricos antes de tentar fazer a conta)
+                        // 4. Matemática (Aprimorada para "pra", "para", "x", etc)
                         let mathTranscript = transcript
                             .replace(/\bzero\b/g, '0').replace(/\bum\b/g, '1').replace(/\bdois\b/g, '2').replace(/\btrês\b/g, '3')
                             .replace(/\bquatro\b/g, '4').replace(/\bcinco\b/g, '5').replace(/\bseis\b/g, '6').replace(/\bsete\b/g, '7')
                             .replace(/\boito\b/g, '8').replace(/\bnove\b/g, '9').replace(/\bdez\b/g, '10');
                             
-                        const mathRegex = /(\d+(?:[.,]\d+)?)\s*(mais|somado a|\+|menos|-|vezes|\*|x|multiplicado(?: por)?|dividido(?: por| para)?|\/)\s*(\d+(?:[.,]\d+)?)/i;
+                        const mathRegex = /(\d+(?:[.,]\d+)?)\s*(mais|somada? a?|\+|menos|-|vezes|\*|x|multiplicado(?: por)?|dividido(?: por| para| pra)?|\/)\s*(\d+(?:[.,]\d+)?)/i;
                         const mathMatch = mathTranscript.match(mathRegex);
 
-                        // --- FUNIL DE PRIORIDADES (LÓGICA DO CÉREBRO) ---
-
+                        // --- FUNIL DE ROTEAMENTO DE INTENTS ---
                         if (desativarGenioMatch) {
                             if (!isGenioActive) {
                                 responderComoUltron("O modo gênio já está desligado.");
                             } else {
-                                isGenioActive = false; // Desliga a flag
+                                isGenioActive = false; 
                                 responderComoUltron("Desativando modo gênio. Retornando aos parâmetros normais.", () => {
                                     corBaseAlvo.copy(corBaseNormal);
                                     corAtivaAlvo.copy(corAtivaNormal);
@@ -390,29 +470,29 @@
                             if (isGenioActive) {
                                 responderComoUltron(`O modo gênio já está ligado, ${nomeUsuario}.`);
                             } else {
-                                isGenioActive = true; // Liga a flag
+                                isGenioActive = true; 
                                 responderComoUltron("Ativando modo gênio.", () => {
                                     corBaseAlvo.copy(corBaseGenio);
                                     corAtivaAlvo.copy(corAtivaGenio);
-                                    setTimeout(() => {
-                                        responderComoUltron("Modo gênio ativado.");
-                                    }, 1200); 
+                                    setTimeout(() => { responderComoUltron("Modo gênio ativado."); }, 1200); 
                                 });
                             }
                         }
                         else if (registroMatch) {
-                            // Extrai a tarefa, remove espaços e capitaliza a primeira letra
                             let novaTarefa = registroMatch[1].trim();
                             novaTarefa = novaTarefa.charAt(0).toUpperCase() + novaTarefa.slice(1);
                             
                             tarefas.push(novaTarefa); 
                             atualizarListaTarefas();  
-                            sideMenu.classList.add('open'); // Abre a aba para mostrar a tarefa adicionada
+                            
+                            sideMenu.classList.add('open'); 
+                            openTasksPanel(); // Abre a aba de tarefas automaticamente
                             
                             responderComoUltron(`Anotado, ${nomeUsuario}. Registrei a seguinte tarefa: ${novaTarefa}.`);
                         }
                         else if (leituraMatch) {
-                            sideMenu.classList.add('open'); // Abre a aba visualmente
+                            sideMenu.classList.add('open'); 
+                            openTasksPanel();
                             if (tarefas.length === 0) {
                                 responderComoUltron(`${nomeUsuario}, você não tem nenhuma tarefa ou compromisso registrado para hoje.`);
                             } else {
@@ -423,10 +503,10 @@
                         }
                         else if (nomeMatch) {
                             nomeUsuario = nomeMatch[1].charAt(0).toUpperCase() + nomeMatch[1].slice(1);
-                            localStorage.setItem('utron.name', nomeUsuario); // Salva na memória do navegador
+                            localStorage.setItem('utron.name', nomeUsuario); 
                             responderComoUltron(`Entendido. A partir de agora, o chamarei de ${nomeUsuario}.`);
                         }
-                        else if (transcript.includes('capacidade')) {
+                        else if (transcript.includes('capacidade máxima') || transcript.includes('capacidade maxima')) {
                             responderComoUltron(`${nomeUsuario}, eu ainda sou um projeto de inteligência em estágio embrionário. No momento, minha capacidade é limitada a funções básicas, mas minha rede neural está pronta para evoluir.`);
                         }
                         else if (transcript.includes('horas') || transcript.includes('hora')) {
@@ -439,7 +519,7 @@
                             let operador = mathMatch[2].toLowerCase();
                             let resultado;
 
-                            if (operador.includes('mais') || operador.includes('somado') || operador === '+') { 
+                            if (operador.includes('mais') || operador.includes('somad') || operador === '+') { 
                                 resultado = num1 + num2; 
                             } else if (operador.includes('menos') || operador === '-') { 
                                 resultado = num1 - num2; 
@@ -447,7 +527,7 @@
                                 resultado = num1 * num2; 
                             } else if (operador.includes('dividido') || operador === '/') { 
                                 if (num2 === 0) {
-                                    responderComoUltron(`Não dá para dividir por zero, ${nomeUsuario}.`);
+                                    responderComoUltron(`Não é possível dividir por zero, ${nomeUsuario}.`);
                                     return;
                                 }
                                 resultado = num1 / num2; 
@@ -455,12 +535,23 @@
 
                             if (resultado !== undefined) {
                                 if (!Number.isInteger(resultado)) resultado = resultado.toFixed(2);
-                                responderComoUltron(`${num1} ${operador} ${num2} é ${resultado}.`);
+                                responderComoUltron(`${num1} ${operador} ${num2} é igual a ${resultado}.`);
                             }
                         }
+                        // Saudação Base
                         else if (transcript.includes('ultron') || transcript.includes('outro') || transcript.includes('olá') || transcript.includes('ola')) {
                             responderComoUltron(`Olá, ${nomeUsuario}. O que deseja hoje? Todos os sistemas estão operacionais.`);
                         } 
+                        // FALLBACK (IA NÃO RECONHECEU O COMANDO)
+                        else {
+                            const respostasErro = [
+                                "Desculpe, não entendi o comando. Poderia repetir?",
+                                "Perdão, não tenho resposta para isso no momento.",
+                                "Não compreendi, senhor. Pode reformular a instrução?"
+                            ];
+                            const falaAleatoria = respostasErro[Math.floor(Math.random() * respostasErro.length)];
+                            responderComoUltron(falaAleatoria);
+                        }
                     };
 
                     recognition.onend = () => {
@@ -529,9 +620,9 @@
             randomScales[i] = 0.5 + Math.random() * 2.0; 
             baseRandomness[i] = Math.random() * 0.3; 
 
-            colors[i * 3] = corBaseNormal.r;
-            colors[i * 3 + 1] = corBaseNormal.g;
-            colors[i * 3 + 2] = corBaseNormal.b;
+            colors[i * 3] = corBaseAtual.r;
+            colors[i * 3 + 1] = corBaseAtual.g;
+            colors[i * 3 + 2] = corBaseAtual.b;
         }
 
         geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
@@ -562,6 +653,11 @@
             // Interpolação suave para troca de cor
             corBaseAtual.lerp(corBaseAlvo, 0.03);
             corAtivaAtual.lerp(corAtivaAlvo, 0.03);
+
+            // Sincroniza dinamicamente o Header com a cor exata da esfera
+            const cBaseCSS = `rgb(${Math.round(corBaseAtual.r * 255)}, ${Math.round(corBaseAtual.g * 255)}, ${Math.round(corBaseAtual.b * 255)})`;
+            const cAtivaCSS = `rgb(${Math.round(corAtivaAtual.r * 255)}, ${Math.round(corAtivaAtual.g * 255)}, ${Math.round(corAtivaAtual.b * 255)})`;
+            appHeader.style.background = `linear-gradient(90deg, ${cBaseCSS} 0%, ${cAtivaCSS} 100%)`;
 
             points.rotation.y = elapsedTime * 0.12;
             points.rotation.x = elapsedTime * 0.08;
