@@ -111,19 +111,22 @@
         let recognition;
         let isUltronSpeaking = false; 
         
-        // CORREÇÃO PARA iOS: Variável global para evitar que o Safari destrua o áudio antes de tocar
         let currentUtterance = null; 
 
+        // Pré-carrega as vozes do sistema para o filtro funcionar corretamente no iOS
+        window.speechSynthesis.onvoiceschanged = () => {
+            window.speechSynthesis.getVoices();
+        };
+
         const micBtn = document.getElementById('mic-btn');
-        const waveform = document.getElementById('waveform'); // Referência às ondas sonoras
+        const waveform = document.getElementById('waveform'); 
         
         micBtn.addEventListener('click', async () => {
-            // CORREÇÃO PARA iOS: O destravamento precisa ser síncrono, ANTES do 'await'
             const unlockSpeech = new SpeechSynthesisUtterance('');
             window.speechSynthesis.speak(unlockSpeech);
 
             try {
-                // 1. Solicita permissão e configura o microfone (Web Audio API)
+                // 1. Solicita permissão e configura o microfone
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -135,7 +138,7 @@
                 
                 dataArray = new Uint8Array(analyser.frequencyBinCount);
 
-                // 2. Configura o Reconhecimento de Voz (SpeechRecognition)
+                // 2. Configura o Reconhecimento de Voz
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 if (SpeechRecognition) {
                     recognition = new SpeechRecognition();
@@ -148,8 +151,44 @@
                         const transcript = lastResult[0].transcript.trim().toLowerCase();
                         console.log("Você disse:", transcript);
 
+                        // --- ATUALIZAÇÃO DO CÉREBRO: LÓGICA DE INTERPRETAÇÃO ---
+                        
+                        // Regex para identificar operações matemáticas básicas (ex: 5 mais 5, 10 vezes 2)
+                        const mathRegex = /(\d+(?:[.,]\d+)?)\s*(mais|\+|menos|-|vezes|\*|x|dividido(?: por)?|\/)\s*(\d+(?:[.,]\d+)?)/i;
+                        const mathMatch = transcript.match(mathRegex);
+
                         if (transcript.includes('olá ultron') || transcript.includes('ola ultron') || transcript.includes('olá outro')) {
-                            responderComoUltron();
+                            responderComoUltron("Olá, senhor. O que deseja hoje? Todos os sistemas estão operacionais.");
+                        } 
+                        else if (transcript.includes('capacidade máxima') || transcript.includes('capacidade maxima')) {
+                            responderComoUltron("Senhor, eu ainda sou um projeto de inteligência em estágio embrionário. No momento, minha capacidade é limitada a funções básicas, mas minha rede neural está pronta para evoluir conforme suas atualizações de código.");
+                        }
+                        else if (mathMatch) {
+                            // Extrai os números e o operador da voz
+                            let num1 = parseFloat(mathMatch[1].replace(',', '.'));
+                            let num2 = parseFloat(mathMatch[3].replace(',', '.'));
+                            let operador = mathMatch[2].toLowerCase();
+                            let resultado;
+
+                            if (operador === 'mais' || operador === '+') { 
+                                resultado = num1 + num2; 
+                            } else if (operador === 'menos' || operador === '-') { 
+                                resultado = num1 - num2; 
+                            } else if (operador === 'vezes' || operador === '*' || operador === 'x') { 
+                                resultado = num1 * num2; 
+                            } else if (operador.includes('dividido') || operador === '/') { 
+                                if (num2 === 0) {
+                                    responderComoUltron("Senhor, a divisão por zero gera um paradoxo matemático intolerável.");
+                                    return;
+                                }
+                                resultado = num1 / num2; 
+                            }
+
+                            if (resultado !== undefined) {
+                                // Arredonda para evitar dízimas gigantes na voz
+                                if (!Number.isInteger(resultado)) resultado = resultado.toFixed(2);
+                                responderComoUltron(`O resultado desse cálculo é ${resultado}.`);
+                            }
                         }
                     };
 
@@ -171,34 +210,42 @@
             }
         });
 
-        // Função que faz o sistema falar e a UI reagir
-        function responderComoUltron() {
+        // Função que faz o sistema falar recebendo a frase dinamicamente
+        function responderComoUltron(fraseDaVez) {
             if (isUltronSpeaking) return;
             
             isUltronSpeaking = true;
             if (recognition) recognition.stop(); // Para de ouvir você
             
-            // Ativa as ondas sonoras na tela
             waveform.style.opacity = '1';
 
-            // Nova frase de teste solicitada
-            const frase = "Olá, senhor. Me chamo Ultron. Todos os sistemas estão operacionais. Como posso ajudar?";
-            
-            currentUtterance = new SpeechSynthesisUtterance(frase);
+            currentUtterance = new SpeechSynthesisUtterance(fraseDaVez);
             currentUtterance.lang = 'pt-BR';
-            currentUtterance.pitch = 0.6; 
-            currentUtterance.rate = 1.0;  
-            currentUtterance.volume = 1.0; // Garante volume máximo
+            
+            // --- CONFIGURAÇÃO DA VOZ TIPO ULTRON ---
+            currentUtterance.pitch = 0.2; // Bem grave, quase distorcido
+            currentUtterance.rate = 0.85; // Fala pausada, mais cadenciada e imponente
+            currentUtterance.volume = 1.0; 
+
+            // Tenta forçar uma voz mais densa ou masculina disponível no iOS/Navegador
+            const vozes = window.speechSynthesis.getVoices();
+            const vozMasculinaOuPremium = vozes.find(voz => 
+                (voz.lang.includes('pt-BR') || voz.lang.includes('pt-PT')) && 
+                (voz.name.includes('Premium') || voz.name.includes('Daniel') || voz.name.includes('Thiago') || voz.name.includes('Google'))
+            ) || vozes.find(voz => voz.lang.includes('pt')); // Fallback
+
+            if (vozMasculinaOuPremium) {
+                currentUtterance.voice = vozMasculinaOuPremium;
+            }
 
             currentUtterance.onend = () => {
                 isUltronSpeaking = false;
-                waveform.style.opacity = '0'; // Esconde as ondas sonoras
+                waveform.style.opacity = '0'; 
                 if (recognition) {
                     try { recognition.start(); } catch(e) {} 
                 }
             };
             
-            // Tratamento de erro de síntese para evitar travamentos
             currentUtterance.onerror = (e) => {
                 console.warn("Erro na síntese de voz:", e);
                 isUltronSpeaking = false;
@@ -305,7 +352,7 @@
                 // Se a IA estiver falando, simula pulsos fortes
                 currentVolume = (Math.sin(elapsedTime * 20) * 0.5 + 0.5) * (Math.random() * 0.6 + 0.4) * 0.7;
             } else {
-                // Mantém a esfera em repouso sem reagir visualmente ao microfone do usuário
+                // Mantém a esfera em repouso
                 currentVolume = 0;
             }
 
