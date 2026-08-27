@@ -3,242 +3,300 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beat & Letra - Meu Estúdio</title>
+    <title>Visualizador de IA - Esfera Tecnológica</title>
     <style>
-        /* Importando uma fonte estilosa do Google Fonts */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-
         body {
-            background-color: #121212;
-            color: #f5f5f5;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        header {
-            background-color: #1e1e1e;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #8a2be2; /* Detalhe roxo neon */
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
-
-        header h1 {
-            font-size: 24px;
-            color: #8a2be2;
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            width: 60%;
-        }
-
-        input[type="text"] {
-            flex: 1;
-            padding: 12px 15px;
-            border-radius: 8px;
-            border: 1px solid #333;
-            background-color: #2a2a2a;
-            color: #fff;
-            outline: none;
-            transition: border 0.3s;
-        }
-
-        input[type="text"]:focus {
-            border: 1px solid #8a2be2;
-        }
-
-        button {
-            padding: 12px 25px;
-            border-radius: 8px;
-            border: none;
-            background-color: #8a2be2;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
-        }
-
-        button:hover {
-            background-color: #9b45e4;
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        .main-content {
-            display: flex;
-            flex: 1;
-            padding: 20px;
-            gap: 20px;
-            height: calc(100vh - 80px);
-        }
-
-        .player-container {
-            flex: 1;
-            background-color: #1e1e1e;
-            border-radius: 12px;
+            margin: 0;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
+            background-color: #05020a; /* Fundo extremamente escuro, roxo quase preto */
+            font-family: sans-serif;
         }
-
-        .iframe-wrapper {
-            flex: 1;
-            width: 100%;
-            background-color: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #555;
+        canvas {
+            display: block;
         }
-
-        iframe {
-            width: 100%;
-            height: 100%;
+        /* Estilização do botão para ativar o microfone (Exigência de segurança dos navegadores) */
+        #mic-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #8a2be2;
+            color: #ffffff;
             border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            z-index: 10;
+            transition: background-color 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
-
-        .lyrics-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: #1e1e1e;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-
-        .lyrics-container h2 {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #bbb;
-        }
-
-        textarea {
-            flex: 1;
-            width: 100%;
-            background-color: transparent;
-            border: none;
-            color: #fff;
-            font-size: 16px;
-            line-height: 1.6;
-            resize: none;
-            outline: none;
-        }
-
-        textarea::placeholder {
-            color: #555;
-        }
-
-        /* Scrollbar customizada */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1e1e1e;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #444;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #8a2be2;
-        }
-
-        /* Responsividade para telas menores */
-        @media (max-width: 768px) {
-            .main-content {
-                flex-direction: column;
-            }
-            .controls {
-                width: 100%;
-            }
-            header {
-                flex-direction: column;
-                gap: 15px;
-            }
+        #mic-btn:hover {
+            background-color: #6a1b9a;
         }
     </style>
+    <!-- Import Maps para carregar o Three.js modernos via CDN -->
+    <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
 </head>
 <body>
+    <button id="mic-btn">Ativar Microfone e IA</button>
 
-    <header>
-        <h1>🎙️ Beat & Letra</h1>
-        <div class="controls">
-            <input type="text" id="yt-link" placeholder="Cole o link do YouTube aqui (ex: https://youtube.com/watch?v=...)">
-            <button onclick="carregarBeat()">Dar Play</button>
-        </div>
-    </header>
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-    <div class="main-content">
-        <!-- Lado Esquerdo: Player de Vídeo -->
-        <div class="player-container">
-            <div class="iframe-wrapper" id="video-wrapper">
-                <p>O beat vai tocar aqui...</p>
-            </div>
-        </div>
+        // ==========================================
+        // CONFIGURAÇÃO DE ÁUDIO E INTELIGÊNCIA (MICROFONE + FALA)
+        // ==========================================
+        let audioContext;
+        let analyser;
+        let dataArray;
+        let currentVolume = 0;
+        let smoothedVolume = 0;
+        
+        let recognition;
+        let isUltronSpeaking = false; // Flag para controlar de quem é a vez de falar
 
-        <!-- Lado Direito: Bloco de Notas -->
-        <div class="lyrics-container">
-            <h2>Suas Letras (Salvas automaticamente)</h2>
-            <textarea id="bloco-de-letras" placeholder="Comece a soltar as rimas aqui..."></textarea>
-        </div>
-    </div>
+        const micBtn = document.getElementById('mic-btn');
+        
+        micBtn.addEventListener('click', async () => {
+            try {
+                // 1. Solicita permissão e configura o microfone (Web Audio API)
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256; 
+                
+                const source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+                
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+                
+                // 2. Desbloqueia a voz do sistema no iOS (SpeechSynthesis)
+                // O iOS exige que a primeira fala ocorra a partir de um clique do usuário
+                const unlockSpeech = new SpeechSynthesisUtterance('');
+                window.speechSynthesis.speak(unlockSpeech);
 
-    <script>
-        // Função para extrair o ID do vídeo do link do YouTube
-        function extrairIdYoutube(url) {
-            const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-            const match = url.match(regex);
-            return (match && match[1]) ? match[1] : null;
-        }
+                // 3. Configura o Reconhecimento de Voz (SpeechRecognition)
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (SpeechRecognition) {
+                    recognition = new SpeechRecognition();
+                    recognition.continuous = true; // Continua ouvindo o tempo todo
+                    recognition.interimResults = false;
+                    recognition.lang = 'pt-BR';
 
-        // Função para carregar o vídeo no iframe
-        function carregarBeat() {
-            const inputLink = document.getElementById('yt-link').value;
-            const videoId = extrairIdYoutube(inputLink);
-            const wrapper = document.getElementById('video-wrapper');
+                    recognition.onresult = (event) => {
+                        const lastResult = event.results[event.results.length - 1];
+                        const transcript = lastResult[0].transcript.trim().toLowerCase();
+                        console.log("Você disse:", transcript);
 
-            if (videoId) {
-                // Cria o iframe do YouTube
-                wrapper.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-            } else {
-                alert("Mano, não consegui ler esse link. Tem certeza que é um link válido do YouTube?");
+                        // Lógica de Gatilho: Verifica se você chamou o Ultron
+                        if (transcript.includes('olá ultron') || transcript.includes('ola ultron') || transcript.includes('olá outro')) {
+                            responderComoUltron();
+                        }
+                    };
+
+                    // Mantém o reconhecimento rodando se ele parar sozinho
+                    recognition.onend = () => {
+                        if (!isUltronSpeaking && recognition) {
+                            try { recognition.start(); } catch(e) {}
+                        }
+                    };
+
+                    recognition.start();
+                } else {
+                    console.warn("Reconhecimento de voz não suportado neste navegador.");
+                }
+
+                micBtn.style.display = 'none';
+            } catch (err) {
+                console.error('Erro ao acessar APIs:', err);
+                alert('É necessário permitir o uso do microfone.');
             }
-        }
-
-        // --- SISTEMA DE SALVAMENTO AUTOMÁTICO DAS LETRAS ---
-        const textarea = document.getElementById('bloco-de-letras');
-
-        // Quando a página carrega, recupera a letra salva (se houver)
-        window.onload = function() {
-            const letraSalva = localStorage.getItem('minhasRimas');
-            if (letraSalva) {
-                textarea.value = letraSalva;
-            }
-        };
-
-        // Toda vez que você digitar, ele salva no navegador
-        textarea.addEventListener('input', function() {
-            localStorage.setItem('minhasRimas', textarea.value);
         });
 
+        // Função que faz o sistema falar e a esfera reagir
+        function responderComoUltron() {
+            if (isUltronSpeaking) return;
+            
+            isUltronSpeaking = true;
+            if (recognition) recognition.stop(); // Para de ouvir você enquanto ele fala
+
+            const frase = "Olá, senhor. Todos os sistemas estão operacionais. Como posso ajudar?";
+            const utterance = new SpeechSynthesisUtterance(frase);
+            utterance.lang = 'pt-BR';
+            utterance.pitch = 0.6; // Voz um pouco mais grave para parecer uma IA
+            utterance.rate = 1.0;  // Velocidade normal
+
+            utterance.onend = () => {
+                isUltronSpeaking = false;
+                if (recognition) {
+                    try { recognition.start(); } catch(e) {} // Volta a te ouvir
+                }
+            };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // ==========================================
+        // 1. SETUP DE CENA, CÂMERA E RENDERER
+        // ==========================================
+        const scene = new THREE.Scene();
+        
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 7; 
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        // ==========================================
+        // CONTROLES DE ÓRBITA (INTERAÇÃO DO USUÁRIO)
+        // ==========================================
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true; 
+        controls.dampingFactor = 0.05;
+        controls.enablePan = false; 
+        controls.minDistance = 0.1; 
+        controls.maxDistance = 20; 
+
+        // ==========================================
+        // 2. GEOMETRIA E MATERIAL (A ESFERA)
+        // ==========================================
+        const radius = 2.2;
+        const detail = 18; 
+        const geometry = new THREE.IcosahedronGeometry(radius, detail);
+
+        const positionAttribute = geometry.attributes.position;
+        const vertexCount = positionAttribute.count;
+        
+        const originalPositions = new Float32Array(vertexCount * 3);
+        const randomOffsets = new Float32Array(vertexCount);
+        const randomScales = new Float32Array(vertexCount); 
+        const baseRandomness = new Float32Array(vertexCount); 
+
+        const baseColor = new THREE.Color(0x8a2be2); 
+        const activeColor = new THREE.Color(0xff0000); 
+        const tempColor = new THREE.Color();
+        const colors = new Float32Array(vertexCount * 3);
+
+        for (let i = 0; i < vertexCount; i++) {
+            const x = positionAttribute.getX(i);
+            const y = positionAttribute.getY(i);
+            const z = positionAttribute.getZ(i);
+            
+            originalPositions[i * 3] = x;
+            originalPositions[i * 3 + 1] = y;
+            originalPositions[i * 3 + 2] = z;
+
+            randomOffsets[i] = Math.random() * Math.PI * 2;
+            randomScales[i] = 0.5 + Math.random() * 2.0; 
+            baseRandomness[i] = Math.random() * 0.3; 
+
+            colors[i * 3] = baseColor.r;
+            colors[i * 3 + 1] = baseColor.g;
+            colors[i * 3 + 2] = baseColor.b;
+        }
+
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        
+        const material = new THREE.PointsMaterial({
+            size: 0.025, 
+            vertexColors: true,
+            blending: THREE.NormalBlending, 
+            transparent: true,
+            opacity: 0.85, 
+            depthWrite: false
+        });
+
+        const points = new THREE.Points(geometry, material);
+        scene.add(points);
+
+        // ==========================================
+        // 3. ANIMAÇÃO (PULSAÇÃO E ROTAÇÃO)
+        // ==========================================
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const elapsedTime = clock.getElapsedTime();
+            controls.update(); 
+
+            points.rotation.y = elapsedTime * 0.12;
+            points.rotation.x = elapsedTime * 0.08;
+
+            // --- LÓGICA DE CAPTAÇÃO VISUAL (QUEM ESTÁ FALANDO?) ---
+            if (isUltronSpeaking) {
+                // Se a IA estiver falando, simula pulsos fortes baseados no tempo para a esfera reagir à própria voz
+                // Mistura oscilações rápidas com fatores aleatórios para simular as sílabas
+                currentVolume = (Math.sin(elapsedTime * 20) * 0.5 + 0.5) * (Math.random() * 0.6 + 0.4) * 0.7;
+            } else {
+                // Mantém a esfera em repouso sem reagir visualmente ao microfone do usuário
+                currentVolume = 0;
+            }
+
+            smoothedVolume += (currentVolume - smoothedVolume) * 0.15;
+            let activeVolume = Math.min(1.0, smoothedVolume * 2.5); 
+
+            // Anima vértices
+            const positions = points.geometry.attributes.position;
+            const colorAttribute = points.geometry.attributes.color; 
+            const normalVector = new THREE.Vector3();
+            
+            for (let i = 0; i < vertexCount; i++) {
+                const ox = originalPositions[i * 3];
+                const oy = originalPositions[i * 3 + 1];
+                const oz = originalPositions[i * 3 + 2];
+
+                normalVector.set(ox, oy, oz).normalize();
+                
+                const noise = Math.sin(elapsedTime * 2.5 + randomOffsets[i] + ox * 1.5) * 0.5 + 0.5;
+                
+                const baseDeformation = (0.08 + baseRandomness[i]) * noise;
+                const activeDeformation = activeVolume * 0.45 * noise * randomScales[i]; 
+                
+                const totalDeformation = baseDeformation + activeDeformation;
+                
+                positions.setXYZ(
+                    i, 
+                    ox + normalVector.x * totalDeformation,
+                    oy + normalVector.y * totalDeformation,
+                    oz + normalVector.z * totalDeformation
+                );
+
+                const colorLerpFactor = Math.min(1.0, activeDeformation * 2.5); 
+                tempColor.copy(baseColor).lerp(activeColor, colorLerpFactor);
+                
+                colorAttribute.setXYZ(i, tempColor.r, tempColor.g, tempColor.b);
+            }
+            
+            positions.needsUpdate = true;
+            colorAttribute.needsUpdate = true; 
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // ==========================================
+        // 4. RESPONSIVIDADE DE TELA
+        // ==========================================
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
