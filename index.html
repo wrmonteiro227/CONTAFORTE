@@ -15,6 +15,7 @@
             display: block;
         }
         
+        /* BOTÃO DO MICROFONE */
         #mic-btn {
             position: absolute;
             bottom: 40px; 
@@ -39,6 +40,7 @@
             transform: translateX(-50%) scale(0.9); 
         }
 
+        /* ONDAS SONORAS */
         #waveform {
             position: absolute;
             bottom: 120px; 
@@ -67,11 +69,134 @@
             0% { transform: scaleY(0.3); }
             100% { transform: scaleY(1.2); }
         }
+
+        /* ==========================================
+           NOVA UI: MENU LATERAL E TAREFAS 
+           ========================================== */
+        #menu-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(138, 43, 226, 0.2);
+            color: #ffffff;
+            border: 1px solid rgba(138, 43, 226, 0.5);
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 24px;
+            z-index: 15;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            transition: background 0.3s;
+        }
+        #menu-btn:hover {
+            background: rgba(138, 43, 226, 0.5);
+        }
+
+        #side-menu {
+            position: absolute;
+            top: 0;
+            left: -320px;
+            width: 300px;
+            height: 100vh;
+            background: rgba(10, 5, 20, 0.85);
+            backdrop-filter: blur(15px);
+            border-right: 2px solid rgba(138, 43, 226, 0.5);
+            z-index: 20;
+            transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+        }
+        #side-menu.open {
+            left: 0;
+        }
+        
+        #close-btn {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.6);
+            font-size: 24px;
+            cursor: pointer;
+            float: right;
+            transition: color 0.2s;
+        }
+        #close-btn:hover {
+            color: white;
+        }
+
+        .menu-tabs {
+            margin-top: 50px;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+            display: flex;
+            gap: 15px;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #8a2be2;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tab-content {
+            margin-top: 20px;
+            height: calc(100vh - 150px);
+            overflow-y: auto;
+        }
+        
+        #task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        #task-list li {
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 12px;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #8a2be2;
+            font-size: 15px;
+            line-height: 1.4;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
     </style>
+    <!-- CDNs Estáveis para evitar bloqueios na Vercel/Safari -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
+    
+    <!-- Botão do Menu -->
+    <button id="menu-btn" aria-label="Abrir Menu">☰</button>
+
+    <!-- Menu Lateral -->
+    <div id="side-menu">
+        <button id="close-btn" aria-label="Fechar Menu">✖</button>
+        <div class="menu-tabs">
+            <button class="tab-btn active">Tarefas</button>
+        </div>
+        <div class="tab-content">
+            <ul id="task-list">
+                <!-- As tarefas aparecerão aqui via JavaScript -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Interface Visual Principal -->
     <div id="waveform">
         <div class="bar"></div>
         <div class="bar"></div>
@@ -83,6 +208,36 @@
     <button id="mic-btn" aria-label="Ativar IA">🎤</button>
 
     <script>
+        // ==========================================
+        // UI DO MENU E DADOS DE TAREFAS
+        // ==========================================
+        const menuBtn = document.getElementById('menu-btn');
+        const sideMenu = document.getElementById('side-menu');
+        const closeBtn = document.getElementById('close-btn');
+        const taskListEl = document.getElementById('task-list');
+
+        // Tenta resgatar tarefas salvas no navegador
+        let tarefas = JSON.parse(localStorage.getItem('utron.tasks.v1')) || []; 
+
+        menuBtn.addEventListener('click', () => sideMenu.classList.add('open'));
+        closeBtn.addEventListener('click', () => sideMenu.classList.remove('open'));
+
+        // Atualiza o painel visual de tarefas e salva no cache
+        function atualizarListaTarefas() {
+            taskListEl.innerHTML = '';
+            if (tarefas.length === 0) {
+                taskListEl.innerHTML = '<li style="border-left-color: gray; color: gray;">Nenhum compromisso registrado para hoje.</li>';
+            } else {
+                tarefas.forEach((tarefa) => {
+                    let li = document.createElement('li');
+                    li.textContent = tarefa;
+                    taskListEl.appendChild(li);
+                });
+            }
+            localStorage.setItem('utron.tasks.v1', JSON.stringify(tarefas));
+        }
+        atualizarListaTarefas(); 
+
         // ==========================================
         // VARIÁVEIS GLOBAIS DE ESTADO E CORES
         // ==========================================
@@ -96,9 +251,12 @@
         let isUltronSpeaking = false; 
         let currentUtterance = null; 
 
-        let nomeUsuario = "senhor";
+        // Tenta lembrar do seu nome (Memória via LocalStorage)
+        let nomeUsuario = localStorage.getItem('utron.name') || "senhor";
 
-        // Cores padrão e modo gênio
+        // Variável de verificação do Modo Gênio
+        let isGenioActive = false; 
+
         const corBaseNormal = new THREE.Color(0x8a2be2); 
         const corAtivaNormal = new THREE.Color(0xff0000); 
         const corBaseGenio = new THREE.Color(0x004d00); 
@@ -124,8 +282,7 @@
             }
             
             waveform.style.opacity = '1';
-
-            window.speechSynthesis.cancel(); // Limpa filas pendentes no iOS
+            window.speechSynthesis.cancel(); 
 
             currentUtterance = new SpeechSynthesisUtterance(fraseDaVez);
             currentUtterance.lang = 'pt-BR';
@@ -190,39 +347,92 @@
                         const transcript = lastResult[0].transcript.trim().toLowerCase();
                         console.log("Comando detectado:", transcript);
 
-                        // Regex Memória (Nome) CORRIGIDA
+                        // --- TRATAMENTO DOS COMANDOS (REGEX) ---
+                        
+                        // 1. Controle de Modos
+                        const desativarGenioMatch = transcript.match(/desativar modo gênio|desligar modo gênio|desativar modo genio|desligar modo genio|desativa o modo gênio|desliga o gênio|sair do modo gênio/i);
+                        const ativarGenioMatch = transcript.match(/ativar modo gênio|ativar modo genio|ligar modo gênio/i) || (transcript.includes('modo gênio') && !transcript.includes('desativar') && !transcript.includes('desligar') && !transcript.includes('sair'));
+
+                        // 2. Registro e Leitura de Tarefas
+                        const registroRegex = /(?:registrar|salvar|anotar|registre|anote|salve)(?:\s+(?:nova tarefa|tarefa|compromissos?|que|um compromisso|uma tarefa))?\s+(.+)/i;
+                        const registroMatch = transcript.match(registroRegex);
+
+                        const leituraTarefasRegex = /quais (?:são as )?tarefas|o que tenho para fazer|o que há para hoje|ler tarefas|meus compromissos/i;
+                        const leituraMatch = transcript.match(leituraTarefasRegex);
+
+                        // 3. Memória de Nome (A REGEX CORRIGIDA ESTÁ AQUI!)
                         const nomeRegex = /(?:meu nome [ée]|me chamo)\s+([a-zàáâãéèêíïóôõöúçñ]+)/i;
                         const nomeMatch = transcript.match(nomeRegex);
 
+                        // 4. Tradutor Matemático (Converte números por extenso para dígitos numéricos antes de tentar fazer a conta)
+                        let mathTranscript = transcript
+                            .replace(/\bzero\b/g, '0').replace(/\bum\b/g, '1').replace(/\bdois\b/g, '2').replace(/\btrês\b/g, '3')
+                            .replace(/\bquatro\b/g, '4').replace(/\bcinco\b/g, '5').replace(/\bseis\b/g, '6').replace(/\bsete\b/g, '7')
+                            .replace(/\boito\b/g, '8').replace(/\bnove\b/g, '9').replace(/\bdez\b/g, '10');
+                            
                         const mathRegex = /(\d+(?:[.,]\d+)?)\s*(mais|somado a|\+|menos|-|vezes|\*|x|multiplicado(?: por)?|dividido(?: por| para)?|\/)\s*(\d+(?:[.,]\d+)?)/i;
-                        const mathMatch = transcript.match(mathRegex);
+                        const mathMatch = mathTranscript.match(mathRegex);
 
-                        // Prioridade 1: Modo Gênio
-                        if (transcript.includes('modo gênio') || transcript.includes('modo genio') || transcript.includes('genio')) {
-                            responderComoUltron("Ativando modo gênio.", () => {
-                                corBaseAlvo.copy(corBaseGenio);
-                                corAtivaAlvo.copy(corAtivaGenio);
-                                
-                                setTimeout(() => {
-                                    responderComoUltron("Modo gênio ativado.");
-                                }, 1200); 
-                            });
+                        // --- FUNIL DE PRIORIDADES (LÓGICA DO CÉREBRO) ---
+
+                        if (desativarGenioMatch) {
+                            if (!isGenioActive) {
+                                responderComoUltron("O modo gênio já está desligado.");
+                            } else {
+                                isGenioActive = false; // Desliga a flag
+                                responderComoUltron("Desativando modo gênio. Retornando aos parâmetros normais.", () => {
+                                    corBaseAlvo.copy(corBaseNormal);
+                                    corAtivaAlvo.copy(corAtivaNormal);
+                                });
+                            }
                         }
-                        // Prioridade 2: Nome
+                        else if (ativarGenioMatch) {
+                            if (isGenioActive) {
+                                responderComoUltron(`O modo gênio já está ligado, ${nomeUsuario}.`);
+                            } else {
+                                isGenioActive = true; // Liga a flag
+                                responderComoUltron("Ativando modo gênio.", () => {
+                                    corBaseAlvo.copy(corBaseGenio);
+                                    corAtivaAlvo.copy(corAtivaGenio);
+                                    setTimeout(() => {
+                                        responderComoUltron("Modo gênio ativado.");
+                                    }, 1200); 
+                                });
+                            }
+                        }
+                        else if (registroMatch) {
+                            // Extrai a tarefa, remove espaços e capitaliza a primeira letra
+                            let novaTarefa = registroMatch[1].trim();
+                            novaTarefa = novaTarefa.charAt(0).toUpperCase() + novaTarefa.slice(1);
+                            
+                            tarefas.push(novaTarefa); 
+                            atualizarListaTarefas();  
+                            sideMenu.classList.add('open'); // Abre a aba para mostrar a tarefa adicionada
+                            
+                            responderComoUltron(`Anotado, ${nomeUsuario}. Registrei a seguinte tarefa: ${novaTarefa}.`);
+                        }
+                        else if (leituraMatch) {
+                            sideMenu.classList.add('open'); // Abre a aba visualmente
+                            if (tarefas.length === 0) {
+                                responderComoUltron(`${nomeUsuario}, você não tem nenhuma tarefa ou compromisso registrado para hoje.`);
+                            } else {
+                                let textoTarefas = tarefas.join(". ");
+                                let plural = tarefas.length === 1 ? 'tarefa registrada' : 'tarefas registradas';
+                                responderComoUltron(`Você tem ${tarefas.length} ${plural}. São elas: ${textoTarefas}.`);
+                            }
+                        }
                         else if (nomeMatch) {
                             nomeUsuario = nomeMatch[1].charAt(0).toUpperCase() + nomeMatch[1].slice(1);
+                            localStorage.setItem('utron.name', nomeUsuario); // Salva na memória do navegador
                             responderComoUltron(`Entendido. A partir de agora, o chamarei de ${nomeUsuario}.`);
                         }
-                        // Prioridade 3: Capacidade
                         else if (transcript.includes('capacidade')) {
                             responderComoUltron(`${nomeUsuario}, eu ainda sou um projeto de inteligência em estágio embrionário. No momento, minha capacidade é limitada a funções básicas, mas minha rede neural está pronta para evoluir.`);
                         }
-                        // Prioridade 4: Horas
                         else if (transcript.includes('horas') || transcript.includes('hora')) {
                             const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                             responderComoUltron(`Agora são exatamente ${time}, ${nomeUsuario}.`);
                         }
-                        // Prioridade 5: Matemática
                         else if (mathMatch) {
                             let num1 = parseFloat(mathMatch[1].replace(',', '.'));
                             let num2 = parseFloat(mathMatch[3].replace(',', '.'));
@@ -231,13 +441,13 @@
 
                             if (operador.includes('mais') || operador.includes('somado') || operador === '+') { 
                                 resultado = num1 + num2; 
-                            } else if (operador === 'menos' || operador === '-') { 
+                            } else if (operador.includes('menos') || operador === '-') { 
                                 resultado = num1 - num2; 
                             } else if (operador.includes('vezes') || operador.includes('multiplicado') || operador === '*' || operador === 'x') { 
                                 resultado = num1 * num2; 
                             } else if (operador.includes('dividido') || operador === '/') { 
                                 if (num2 === 0) {
-                                    responderComoUltron(`A divisão por zero gera um paradoxo matemático intolerável, ${nomeUsuario}.`);
+                                    responderComoUltron(`Não dá para dividir por zero, ${nomeUsuario}.`);
                                     return;
                                 }
                                 resultado = num1 / num2; 
@@ -245,10 +455,9 @@
 
                             if (resultado !== undefined) {
                                 if (!Number.isInteger(resultado)) resultado = resultado.toFixed(2);
-                                responderComoUltron(`O resultado desse cálculo é ${resultado}.`);
+                                responderComoUltron(`${num1} ${operador} ${num2} é ${resultado}.`);
                             }
                         }
-                        // Prioridade 6: Saudação Base
                         else if (transcript.includes('ultron') || transcript.includes('outro') || transcript.includes('olá') || transcript.includes('ola')) {
                             responderComoUltron(`Olá, ${nomeUsuario}. O que deseja hoje? Todos os sistemas estão operacionais.`);
                         } 
