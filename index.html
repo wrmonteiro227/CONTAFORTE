@@ -33,7 +33,6 @@
             font-weight: 800;
             letter-spacing: 4px;
             text-transform: uppercase;
-            /* Fundo de vidro fosco profundo */
             background: rgba(5, 2, 12, 0.6); 
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
@@ -55,7 +54,7 @@
             border-radius: 50%; 
             cursor: pointer;
             font-size: 24px; 
-            display: flex; /* Mudará dinamicamente para 'none' quando ouvindo e 'flex' quando pausado */
+            display: flex; 
             justify-content: center;
             align-items: center;
             z-index: 10;
@@ -97,7 +96,7 @@
         }
 
         /* ==========================================
-           MENU LATERAL E TAREFAS
+           MENU LATERAL, TAREFAS E CÉREBRO
            ========================================== */
         #menu-btn {
             position: absolute;
@@ -117,9 +116,7 @@
             align-items: center;
             transition: background 0.3s;
         }
-        #menu-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
+        #menu-btn:hover { background: rgba(255, 255, 255, 0.15); }
 
         #side-menu {
             position: absolute;
@@ -137,9 +134,7 @@
             box-sizing: border-box;
             box-shadow: 10px 0 30px rgba(0,0,0,0.5);
         }
-        #side-menu.open {
-            left: 0;
-        }
+        #side-menu.open { left: 0; }
         
         .menu-header {
             display: flex;
@@ -150,10 +145,7 @@
             border-bottom: 2px solid rgba(255,255,255,0.1);
             padding-bottom: 15px;
         }
-        .menu-header h2 {
-            margin: 0;
-            font-size: 20px;
-        }
+        .menu-header h2 { margin: 0; font-size: 20px; }
         #close-btn {
             background: none;
             border: none;
@@ -164,11 +156,7 @@
         }
         #close-btn:hover { color: white; }
 
-        #main-nav {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+        #main-nav { list-style: none; padding: 0; margin: 0; }
         .nav-item {
             background: rgba(255, 255, 255, 0.05);
             padding: 15px;
@@ -182,14 +170,12 @@
             align-items: center;
             gap: 10px;
         }
-        .nav-item:hover {
-            background: rgba(138, 43, 226, 0.3);
-        }
+        .nav-item:hover { background: rgba(138, 43, 226, 0.3); }
 
-        #tasks-panel {
-            display: none; 
-        }
-        #back-nav-btn {
+        /* Paineis Ocultos */
+        #tasks-panel, #brain-panel { display: none; }
+        
+        .back-nav-btn {
             background: rgba(255,255,255,0.1);
             border: none;
             color: white;
@@ -202,7 +188,7 @@
             align-items: center;
             gap: 5px;
         }
-        #back-nav-btn:hover { background: rgba(255,255,255,0.2); }
+        .back-nav-btn:hover { background: rgba(255,255,255,0.2); }
 
         #task-list {
             list-style: none;
@@ -221,23 +207,45 @@
             line-height: 1.4;
             animation: fadeIn 0.3s ease;
         }
+
+        /* Estilos do Painel do Cérebro */
+        .brain-action-btn {
+            width: 100%;
+            background: rgba(138, 43, 226, 0.2);
+            border: 1px solid rgba(138, 43, 226, 0.5);
+            color: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: left;
+        }
+        .brain-action-btn:hover { background: rgba(138, 43, 226, 0.4); }
+        .brain-action-btn.supabase-btn {
+            background: rgba(62, 207, 142, 0.2);
+            border-color: rgba(62, 207, 142, 0.5);
+        }
+        .brain-action-btn.supabase-btn:hover { background: rgba(62, 207, 142, 0.4); }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateX(-10px); }
             to { opacity: 1; transform: translateX(0); }
         }
     </style>
+    <!-- Bibliotecas e CDNs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Cliente do Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     
-    <!-- Novo Header Fixo -->
     <header id="app-header">Ultron</header>
 
-    <!-- Botão do Menu Hambúrguer -->
     <button id="menu-btn" aria-label="Abrir Menu">☰</button>
 
-    <!-- Menu Lateral Reestruturado -->
     <div id="side-menu">
         <div class="menu-header">
             <h2>Menu</h2>
@@ -246,11 +254,29 @@
         
         <ul id="main-nav">
             <li class="nav-item" id="nav-tarefas-btn">📝 Tarefas Diárias</li>
+            <li class="nav-item" id="nav-brain-btn">🧠 Cérebro e Aprendizado</li>
         </ul>
 
+        <!-- Painel de Tarefas -->
         <div id="tasks-panel">
-            <button id="back-nav-btn">⬅ Voltar</button>
+            <button class="back-nav-btn">⬅ Voltar</button>
             <ul id="task-list"></ul>
+        </div>
+
+        <!-- Painel do Cérebro (NOVO) -->
+        <div id="brain-panel">
+            <button class="back-nav-btn">⬅ Voltar</button>
+            <h3 style="color: #8a2be2; margin-top: 0;">🧠 Conexões Neurais</h3>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 20px;">Gerencie e sincronize as memórias do Ultron.</p>
+            
+            <button id="export-brain-btn" class="brain-action-btn">📥 Baixar Cérebro (Backup Local)</button>
+            
+            <input type="file" id="import-brain-file" style="display: none;" accept=".json">
+            <button id="import-brain-btn" class="brain-action-btn">📤 Carregar Cérebro (Restaurar)</button>
+            
+            <button id="sync-supabase-btn" class="brain-action-btn supabase-btn">☁️ Sincronizar com Supabase</button>
+            
+            <p id="brain-status-msg" style="font-size: 12px; color: #8a2be2; margin-top: 10px;"></p>
         </div>
     </div>
 
@@ -267,44 +293,71 @@
 
     <script>
         // ==========================================
-        // UI DO MENU E TAREFAS
+        // CONFIGURAÇÕES DO SUPABASE
+        // ==========================================
+        const SUPABASE_URL = 'https://oewodtojczbxmqcqwobo.supabase.co'; 
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ld29kdG9qY3pieG1xY3F3b2JvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1OTA1NzcsImV4cCI6MjEwMzE2NjU3N30.84cEtEFHQFFPWZh2qw7NRphfuD9F8kN6nSjttx9EH3Q';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Regra de RLS: Certifique-se de ter uma tabela 'utron_brain' com as colunas 'id' (texto) e 'data' (jsonb).
+
+        // ==========================================
+        // DADOS LOCAIS DO CÉREBRO (Memória Curta e Longa)
+        // ==========================================
+        let tarefas = JSON.parse(localStorage.getItem('utron.tasks.v1')) || []; 
+        let nomeUsuario = localStorage.getItem('utron.name') || "senhor";
+        let isGenioActive = localStorage.getItem('utron.mode') === 'genio'; 
+
+        // ==========================================
+        // GERENCIAMENTO DA UI (MENU E PAINEIS)
         // ==========================================
         const menuBtn = document.getElementById('menu-btn');
         const sideMenu = document.getElementById('side-menu');
         const closeBtn = document.getElementById('close-btn');
         const mainNav = document.getElementById('main-nav');
+        
         const tasksPanel = document.getElementById('tasks-panel');
+        const brainPanel = document.getElementById('brain-panel');
+        
         const navTarefasBtn = document.getElementById('nav-tarefas-btn');
-        const backNavBtn = document.getElementById('back-nav-btn');
+        const navBrainBtn = document.getElementById('nav-brain-btn');
+        const backNavBtns = document.querySelectorAll('.back-nav-btn');
+        
         const taskListEl = document.getElementById('task-list');
         const micBtn = document.getElementById('mic-btn');
-
-        let tarefas = JSON.parse(localStorage.getItem('utron.tasks.v1')) || []; 
+        const brainStatusMsg = document.getElementById('brain-status-msg');
 
         function openSideMenu() {
             sideMenu.classList.add('open');
             mainNav.style.display = 'block';
             tasksPanel.style.display = 'none';
-        }
-
-        function openTasksPanel() {
-            mainNav.style.display = 'none';
-            tasksPanel.style.display = 'block';
+            brainPanel.style.display = 'none';
         }
 
         menuBtn.addEventListener('click', openSideMenu);
         closeBtn.addEventListener('click', () => sideMenu.classList.remove('open'));
         
-        navTarefasBtn.addEventListener('click', openTasksPanel);
-        backNavBtn.addEventListener('click', () => {
-            tasksPanel.style.display = 'none';
-            mainNav.style.display = 'block';
+        navTarefasBtn.addEventListener('click', () => {
+            mainNav.style.display = 'none';
+            tasksPanel.style.display = 'block';
+        });
+
+        navBrainBtn.addEventListener('click', () => {
+            mainNav.style.display = 'none';
+            brainPanel.style.display = 'block';
+        });
+
+        backNavBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tasksPanel.style.display = 'none';
+                brainPanel.style.display = 'none';
+                mainNav.style.display = 'block';
+            });
         });
 
         function atualizarListaTarefas() {
             taskListEl.innerHTML = '';
             if (tarefas.length === 0) {
-                taskListEl.innerHTML = '<li style="border-left-color: gray; color: gray;">Nenhum compromisso registrado para hoje.</li>';
+                taskListEl.innerHTML = '<li style="border-left-color: gray; color: gray;">Nenhum compromisso registrado.</li>';
             } else {
                 tarefas.forEach((tarefa) => {
                     let li = document.createElement('li');
@@ -317,7 +370,125 @@
         atualizarListaTarefas(); 
 
         // ==========================================
-        // VARIÁVEIS GLOBAIS DE ESTADO E CORES
+        // LÓGICA DE APRENDIZADO E SINCRONIZAÇÃO (BRAIN)
+        // ==========================================
+        
+        // Empacota todos os dados do cérebro atual
+        function compilarCerebro() {
+            return JSON.stringify({
+                nomeUsuario: nomeUsuario,
+                modoGenio: isGenioActive,
+                tarefas: tarefas,
+                timestamp: new Date().toISOString()
+            }, null, 2);
+        }
+
+        // 1. Rota Offline: Exportar Cérebro (Download)
+        document.getElementById('export-brain-btn').addEventListener('click', () => {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(compilarCerebro());
+            const anchor = document.createElement('a');
+            anchor.setAttribute("href", dataStr);
+            anchor.setAttribute("download", `ultron-brain-${new Date().getTime()}.json`);
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.remove();
+            brainStatusMsg.textContent = "✅ Cérebro baixado com sucesso.";
+        });
+
+        // 2. Rota Offline: Importar Cérebro (Upload)
+        document.getElementById('import-brain-btn').addEventListener('click', () => {
+            document.getElementById('import-brain-file').click();
+        });
+
+        document.getElementById('import-brain-file').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // VALIDAÇÃO DE PAYLOAD: Limite de tamanho e prevenção contra congelamento de aba
+            if (file.size > 1024 * 1024) { 
+                brainStatusMsg.textContent = "❌ Arquivo muito grande (Máx 1MB).";
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const brainData = JSON.parse(event.target.result);
+                    
+                    // VALIDAÇÃO DE INPUT: Evita injeção de dados corrompidos ou XSS nas tarefas
+                    if (brainData.nomeUsuario && typeof brainData.nomeUsuario === 'string') {
+                        nomeUsuario = brainData.nomeUsuario;
+                        localStorage.setItem('utron.name', nomeUsuario);
+                    }
+                    if (Array.isArray(brainData.tarefas)) {
+                        tarefas = brainData.tarefas.filter(t => typeof t === 'string'); // Sanitização básica
+                    }
+                    if (typeof brainData.modoGenio === 'boolean') {
+                        isGenioActive = brainData.modoGenio;
+                        localStorage.setItem('utron.mode', isGenioActive ? 'genio' : 'normal');
+                        corBaseAlvo.copy(isGenioActive ? corBaseGenio : corBaseNormal);
+                        corAtivaAlvo.copy(isGenioActive ? corAtivaGenio : corAtivaNormal);
+                    }
+
+                    atualizarListaTarefas();
+                    brainStatusMsg.textContent = "✅ Cérebro restaurado e neurônios conectados!";
+                    setTimeout(() => location.reload(), 2000); // Recarrega para aplicar 100% das cores e vozes
+                } catch (err) {
+                    brainStatusMsg.textContent = "❌ Arquivo JSON corrompido ou inválido.";
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // 3. Rota Nuvem: Sincronização Supabase
+        document.getElementById('sync-supabase-btn').addEventListener('click', async () => {
+            brainStatusMsg.textContent = "⏳ Sincronizando com a nuvem...";
+            
+            try {
+                // Tenta buscar dados da nuvem primeiro (Race Condition Protection por timestamp)
+                const { data: remoteData, error: fetchError } = await supabase
+                    .from('utron_brain')
+                    .select('data')
+                    .eq('id', 'master_brain')
+                    .single();
+
+                let deveSubirDadosLocais = true;
+
+                if (remoteData && remoteData.data) {
+                    const localTime = new Date(JSON.parse(compilarCerebro()).timestamp);
+                    const remoteTime = new Date(remoteData.data.timestamp);
+
+                    // Se a nuvem for mais nova, puxa da nuvem
+                    if (remoteTime > localTime) {
+                        tarefas = remoteData.data.tarefas || [];
+                        nomeUsuario = remoteData.data.nomeUsuario || "senhor";
+                        localStorage.setItem('utron.name', nomeUsuario);
+                        atualizarListaTarefas();
+                        deveSubirDadosLocais = false;
+                        brainStatusMsg.textContent = "✅ Cérebro atualizado via nuvem!";
+                    }
+                }
+
+                // Se o local for mais novo ou não existir nuvem, sobe para o Supabase
+                if (deveSubirDadosLocais) {
+                    const payload = JSON.parse(compilarCerebro());
+                    const { error: upsertError } = await supabase
+                        .from('utron_brain')
+                        .upsert({ id: 'master_brain', data: payload });
+
+                    if (upsertError) throw upsertError;
+                    brainStatusMsg.textContent = "✅ Memória enviada para a nuvem com sucesso!";
+                }
+
+            } catch (error) {
+                console.error(error);
+                brainStatusMsg.textContent = "❌ Erro ao conectar com Supabase. Verifique suas chaves.";
+            }
+        });
+
+
+        // ==========================================
+        // VARIÁVEIS DE COR DO CÉREBRO VISUAL (THREE.JS)
         // ==========================================
         let audioContext;
         let analyser;
@@ -328,19 +499,13 @@
         let recognition = null;
         let isUltronSpeaking = false; 
         let currentUtterance = null; 
-        let isListening = false; // Controle de estado do microfone para resgate de sessão
-
-        let nomeUsuario = localStorage.getItem('utron.name') || "senhor";
-        
-        // --- NOVO: Verifica na memória se o Modo Gênio estava ativo ao carregar a página
-        let isGenioActive = localStorage.getItem('utron.mode') === 'genio'; 
+        let isListening = false; 
 
         const corBaseNormal = new THREE.Color(0x8a2be2); 
         const corAtivaNormal = new THREE.Color(0xff0000); 
         const corBaseGenio = new THREE.Color(0x004d00); 
         const corAtivaGenio = new THREE.Color(0x33ff33); 
 
-        // Carrega as cores corretas baseadas na memória
         const corBaseAlvo = new THREE.Color(isGenioActive ? 0x004d00 : 0x8a2be2);
         const corAtivaAlvo = new THREE.Color(isGenioActive ? 0x33ff33 : 0xff0000);
         const corBaseAtual = new THREE.Color(isGenioActive ? 0x004d00 : 0x8a2be2);
@@ -349,9 +514,7 @@
         const waveform = document.getElementById('waveform'); 
         const appHeader = document.getElementById('app-header'); 
 
-        window.speechSynthesis.onvoiceschanged = () => {
-            window.speechSynthesis.getVoices();
-        };
+        window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 
         // ==========================================
         // FUNÇÃO DE FALA ROBUSTA
@@ -360,9 +523,7 @@
             if (isUltronSpeaking) return;
             
             isUltronSpeaking = true;
-            if (recognition) {
-                try { recognition.stop(); } catch(e) {}
-            }
+            if (recognition) { try { recognition.stop(); } catch(e) {} }
             
             waveform.style.opacity = '1';
             window.speechSynthesis.cancel(); 
@@ -400,7 +561,7 @@
         }
 
         // ==========================================
-        // CÉREBRO: MICROFONE E ROTEADOR DE INTENTS
+        // MICROFONE E ROTEADOR DE INTENTS
         // ==========================================
         micBtn.addEventListener('click', async () => {
             try {
@@ -425,7 +586,6 @@
                     recognition.interimResults = false;
                     recognition.lang = 'pt-BR';
 
-                    // Controle de Estado para o Resgate de Sessão
                     recognition.onstart = () => {
                         isListening = true;
                         micBtn.style.display = 'none';
@@ -458,13 +618,12 @@
                         const mathRegex = /(\d+(?:[.,]\d+)?)\s*(mais|somada? a?|\+|menos|-|vezes|\*|x|multiplicado(?: por)?|dividido(?: por| para| pra)?|\/)\s*(\d+(?:[.,]\d+)?)/i;
                         const mathMatch = mathTranscript.match(mathRegex);
 
-                        // ROTEAMENTO
                         if (desativarGenioMatch) {
                             if (!isGenioActive) {
                                 responderComoUltron("O modo gênio já está desligado.");
                             } else {
                                 isGenioActive = false; 
-                                localStorage.setItem('utron.mode', 'normal'); // Salva na memória
+                                localStorage.setItem('utron.mode', 'normal'); 
                                 responderComoUltron("Desativando modo gênio. Retornando aos parâmetros normais.", () => {
                                     corBaseAlvo.copy(corBaseNormal);
                                     corAtivaAlvo.copy(corAtivaNormal);
@@ -476,7 +635,7 @@
                                 responderComoUltron(`O modo gênio já está ligado, ${nomeUsuario}.`);
                             } else {
                                 isGenioActive = true; 
-                                localStorage.setItem('utron.mode', 'genio'); // Salva na memória
+                                localStorage.setItem('utron.mode', 'genio'); 
                                 responderComoUltron("Ativando modo gênio.", () => {
                                     corBaseAlvo.copy(corBaseGenio);
                                     corAtivaAlvo.copy(corAtivaGenio);
@@ -492,13 +651,15 @@
                             atualizarListaTarefas();  
                             
                             sideMenu.classList.add('open'); 
-                            openTasksPanel(); 
+                            mainNav.style.display = 'none';
+                            tasksPanel.style.display = 'block';
                             
                             responderComoUltron(`Anotado, ${nomeUsuario}. Registrei a seguinte tarefa: ${novaTarefa}.`);
                         }
                         else if (leituraMatch) {
                             sideMenu.classList.add('open'); 
-                            openTasksPanel();
+                            mainNav.style.display = 'none';
+                            tasksPanel.style.display = 'block';
                             if (tarefas.length === 0) {
                                 responderComoUltron(`${nomeUsuario}, você não tem nenhuma tarefa ou compromisso registrado para hoje.`);
                             } else {
@@ -561,41 +722,25 @@
                     recognition.onend = () => {
                         isListening = false;
                         if (!isUltronSpeaking && recognition) {
-                            try { 
-                                recognition.start(); 
-                            } catch(e) {
-                                // Se der erro ao reiniciar (ex: aba em 2º plano no Safari), força mostrar o botão
-                                micBtn.style.display = 'flex';
-                            }
+                            try { recognition.start(); } catch(e) { micBtn.style.display = 'flex'; }
                         }
                     };
                     
-                    recognition.onerror = (event) => {
-                        console.warn("Erro de escuta:", event.error);
-                        // Restaura o botão na interface caso falhe a permissão ou rede
-                        micBtn.style.display = 'flex';
-                    };
+                    recognition.onerror = () => { micBtn.style.display = 'flex'; };
 
                     recognition.start();
                 }
 
             } catch (err) {
-                console.error('Erro na inicialização de hardware:', err);
                 alert('Erro ao inicializar microfone.');
                 micBtn.style.display = 'flex';
             }
         });
 
-        // --- SISTEMA DE RESGATE DE SESSÃO (APP EM SEGUNDO PLANO) ---
-        // Se você minimizar o Safari e voltar, ele tenta recuperar a audição ou devolver o botão
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
                 if (recognition && !isListening && !isUltronSpeaking) {
-                    try { 
-                        recognition.start(); 
-                    } catch(e) {
-                        micBtn.style.display = 'flex';
-                    }
+                    try { recognition.start(); } catch(e) { micBtn.style.display = 'flex'; }
                 }
             } else {
                 if (recognition && isListening) {
@@ -605,10 +750,9 @@
         });
 
         // ==========================================
-        // SETUP DE CENA, CÂMERA E RENDERER
+        // SETUP DE CENA E ANIMAÇÃO
         // ==========================================
         const scene = new THREE.Scene();
-        
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.z = 7; 
 
@@ -624,9 +768,6 @@
         controls.minDistance = 0.1; 
         controls.maxDistance = 20; 
 
-        // ==========================================
-        // GEOMETRIA E PARTICULAS
-        // ==========================================
         const radius = 2.2;
         const detail = 18; 
         const geometry = new THREE.IcosahedronGeometry(radius, detail);
@@ -673,9 +814,6 @@
         const points = new THREE.Points(geometry, material);
         scene.add(points);
 
-        // ==========================================
-        // LOOP DE RENDERIZAÇÃO E ANIMAÇÃO
-        // ==========================================
         const clock = new THREE.Clock();
 
         function animate() {
@@ -684,11 +822,9 @@
             const elapsedTime = clock.getElapsedTime();
             controls.update(); 
 
-            // Interpolação suave para troca de cor
             corBaseAtual.lerp(corBaseAlvo, 0.03);
             corAtivaAtual.lerp(corAtivaAlvo, 0.03);
 
-            // Sincroniza dinamicamente o brilho (Glow) do Header com a cor exata da esfera
             const cAtivaCSS = `rgb(${Math.round(corAtivaAtual.r * 255)}, ${Math.round(corAtivaAtual.g * 255)}, ${Math.round(corAtivaAtual.b * 255)})`;
             appHeader.style.textShadow = `0 0 12px ${cAtivaCSS}`;
             appHeader.style.borderBottomColor = cAtivaCSS;
