@@ -360,8 +360,8 @@
         // CONFIGURAÇÕES DO SUPABASE 
         // ==========================================
         const SUPABASE_URL = 'https://oewodtojczbxmqcqwobo.supabase.co'; 
-        // Lembre-se de verificar se sua Key inteira está colada aqui
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3M...'; 
+        // Lembre-se de colar a sua Key inteira aqui novamente, assim como fez da última vez!
+        const SUPABASE_KEY = 'SUA_ANON_KEY_DO_SUPABASE'; 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // ==========================================
@@ -652,6 +652,12 @@
                         console.log("Comando detectado:", transcript);
 
                         // O Cérebro processa o que você disse!
+                        if (!UltronBrain) {
+                            console.error("Cérebro não encontrado!");
+                            responderComoUltron("Erro no núcleo. Arquivo cerebral não carregado.");
+                            return;
+                        }
+                        
                         const pensamento = UltronBrain.pensar(transcript);
                         console.log("Intenção Decodificada:", pensamento);
 
@@ -817,7 +823,8 @@
         controls.maxDistance = 20; 
 
         const radius = 2.2;
-        const detail = 18; 
+        // RESOLUÇÃO DE MEMÓRIA: Mantido em 4 para não sobrecarregar o hardware móvel
+        const detail = 4; 
         const geometry = new THREE.IcosahedronGeometry(radius, detail);
 
         const positionAttribute = geometry.attributes.position;
