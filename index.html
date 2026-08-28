@@ -172,7 +172,6 @@
         }
         .nav-item:hover { background: rgba(138, 43, 226, 0.3); }
 
-        /* Paineis Ocultos */
         #tasks-panel, #brain-panel { display: none; }
         
         .back-nav-btn {
@@ -208,7 +207,6 @@
             animation: fadeIn 0.3s ease;
         }
 
-        /* Estilos do Painel do Cérebro */
         .brain-action-btn {
             width: 100%;
             background: rgba(138, 43, 226, 0.2);
@@ -228,16 +226,18 @@
             border-color: rgba(62, 207, 142, 0.5);
         }
         .brain-action-btn.supabase-btn:hover { background: rgba(62, 207, 142, 0.4); }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateX(-10px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
     </style>
-    
-    <!-- Bibliotecas e CDNs -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- Import Maps Original para o Three.js Funcionar Perfeitamente -->
+    <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
     <!-- Cliente do Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -258,13 +258,11 @@
             <li class="nav-item" id="nav-brain-btn">🧠 Cérebro e Aprendizado</li>
         </ul>
 
-        <!-- Painel de Tarefas -->
         <div id="tasks-panel">
             <button class="back-nav-btn">⬅ Voltar</button>
             <ul id="task-list"></ul>
         </div>
 
-        <!-- Painel do Cérebro -->
         <div id="brain-panel">
             <button class="back-nav-btn">⬅ Voltar</button>
             <h3 style="color: #8a2be2; margin-top: 0;">🧠 Conexões Neurais</h3>
@@ -281,7 +279,6 @@
         </div>
     </div>
 
-    <!-- Interface Visual Principal -->
     <div id="waveform">
         <div class="bar"></div>
         <div class="bar"></div>
@@ -292,7 +289,12 @@
 
     <button id="mic-btn" aria-label="Ativar IA">🎤</button>
 
-    <script>
+    <!-- Tudo em modo module para o Three.js funcionar! -->
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // 1. LOG DE INÍCIO CONFORME SOLICITADO
         console.log('Script iniciado');
 
         // ==========================================
@@ -310,15 +312,14 @@
 
             filtrarRuido: function(texto) {
                 return texto.toLowerCase()
-                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove acentos
-                    .replace(/[.,!?]/g, ""); // Remove pontuação
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                    .replace(/[.,!?]/g, "");
             },
 
             pensar: function(fraseOriginal) {
                 const fraseLimpa = this.filtrarRuido(fraseOriginal);
                 const palavras = fraseLimpa.split(" ");
                 
-                // 1. Reflexos (Regex Consolidadas)
                 const nomeMatch = fraseOriginal.match(/(?:meu nome [ée]|me chamo)\s+([a-zàáâãéèêíïóôõöúçñ]+)/i);
                 if (nomeMatch) return { intencao: 'APRENDER_NOME', dados: nomeMatch[1] };
 
@@ -332,7 +333,6 @@
                 const registroMatch = fraseOriginal.match(/(?:registrar|salvar|anotar|registre|anote|salve)(?:\s+(?:nova tarefa|tarefa|compromissos?|que|um compromisso|uma tarefa))?\s+(.+)/i);
                 if (registroMatch) return { intencao: 'SALVAR_TAREFA', dados: registroMatch[1].trim() };
 
-                // 2. Processamento Neural Probabilístico
                 let intencaoGanhadora = 'DESCONHECIDO';
                 let maiorPontuacao = 0;
 
@@ -341,7 +341,6 @@
                     for (const palavra of palavras) {
                         if (neuronios.includes(palavra)) pontuacao++;
                     }
-                    
                     if (nomeRede === 'modo_genio_desativar' && pontuacao > 0) pontuacao += 5;
 
                     if (pontuacao > maiorPontuacao && pontuacao >= 1) {
@@ -359,10 +358,11 @@
         };
 
         // ==========================================
-        // CONFIGURAÇÕES DO SUPABASE (Tratamento de Falhas Adicionado)
+        // CONFIGURAÇÕES DO SUPABASE COM TRY/CATCH BLINDADO
         // ==========================================
         const SUPABASE_URL = 'https://oewodtojczbxmqcqwobo.supabase.co'; 
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ld29kdG9qY3pieG1xY3F3b2JvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1OTA1NzcsImV4cCI6MjEwMzE2NjU3N30.84cEtEFHQFFPWZh2qw7NRphfuD9F8kN6nSjttx9EH3Q'; // Mantenha sua Key inteira aqui!
+        // COLE SUA CHAVE COMPLETA AQUI!
+        const SUPABASE_KEY = 'SUA_ANON_KEY_DO_SUPABASE'; 
         
         let supabase = null;
         try {
@@ -377,14 +377,14 @@
         }
 
         // ==========================================
-        // DADOS LOCAIS DO CÉREBRO (Memória Curta e Longa)
+        // DADOS LOCAIS DO CÉREBRO
         // ==========================================
         let tarefas = JSON.parse(localStorage.getItem('utron.tasks.v1')) || []; 
         let nomeUsuario = localStorage.getItem('utron.name') || "senhor";
         let isGenioActive = localStorage.getItem('utron.mode') === 'genio'; 
 
         // ==========================================
-        // GERENCIAMENTO DA UI (MENU E PAINEIS)
+        // GERENCIAMENTO DA UI
         // ==========================================
         const menuBtn = document.getElementById('menu-btn');
         const sideMenu = document.getElementById('side-menu');
@@ -448,7 +448,6 @@
         // ==========================================
         // LÓGICA DE APRENDIZADO E SINCRONIZAÇÃO 
         // ==========================================
-        
         function compilarCerebro() {
             return JSON.stringify({
                 nomeUsuario: nomeUsuario,
@@ -458,7 +457,6 @@
             }, null, 2);
         }
 
-        // Rota Offline: Exportar
         document.getElementById('export-brain-btn').addEventListener('click', () => {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(compilarCerebro());
             const anchor = document.createElement('a');
@@ -470,7 +468,6 @@
             brainStatusMsg.textContent = "✅ Cérebro baixado com sucesso.";
         });
 
-        // Rota Offline: Importar
         document.getElementById('import-brain-btn').addEventListener('click', () => {
             document.getElementById('import-brain-file').click();
         });
@@ -513,7 +510,7 @@
             reader.readAsText(file);
         });
 
-        // Rota Nuvem: Supabase
+        // TRAVA DO SUPABASE ADICIONADA
         document.getElementById('sync-supabase-btn').addEventListener('click', async () => {
             if (!supabase) {
                 brainStatusMsg.textContent = "❌ Supabase não está configurado.";
@@ -557,16 +554,20 @@
 
             } catch (error) {
                 console.error(error);
-                brainStatusMsg.textContent = "❌ Erro ao conectar com Supabase. Verifique suas chaves e RLS.";
+                brainStatusMsg.textContent = "❌ Erro ao conectar com Supabase.";
             }
         });
 
         // ==========================================
-        // VARIÁVEIS DE COR DO CÉREBRO VISUAL (THREE.JS)
+        // VARIÁVEIS DE COR E CONTROLE
         // ==========================================
+        let audioContext;
+        let analyser;
+        let dataArray;
         let currentVolume = 0;
         let smoothedVolume = 0;
         
+        let recognition = null; // CORREÇÃO FATAL RESOLVIDA AQUI
         let isUltronSpeaking = false; 
         let currentUtterance = null; 
         let isListening = false; 
@@ -667,18 +668,11 @@
                         if (!transcript) return;
 
                         console.log("Comando detectado:", transcript);
-
-                        if (!window.UltronBrain) {
-                            console.error("Cérebro não encontrado!");
-                            responderComoUltron("Erro no núcleo. Arquivo cerebral não carregado.");
-                            return;
-                        }
                         
-                        const pensamento = window.UltronBrain.pensar(transcript);
+                        const pensamento = UltronBrain.pensar(transcript);
                         console.log("Intenção Decodificada:", pensamento);
 
                         switch(pensamento.intencao) {
-                            
                             case 'modo_genio_desativar':
                                 if (!isGenioActive) {
                                     responderComoUltron("O modo gênio já está desligado.");
@@ -830,7 +824,7 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         document.body.appendChild(renderer.domElement);
 
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true; 
         controls.dampingFactor = 0.05;
         controls.enablePan = false; 
@@ -838,6 +832,7 @@
         controls.maxDistance = 20; 
 
         const radius = 2.2;
+        // CORREÇÃO DO CLAUDE APLICADA PARA NÃO TRAVAR O CELULAR
         const detail = 4; 
         const geometry = new THREE.IcosahedronGeometry(radius, detail);
 
@@ -882,6 +877,8 @@
 
         const points = new THREE.Points(geometry, material);
         scene.add(points);
+
+        // 2. LOG DE CONFIRMAÇÃO DE MONTAGEM CONFORME SOLICITADO
         console.log('Cena 3D montada');
 
         const clock = new THREE.Clock();
