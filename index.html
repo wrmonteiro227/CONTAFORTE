@@ -293,6 +293,8 @@
     <button id="mic-btn" aria-label="Ativar IA">🎤</button>
 
     <script>
+        console.log('Script iniciado');
+
         // ==========================================
         // CÉREBRO DO ULTRON (NLP Estatístico Interno)
         // ==========================================
@@ -357,12 +359,22 @@
         };
 
         // ==========================================
-        // CONFIGURAÇÕES DO SUPABASE 
+        // CONFIGURAÇÕES DO SUPABASE (Tratamento de Falhas Adicionado)
         // ==========================================
         const SUPABASE_URL = 'https://oewodtojczbxmqcqwobo.supabase.co'; 
-        // Lembre-se de colar a sua Key inteira aqui novamente, assim como fez da última vez!
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ld29kdG9qY3pieG1xY3F3b2JvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1OTA1NzcsImV4cCI6MjEwMzE2NjU3N30.84cEtEFHQFFPWZh2qw7NRphfuD9F8kN6nSjttx9EH3Q'; 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ld29kdG9qY3pieG1xY3F3b2JvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1OTA1NzcsImV4cCI6MjEwMzE2NjU3N30.84cEtEFHQFFPWZh2qw7NRphfuD9F8kN6nSjttx9EH3Q'; // Mantenha sua Key inteira aqui!
+        
+        let supabase = null;
+        try {
+            if (window.supabase) {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            } else {
+                console.warn("Biblioteca Supabase não encontrada no window.");
+            }
+        } catch (error) {
+            console.warn("Erro ao inicializar Supabase. O app continuará funcionando localmente.", error);
+            supabase = null;
+        }
 
         // ==========================================
         // DADOS LOCAIS DO CÉREBRO (Memória Curta e Longa)
@@ -503,6 +515,11 @@
 
         // Rota Nuvem: Supabase
         document.getElementById('sync-supabase-btn').addEventListener('click', async () => {
+            if (!supabase) {
+                brainStatusMsg.textContent = "❌ Supabase não está configurado.";
+                return;
+            }
+            
             brainStatusMsg.textContent = "⏳ Sincronizando com a nuvem...";
             
             try {
@@ -540,7 +557,7 @@
 
             } catch (error) {
                 console.error(error);
-                brainStatusMsg.textContent = "❌ Erro ao conectar com Supabase. Verifique suas chaves.";
+                brainStatusMsg.textContent = "❌ Erro ao conectar com Supabase. Verifique suas chaves e RLS.";
             }
         });
 
@@ -651,17 +668,15 @@
 
                         console.log("Comando detectado:", transcript);
 
-                        // O Cérebro processa o que você disse!
-                        if (!UltronBrain) {
+                        if (!window.UltronBrain) {
                             console.error("Cérebro não encontrado!");
                             responderComoUltron("Erro no núcleo. Arquivo cerebral não carregado.");
                             return;
                         }
                         
-                        const pensamento = UltronBrain.pensar(transcript);
+                        const pensamento = window.UltronBrain.pensar(transcript);
                         console.log("Intenção Decodificada:", pensamento);
 
-                        // ROTEAMENTO A PARTIR DOS NEURÔNIOS
                         switch(pensamento.intencao) {
                             
                             case 'modo_genio_desativar':
@@ -823,7 +838,6 @@
         controls.maxDistance = 20; 
 
         const radius = 2.2;
-        // RESOLUÇÃO DE MEMÓRIA: Mantido em 4 para não sobrecarregar o hardware móvel
         const detail = 4; 
         const geometry = new THREE.IcosahedronGeometry(radius, detail);
 
@@ -868,6 +882,7 @@
 
         const points = new THREE.Points(geometry, material);
         scene.add(points);
+        console.log('Cena 3D montada');
 
         const clock = new THREE.Clock();
 
