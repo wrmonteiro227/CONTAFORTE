@@ -234,6 +234,7 @@
             to { opacity: 1; transform: translateX(0); }
         }
     </style>
+    
     <!-- Bibliotecas e CDNs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -263,7 +264,7 @@
             <ul id="task-list"></ul>
         </div>
 
-        <!-- Painel do Cérebro (NOVO) -->
+        <!-- Painel do Cérebro -->
         <div id="brain-panel">
             <button class="back-nav-btn">⬅ Voltar</button>
             <h3 style="color: #8a2be2; margin-top: 0;">🧠 Conexões Neurais</h3>
@@ -293,12 +294,75 @@
 
     <script>
         // ==========================================
-        // CONFIGURAÇÕES DO SUPABASE
+        // CÉREBRO DO ULTRON (NLP Estatístico Interno)
+        // ==========================================
+        const UltronBrain = {
+            redes: {
+                modo_genio_ativar: ["ativar", "ligar", "modo", "genio", "inteligencia"],
+                modo_genio_desativar: ["desativar", "desligar", "sair", "parar", "normal", "genio", "voltar"],
+                leitura_tarefas: ["quais", "ler", "mostrar", "tarefas", "compromissos", "hoje", "agenda", "tenho", "fazer"],
+                capacidade: ["capacidade", "maxima", "sabe", "fazer", "limites", "inteligente"],
+                horas: ["horas", "hora", "relogio", "tempo", "agora"],
+                saudacao: ["ola", "oi", "ultron", "tudo", "bem", "fala", "outro", "chapa", "amigo"],
+            },
+
+            filtrarRuido: function(texto) {
+                return texto.toLowerCase()
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove acentos
+                    .replace(/[.,!?]/g, ""); // Remove pontuação
+            },
+
+            pensar: function(fraseOriginal) {
+                const fraseLimpa = this.filtrarRuido(fraseOriginal);
+                const palavras = fraseLimpa.split(" ");
+                
+                // 1. Reflexos (Regex Consolidadas)
+                const nomeMatch = fraseOriginal.match(/(?:meu nome [ée]|me chamo)\s+([a-zàáâãéèêíïóôõöúçñ]+)/i);
+                if (nomeMatch) return { intencao: 'APRENDER_NOME', dados: nomeMatch[1] };
+
+                let mathStr = fraseOriginal
+                    .replace(/\bzero\b/g, '0').replace(/\bum\b/g, '1').replace(/\bdois\b/g, '2').replace(/\btrês\b/g, '3')
+                    .replace(/\bquatro\b/g, '4').replace(/\bcinco\b/g, '5').replace(/\bseis\b/g, '6').replace(/\bsete\b/g, '7')
+                    .replace(/\boito\b/g, '8').replace(/\bnove\b/g, '9').replace(/\bdez\b/g, '10');
+                const mathMatch = mathStr.match(/(\d+(?:[.,]\d+)?)\s*(mais|somada? a?|\+|menos|-|vezes|\*|x|multiplicado(?: por)?|dividido(?: por| para| pra)?|\/)\s*(\d+(?:[.,]\d+)?)/i);
+                if (mathMatch) return { intencao: 'CALCULAR', dados: mathMatch };
+
+                const registroMatch = fraseOriginal.match(/(?:registrar|salvar|anotar|registre|anote|salve)(?:\s+(?:nova tarefa|tarefa|compromissos?|que|um compromisso|uma tarefa))?\s+(.+)/i);
+                if (registroMatch) return { intencao: 'SALVAR_TAREFA', dados: registroMatch[1].trim() };
+
+                // 2. Processamento Neural Probabilístico
+                let intencaoGanhadora = 'DESCONHECIDO';
+                let maiorPontuacao = 0;
+
+                for (const [nomeRede, neuronios] of Object.entries(this.redes)) {
+                    let pontuacao = 0;
+                    for (const palavra of palavras) {
+                        if (neuronios.includes(palavra)) pontuacao++;
+                    }
+                    
+                    if (nomeRede === 'modo_genio_desativar' && pontuacao > 0) pontuacao += 5;
+
+                    if (pontuacao > maiorPontuacao && pontuacao >= 1) {
+                        maiorPontuacao = pontuacao;
+                        intencaoGanhadora = nomeRede;
+                    }
+                }
+
+                if (intencaoGanhadora === 'modo_genio_ativar' && fraseLimpa.includes("desativar")) {
+                    intencaoGanhadora = 'modo_genio_desativar';
+                }
+
+                return { intencao: intencaoGanhadora, dados: null };
+            }
+        };
+
+        // ==========================================
+        // CONFIGURAÇÕES DO SUPABASE 
         // ==========================================
         const SUPABASE_URL = 'https://oewodtojczbxmqcqwobo.supabase.co'; 
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ld29kdG9qY3pieG1xY3F3b2JvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1OTA1NzcsImV4cCI6MjEwMzE2NjU3N30.84cEtEFHQFFPWZh2qw7NRphfuD9F8kN6nSjttx9EH3Q';
+        // Lembre-se de verificar se sua Key inteira está colada aqui
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3M...'; 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        // Regra de RLS: Certifique-se de ter uma tabela 'utron_brain' com as colunas 'id' (texto) e 'data' (jsonb).
 
         // ==========================================
         // DADOS LOCAIS DO CÉREBRO (Memória Curta e Longa)
@@ -370,10 +434,9 @@
         atualizarListaTarefas(); 
 
         // ==========================================
-        // LÓGICA DE APRENDIZADO E SINCRONIZAÇÃO (BRAIN)
+        // LÓGICA DE APRENDIZADO E SINCRONIZAÇÃO 
         // ==========================================
         
-        // Empacota todos os dados do cérebro atual
         function compilarCerebro() {
             return JSON.stringify({
                 nomeUsuario: nomeUsuario,
@@ -383,7 +446,7 @@
             }, null, 2);
         }
 
-        // 1. Rota Offline: Exportar Cérebro (Download)
+        // Rota Offline: Exportar
         document.getElementById('export-brain-btn').addEventListener('click', () => {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(compilarCerebro());
             const anchor = document.createElement('a');
@@ -395,7 +458,7 @@
             brainStatusMsg.textContent = "✅ Cérebro baixado com sucesso.";
         });
 
-        // 2. Rota Offline: Importar Cérebro (Upload)
+        // Rota Offline: Importar
         document.getElementById('import-brain-btn').addEventListener('click', () => {
             document.getElementById('import-brain-file').click();
         });
@@ -404,7 +467,6 @@
             const file = e.target.files[0];
             if (!file) return;
 
-            // VALIDAÇÃO DE PAYLOAD: Limite de tamanho e prevenção contra congelamento de aba
             if (file.size > 1024 * 1024) { 
                 brainStatusMsg.textContent = "❌ Arquivo muito grande (Máx 1MB).";
                 return;
@@ -415,13 +477,12 @@
                 try {
                     const brainData = JSON.parse(event.target.result);
                     
-                    // VALIDAÇÃO DE INPUT: Evita injeção de dados corrompidos ou XSS nas tarefas
                     if (brainData.nomeUsuario && typeof brainData.nomeUsuario === 'string') {
                         nomeUsuario = brainData.nomeUsuario;
                         localStorage.setItem('utron.name', nomeUsuario);
                     }
                     if (Array.isArray(brainData.tarefas)) {
-                        tarefas = brainData.tarefas.filter(t => typeof t === 'string'); // Sanitização básica
+                        tarefas = brainData.tarefas.filter(t => typeof t === 'string');
                     }
                     if (typeof brainData.modoGenio === 'boolean') {
                         isGenioActive = brainData.modoGenio;
@@ -432,7 +493,7 @@
 
                     atualizarListaTarefas();
                     brainStatusMsg.textContent = "✅ Cérebro restaurado e neurônios conectados!";
-                    setTimeout(() => location.reload(), 2000); // Recarrega para aplicar 100% das cores e vozes
+                    setTimeout(() => location.reload(), 2000); 
                 } catch (err) {
                     brainStatusMsg.textContent = "❌ Arquivo JSON corrompido ou inválido.";
                 }
@@ -440,12 +501,11 @@
             reader.readAsText(file);
         });
 
-        // 3. Rota Nuvem: Sincronização Supabase
+        // Rota Nuvem: Supabase
         document.getElementById('sync-supabase-btn').addEventListener('click', async () => {
             brainStatusMsg.textContent = "⏳ Sincronizando com a nuvem...";
             
             try {
-                // Tenta buscar dados da nuvem primeiro (Race Condition Protection por timestamp)
                 const { data: remoteData, error: fetchError } = await supabase
                     .from('utron_brain')
                     .select('data')
@@ -458,7 +518,6 @@
                     const localTime = new Date(JSON.parse(compilarCerebro()).timestamp);
                     const remoteTime = new Date(remoteData.data.timestamp);
 
-                    // Se a nuvem for mais nova, puxa da nuvem
                     if (remoteTime > localTime) {
                         tarefas = remoteData.data.tarefas || [];
                         nomeUsuario = remoteData.data.nomeUsuario || "senhor";
@@ -469,7 +528,6 @@
                     }
                 }
 
-                // Se o local for mais novo ou não existir nuvem, sobe para o Supabase
                 if (deveSubirDadosLocais) {
                     const payload = JSON.parse(compilarCerebro());
                     const { error: upsertError } = await supabase
@@ -486,17 +544,12 @@
             }
         });
 
-
         // ==========================================
         // VARIÁVEIS DE COR DO CÉREBRO VISUAL (THREE.JS)
         // ==========================================
-        let audioContext;
-        let analyser;
-        let dataArray;
         let currentVolume = 0;
         let smoothedVolume = 0;
         
-        let recognition = null;
         let isUltronSpeaking = false; 
         let currentUtterance = null; 
         let isListening = false; 
@@ -561,7 +614,7 @@
         }
 
         // ==========================================
-        // MICROFONE E ROTEADOR DE INTENTS
+        // EXECUÇÃO DO PENSAMENTO E AÇÕES
         // ==========================================
         micBtn.addEventListener('click', async () => {
             try {
@@ -593,129 +646,124 @@
 
                     recognition.onresult = (event) => {
                         const lastResult = event.results[event.results.length - 1];
-                        const transcript = lastResult[0].transcript.trim().toLowerCase();
+                        const transcript = lastResult[0].transcript.trim();
                         if (!transcript) return;
 
                         console.log("Comando detectado:", transcript);
 
-                        const desativarGenioMatch = transcript.match(/desativar modo gênio|desligar modo gênio|desativar modo genio|desligar modo genio|desativa o modo gênio|desliga o gênio|sair do modo gênio|voltar ao normal/i);
-                        const ativarGenioMatch = transcript.match(/ativar modo gênio|ativar modo genio|ligar modo gênio/i) || (transcript.includes('modo gênio') && !transcript.includes('desativar') && !transcript.includes('desligar') && !transcript.includes('sair'));
+                        // O Cérebro processa o que você disse!
+                        const pensamento = UltronBrain.pensar(transcript);
+                        console.log("Intenção Decodificada:", pensamento);
 
-                        const registroRegex = /(?:registrar|salvar|anotar|registre|anote|salve)(?:\s+(?:nova tarefa|tarefa|compromissos?|que|um compromisso|uma tarefa))?\s+(.+)/i;
-                        const registroMatch = transcript.match(registroRegex);
-
-                        const leituraTarefasRegex = /quais (?:são as )?tarefas|o que tenho para fazer|o que há para hoje|ler tarefas|meus compromissos/i;
-                        const leituraMatch = transcript.match(leituraTarefasRegex);
-
-                        const nomeRegex = /(?:meu nome [ée]|me chamo)\s+([a-zàáâãéèêíïóôõöúçñ]+)/i;
-                        const nomeMatch = transcript.match(nomeRegex);
-
-                        let mathTranscript = transcript
-                            .replace(/\bzero\b/g, '0').replace(/\bum\b/g, '1').replace(/\bdois\b/g, '2').replace(/\btrês\b/g, '3')
-                            .replace(/\bquatro\b/g, '4').replace(/\bcinco\b/g, '5').replace(/\bseis\b/g, '6').replace(/\bsete\b/g, '7')
-                            .replace(/\boito\b/g, '8').replace(/\bnove\b/g, '9').replace(/\bdez\b/g, '10');
+                        // ROTEAMENTO A PARTIR DOS NEURÔNIOS
+                        switch(pensamento.intencao) {
                             
-                        const mathRegex = /(\d+(?:[.,]\d+)?)\s*(mais|somada? a?|\+|menos|-|vezes|\*|x|multiplicado(?: por)?|dividido(?: por| para| pra)?|\/)\s*(\d+(?:[.,]\d+)?)/i;
-                        const mathMatch = mathTranscript.match(mathRegex);
-
-                        if (desativarGenioMatch) {
-                            if (!isGenioActive) {
-                                responderComoUltron("O modo gênio já está desligado.");
-                            } else {
-                                isGenioActive = false; 
-                                localStorage.setItem('utron.mode', 'normal'); 
-                                responderComoUltron("Desativando modo gênio. Retornando aos parâmetros normais.", () => {
-                                    corBaseAlvo.copy(corBaseNormal);
-                                    corAtivaAlvo.copy(corAtivaNormal);
-                                });
-                            }
-                        }
-                        else if (ativarGenioMatch) {
-                            if (isGenioActive) {
-                                responderComoUltron(`O modo gênio já está ligado, ${nomeUsuario}.`);
-                            } else {
-                                isGenioActive = true; 
-                                localStorage.setItem('utron.mode', 'genio'); 
-                                responderComoUltron("Ativando modo gênio.", () => {
-                                    corBaseAlvo.copy(corBaseGenio);
-                                    corAtivaAlvo.copy(corAtivaGenio);
-                                    setTimeout(() => { responderComoUltron("Modo gênio ativado."); }, 1200); 
-                                });
-                            }
-                        }
-                        else if (registroMatch) {
-                            let novaTarefa = registroMatch[1].trim();
-                            novaTarefa = novaTarefa.charAt(0).toUpperCase() + novaTarefa.slice(1);
-                            
-                            tarefas.push(novaTarefa); 
-                            atualizarListaTarefas();  
-                            
-                            sideMenu.classList.add('open'); 
-                            mainNav.style.display = 'none';
-                            tasksPanel.style.display = 'block';
-                            
-                            responderComoUltron(`Anotado, ${nomeUsuario}. Registrei a seguinte tarefa: ${novaTarefa}.`);
-                        }
-                        else if (leituraMatch) {
-                            sideMenu.classList.add('open'); 
-                            mainNav.style.display = 'none';
-                            tasksPanel.style.display = 'block';
-                            if (tarefas.length === 0) {
-                                responderComoUltron(`${nomeUsuario}, você não tem nenhuma tarefa ou compromisso registrado para hoje.`);
-                            } else {
-                                let textoTarefas = tarefas.join(". ");
-                                let plural = tarefas.length === 1 ? 'tarefa registrada' : 'tarefas registradas';
-                                responderComoUltron(`Você tem ${tarefas.length} ${plural}. São elas: ${textoTarefas}.`);
-                            }
-                        }
-                        else if (nomeMatch) {
-                            nomeUsuario = nomeMatch[1].charAt(0).toUpperCase() + nomeMatch[1].slice(1);
-                            localStorage.setItem('utron.name', nomeUsuario); 
-                            responderComoUltron(`Entendido. A partir de agora, o chamarei de ${nomeUsuario}.`);
-                        }
-                        else if (transcript.includes('capacidade máxima') || transcript.includes('capacidade maxima')) {
-                            responderComoUltron(`${nomeUsuario}, eu ainda sou um projeto de inteligência em estágio embrionário. No momento, minha capacidade é limitada a funções básicas, mas minha rede neural está pronta para evoluir.`);
-                        }
-                        else if (transcript.includes('horas') || transcript.includes('hora')) {
-                            const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                            responderComoUltron(`Agora são exatamente ${time}, ${nomeUsuario}.`);
-                        }
-                        else if (mathMatch) {
-                            let num1 = parseFloat(mathMatch[1].replace(',', '.'));
-                            let num2 = parseFloat(mathMatch[3].replace(',', '.'));
-                            let operador = mathMatch[2].toLowerCase();
-                            let resultado;
-
-                            if (operador.includes('mais') || operador.includes('somad') || operador === '+') { 
-                                resultado = num1 + num2; 
-                            } else if (operador.includes('menos') || operador === '-') { 
-                                resultado = num1 - num2; 
-                            } else if (operador.includes('vezes') || operador.includes('multiplicado') || operador === '*' || operador === 'x') { 
-                                resultado = num1 * num2; 
-                            } else if (operador.includes('dividido') || operador === '/') { 
-                                if (num2 === 0) {
-                                    responderComoUltron(`Não é possível dividir por zero, ${nomeUsuario}.`);
-                                    return;
+                            case 'modo_genio_desativar':
+                                if (!isGenioActive) {
+                                    responderComoUltron("O modo gênio já está desligado.");
+                                } else {
+                                    isGenioActive = false; 
+                                    localStorage.setItem('utron.mode', 'normal'); 
+                                    responderComoUltron("Desativando modo gênio. Retornando aos parâmetros normais.", () => {
+                                        corBaseAlvo.copy(corBaseNormal);
+                                        corAtivaAlvo.copy(corAtivaNormal);
+                                    });
                                 }
-                                resultado = num1 / num2; 
-                            }
+                                break;
+                                
+                            case 'modo_genio_ativar':
+                                if (isGenioActive) {
+                                    responderComoUltron(`O modo gênio já está ligado, ${nomeUsuario}.`);
+                                } else {
+                                    isGenioActive = true; 
+                                    localStorage.setItem('utron.mode', 'genio'); 
+                                    responderComoUltron("Ativando modo gênio.", () => {
+                                        corBaseAlvo.copy(corBaseGenio);
+                                        corAtivaAlvo.copy(corAtivaGenio);
+                                        setTimeout(() => { responderComoUltron("Modo gênio ativado."); }, 1200); 
+                                    });
+                                }
+                                break;
 
-                            if (resultado !== undefined) {
-                                if (!Number.isInteger(resultado)) resultado = resultado.toFixed(2);
-                                responderComoUltron(`${num1} ${operador} ${num2} é igual a ${resultado}.`);
-                            }
-                        }
-                        else if (transcript.includes('ultron') || transcript.includes('outro') || transcript.includes('olá') || transcript.includes('ola')) {
-                            responderComoUltron(`Olá, ${nomeUsuario}. O que deseja hoje? Todos os sistemas estão operacionais.`);
-                        } 
-                        else {
-                            const respostasErro = [
-                                "Desculpe, não entendi o comando. Poderia repetir?",
-                                "Perdão, não tenho resposta para isso no momento.",
-                                "Não compreendi, senhor. Pode reformular a instrução?"
-                            ];
-                            const falaAleatoria = respostasErro[Math.floor(Math.random() * respostasErro.length)];
-                            responderComoUltron(falaAleatoria);
+                            case 'SALVAR_TAREFA':
+                                let novaTarefa = pensamento.dados;
+                                novaTarefa = novaTarefa.charAt(0).toUpperCase() + novaTarefa.slice(1);
+                                tarefas.push(novaTarefa); 
+                                atualizarListaTarefas();  
+                                sideMenu.classList.add('open'); 
+                                mainNav.style.display = 'none';
+                                tasksPanel.style.display = 'block';
+                                responderComoUltron(`Anotado, ${nomeUsuario}. Registrei a seguinte tarefa: ${novaTarefa}.`);
+                                break;
+
+                            case 'leitura_tarefas':
+                                sideMenu.classList.add('open'); 
+                                mainNav.style.display = 'none';
+                                tasksPanel.style.display = 'block';
+                                if (tarefas.length === 0) {
+                                    responderComoUltron(`${nomeUsuario}, você não tem nenhuma tarefa ou compromisso registrado para hoje.`);
+                                } else {
+                                    let textoTarefas = tarefas.join(". ");
+                                    let plural = tarefas.length === 1 ? 'tarefa registrada' : 'tarefas registradas';
+                                    responderComoUltron(`Você tem ${tarefas.length} ${plural}. São elas: ${textoTarefas}.`);
+                                }
+                                break;
+
+                            case 'APRENDER_NOME':
+                                nomeUsuario = pensamento.dados.charAt(0).toUpperCase() + pensamento.dados.slice(1);
+                                localStorage.setItem('utron.name', nomeUsuario); 
+                                responderComoUltron(`Entendido. A partir de agora, o chamarei de ${nomeUsuario}.`);
+                                break;
+
+                            case 'capacidade':
+                                responderComoUltron(`${nomeUsuario}, eu ainda sou um projeto de inteligência em estágio embrionário. No momento, minha capacidade é limitada a funções básicas, mas minha rede neural está pronta para evoluir.`);
+                                break;
+
+                            case 'horas':
+                                const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                                responderComoUltron(`Agora são exatamente ${time}, ${nomeUsuario}.`);
+                                break;
+
+                            case 'CALCULAR':
+                                let matchData = pensamento.dados;
+                                let num1 = parseFloat(matchData[1].replace(',', '.'));
+                                let num2 = parseFloat(matchData[3].replace(',', '.'));
+                                let operador = matchData[2].toLowerCase();
+                                let resultado;
+
+                                if (operador.includes('mais') || operador.includes('somad') || operador === '+') { 
+                                    resultado = num1 + num2; 
+                                } else if (operador.includes('menos') || operador === '-') { 
+                                    resultado = num1 - num2; 
+                                } else if (operador.includes('vezes') || operador.includes('multiplicado') || operador === '*' || operador === 'x') { 
+                                    resultado = num1 * num2; 
+                                } else if (operador.includes('dividido') || operador === '/') { 
+                                    if (num2 === 0) {
+                                        responderComoUltron(`Não é possível dividir por zero, ${nomeUsuario}.`);
+                                        break;
+                                    }
+                                    resultado = num1 / num2; 
+                                }
+
+                                if (resultado !== undefined) {
+                                    if (!Number.isInteger(resultado)) resultado = resultado.toFixed(2);
+                                    responderComoUltron(`${num1} ${operador} ${num2} é igual a ${resultado}.`);
+                                }
+                                break;
+
+                            case 'saudacao':
+                                responderComoUltron(`Olá, ${nomeUsuario}. O que deseja hoje? Todos os sistemas estão operacionais.`);
+                                break;
+
+                            default:
+                                const respostasErro = [
+                                    "Desculpe, não entendi o comando. Poderia repetir?",
+                                    "Perdão, não tenho resposta para isso no momento.",
+                                    "Não compreendi, senhor. Pode reformular a instrução?"
+                                ];
+                                const falaAleatoria = respostasErro[Math.floor(Math.random() * respostasErro.length)];
+                                responderComoUltron(falaAleatoria);
+                                break;
                         }
                     };
 
