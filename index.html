@@ -362,7 +362,7 @@
         // CONFIGURAÇÕES DO SUPABASE 
         // ==========================================
         const SUPABASE_URL = 'https://oewodtojczbxmqcqwobo.supabase.co'; 
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ld29kdG9qY3pieG1xY3F3b2JvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1OTA1NzcsImV4cCI6MjEwMzE2NjU3N30.84cEtEFHQFFPWZh2qw7NRphfuD9F8kN6nSjttx9EH3Q'; // <<< Lembre-se de colar a sua Key aqui antes de subir!
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ld29kdG9qY3pieG1xY3F3b2JvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1OTA1NzcsImV4cCI6MjEwMzE2NjU3N30.84cEtEFHQFFPWZh2qw7NRphfuD9F8kN6nSjttx9EH3Q'; // Mantenha sua Key inteira aqui!
         
         let supabase = null;
         try {
@@ -448,6 +448,7 @@
         // ==========================================
         // LÓGICA DE APRENDIZADO E SINCRONIZAÇÃO 
         // ==========================================
+        
         function compilarCerebro() {
             return JSON.stringify({
                 nomeUsuario: nomeUsuario,
@@ -553,7 +554,7 @@
 
             } catch (error) {
                 console.error(error);
-                brainStatusMsg.textContent = "❌ Erro ao conectar com Supabase. Verifique a tabela e as regras RLS.";
+                brainStatusMsg.textContent = "❌ Erro ao conectar com Supabase.";
             }
         });
 
@@ -831,8 +832,8 @@
         controls.maxDistance = 20; 
 
         const radius = 2.2;
-        // PONTO DE EQUILÍBRIO DA ESFERA: Densidade boa sem travar o iPhone
-        const detail = 10; 
+        // VALOR REDUZIDO DE FORMA SEGURA (Detail = 5) PARA O IPHONE NÃO TRAVAR
+        const detail = 5; 
         const geometry = new THREE.IcosahedronGeometry(radius, detail);
 
         const positionAttribute = geometry.attributes.position;
@@ -855,8 +856,11 @@
             originalPositions[i * 3 + 2] = z;
 
             randomOffsets[i] = Math.random() * Math.PI * 2;
-            randomScales[i] = 0.5 + Math.random() * 2.0; 
-            baseRandomness[i] = Math.random() * 0.3; 
+            
+            // Aumentado a escala randômica para compensar a diminuição dos pontos
+            randomScales[i] = 1.0 + Math.random() * 3.0; 
+            // Aumentado a aleatoriedade base para os pontos se espalharem mais
+            baseRandomness[i] = Math.random() * 0.8; 
 
             colors[i * 3] = corBaseAtual.r;
             colors[i * 3 + 1] = corBaseAtual.g;
@@ -866,8 +870,8 @@
         geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         
         const material = new THREE.PointsMaterial({
-            // TAMANHO DA PARTÍCULA AJUSTADO PARA MAIOR VOLUME VISUAL
-            size: 0.035, 
+            // Tamanho da partícula aumentado para preencher melhor o espaço
+            size: 0.05, 
             vertexColors: true,
             blending: THREE.NormalBlending, 
             transparent: true,
@@ -877,7 +881,7 @@
 
         const points = new THREE.Points(geometry, material);
         scene.add(points);
-        console.log('Cena 3D montada');
+        console.log('Cena 3D montada com detail 5 e randomness ajustada.');
 
         const clock = new THREE.Clock();
 
