@@ -33,7 +33,6 @@
             font-weight: 800;
             letter-spacing: 4px;
             text-transform: uppercase;
-            /* Fundo de vidro fosco profundo */
             background: rgba(5, 2, 12, 0.6); 
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
@@ -55,7 +54,7 @@
             border-radius: 50%; 
             cursor: pointer;
             font-size: 24px; 
-            display: flex; /* Mudará dinamicamente para 'none' quando ouvindo e 'flex' quando pausado */
+            display: flex;
             justify-content: center;
             align-items: center;
             z-index: 10;
@@ -227,7 +226,7 @@
         }
 
         /* ==========================================
-           NOVO: PAINEL DE BUSCAS RECENTES (Internet)
+           PAINEL DE BUSCAS RECENTES (Internet)
            ========================================== */
         #pesquisas-panel {
             display: none;
@@ -287,13 +286,10 @@
 </head>
 <body>
     
-    <!-- Novo Header Fixo -->
     <header id="app-header">Ultron</header>
 
-    <!-- Botão do Menu Hambúrguer -->
     <button id="menu-btn" aria-label="Abrir Menu">☰</button>
 
-    <!-- Menu Lateral Reestruturado -->
     <div id="side-menu">
         <div class="menu-header">
             <h2>Menu</h2>
@@ -310,14 +306,12 @@
             <ul id="task-list"></ul>
         </div>
 
-        <!-- NOVO: painel com o histórico das buscas na internet -->
         <div id="pesquisas-panel">
             <button class="panel-back-btn" id="back-pesquisas-btn">⬅ Voltar</button>
             <ul id="pesquisa-list"></ul>
         </div>
     </div>
 
-    <!-- Interface Visual Principal -->
     <div id="waveform">
         <div class="bar"></div>
         <div class="bar"></div>
@@ -341,8 +335,9 @@
         const backNavBtn = document.getElementById('back-nav-btn');
         const taskListEl = document.getElementById('task-list');
         const micBtn = document.getElementById('mic-btn');
+        const appHeader = document.getElementById('app-header');
+        const waveform = document.getElementById('waveform');
 
-        // NOVO: elementos do painel de buscas
         const navPesquisasBtn = document.getElementById('nav-pesquisas-btn');
         const backPesquisasBtn = document.getElementById('back-pesquisas-btn');
         const pesquisasPanel = document.getElementById('pesquisas-panel');
@@ -400,7 +395,6 @@
         }
         atualizarListaTarefas(); 
 
-        // NOVO: renderiza o histórico de buscas (clicar abre a fonte no navegador)
         function atualizarListaPesquisas() {
             pesquisaListEl.innerHTML = '';
             if (pesquisas.length === 0) {
@@ -450,7 +444,7 @@
         }
 
         // ==========================================
-        // VARIÁVEIS GLOBAIS DE ESTADO E CORES
+        // VARIÁVEIS GLOBAIS DE ESTADO
         // ==========================================
         let audioContext;
         let analyser;
@@ -461,27 +455,22 @@
         let recognition = null;
         let isUltronSpeaking = false; 
         let currentUtterance = null; 
-        let isListening = false; // Controle de estado do microfone para resgate de sessão
-        let isSearching = false; // NOVO: trava anti-duplo-comando durante buscas
+        let isListening = false;
+        let isSearching = false;
 
         let nomeUsuario = localStorage.getItem('utron.name') || "senhor";
-        
-        // --- NOVO: Verifica na memória se o Modo Gênio estava ativo ao carregar a página
         let isGenioActive = localStorage.getItem('utron.mode') === 'genio'; 
+        let isFaceActive = localStorage.getItem('utron.face') === 'on'; // NOVO: Modo Face Human
 
         const corBaseNormal = new THREE.Color(0x8a2be2); 
         const corAtivaNormal = new THREE.Color(0xff0000); 
         const corBaseGenio = new THREE.Color(0x004d00); 
         const corAtivaGenio = new THREE.Color(0x33ff33); 
 
-        // Carrega as cores corretas baseadas na memória
         const corBaseAlvo = new THREE.Color(isGenioActive ? 0x004d00 : 0x8a2be2);
         const corAtivaAlvo = new THREE.Color(isGenioActive ? 0x33ff33 : 0xff0000);
         const corBaseAtual = new THREE.Color(isGenioActive ? 0x004d00 : 0x8a2be2);
         const corAtivaAtual = new THREE.Color(isGenioActive ? 0x33ff33 : 0xff0000);
-
-        const waveform = document.getElementById('waveform'); 
-        const appHeader = document.getElementById('app-header'); 
 
         window.speechSynthesis.onvoiceschanged = () => {
             window.speechSynthesis.getVoices();
@@ -533,14 +522,11 @@
             window.speechSynthesis.speak(currentUtterance);
         }
 
-        // NOVO: fala "prometida" — resolve quando a fala termina,
-        // permitindo encadear: falar → buscar na web → falar o resultado
         function falar(frase) {
             return new Promise((resolve) => {
                 if (isUltronSpeaking) { resolve(); return; }
                 responderComoUltron(frase, () => {
                     resolve();
-                    // Quando a busca já terminou, religa o microfone
                     if (recognition && !isSearching) {
                         try { recognition.start(); } catch(e) { micBtn.style.display = 'flex'; }
                     }
@@ -549,11 +535,7 @@
         }
 
         // ==========================================
-        // NOVO: MÓDULO DE INTERNET (fontes abertas, sem chave, sem custo)
-        // - Wikipedia pt-BR  → conhecimentos, "o que é / quem foi"
-        // - DuckDuckGo IA    → respostas rápidas, conversões, curiosidades
-        // - Open-Meteo       → clima e geocoding (sem chave, CORS liberado)
-        // Tudo roda direto no navegador do usuário: nenhum segredo em servidor.
+        // MÓDULO DE INTERNET (fontes abertas, sem chave, sem custo)
         // ==========================================
         async function httpGetJSON(url, timeoutMs = 6000) {
             const ctrl = new AbortController();
@@ -583,7 +565,7 @@
                 );
                 const paginas = (ext.query && ext.query.pages) ? Object.values(ext.query.pages) : [];
                 extResumo = (paginas[0] && paginas[0].extract) || '';
-            } catch (e) { /* segue com o snippet da busca */ }
+            } catch (e) { /* segue com o snippet */ }
 
             const resumo = (extResumo || primeiro.snippet || '').replace(/<[^>]*>/g, '');
             return {
@@ -642,7 +624,6 @@
             if (geo.results && geo.results.length) {
                 lugar = geo.results[0];
             } else if (cidade.includes(' ')) {
-                // segunda tentativa só com o primeiro nome (ex.: "salvador ba" → "salvador")
                 const geo2 = await httpGetJSON(
                     `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cidade.split(' ')[0])}&count=1&language=pt&format=json`
                 );
@@ -667,14 +648,12 @@
             };
         }
 
-        // Extrai a cidade de frases como "qual o clima em cachoeira"
         function extrairCidade(transcript) {
             if (!/\b(clima|tempo|previs[ãa]o|chove|chover|chovendo|chuva)\b/i.test(transcript)) return null;
             const m = transcript.match(/\b(?:em|no|na|de|do|da)\s+([a-zà-ö]+(?:\s+[a-zà-ö]+)?)(?:\s+(?:hoje|amanh[ãa]|semana|pra semana|nesta semana))?\s*[.!?]*\s*$/i);
             return m ? m[1].trim() : null;
         }
 
-        // Corta o texto em fronteira de frase para a fala ficar natural
         function prepararParaFala(texto, max) {
             texto = texto.replace(/\s+/g, ' ').trim();
             if (texto.length <= max) return texto;
@@ -684,7 +663,6 @@
             return corte + '...';
         }
 
-        // Fluxo completo: anuncia → busca → responde (e salva no histórico)
         async function processarPesquisa(consulta) {
             if (isSearching) return;
             isSearching = true;
@@ -705,7 +683,6 @@
                 }
 
                 if (resultado) {
-                    // Modo Gênio = resposta mais longa (mais contexto)
                     const tamanho = isGenioActive ? 700 : 400;
                     salvarPesquisa({
                         pergunta: consulta,
@@ -725,6 +702,100 @@
 
             isSearching = false;
             await falar(mensagemFinal);
+        }
+
+        // ==========================================
+        // NOVO: TIMER POR VOZ
+        // "me avise em 5 minutos" / "timer de 1 hora" / "cancelar timer"
+        // ==========================================
+        let timerId = null;
+        let timerEndsAt = 0;
+        let timerLabel = '';
+
+        function formatarTempo(seg) {
+            seg = Math.max(0, Math.ceil(seg));
+            const h = Math.floor(seg / 3600);
+            const m = Math.floor((seg % 3600) / 60);
+            const s = seg % 60;
+            const mm = String(m).padStart(2, '0');
+            const ss = String(s).padStart(2, '0');
+            return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
+        }
+
+        function atualizarHeaderTimer() {
+            const restante = (timerEndsAt - Date.now()) / 1000;
+            if (restante <= 0) {
+                clearInterval(timerId);
+                timerId = null;
+                timerEndsAt = 0;
+                appHeader.textContent = 'Ultron';
+                tocarAlarme();
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    try { new Notification('Ultron', { body: `Timer de ${timerLabel} concluído, ${nomeUsuario}.` }); } catch(e) {}
+                }
+                responderComoUltron(`Tempo esgotado, ${nomeUsuario}. Seu timer de ${timerLabel} terminou.`);
+                return;
+            }
+            appHeader.textContent = `Ultron ⏰ ${formatarTempo(restante)}`;
+        }
+
+        function tocarAlarme() {
+            try {
+                const ctxA = audioContext || new (window.AudioContext || window.webkitAudioContext)();
+                [0, 0.35, 0.7].forEach((d, i) => {
+                    const o = ctxA.createOscillator();
+                    const g = ctxA.createGain();
+                    o.type = 'sine';
+                    o.frequency.value = i === 2 ? 1318.5 : 880;
+                    g.gain.setValueAtTime(0.0001, ctxA.currentTime + d);
+                    g.gain.exponentialRampToValueAtTime(0.3, ctxA.currentTime + d + 0.02);
+                    g.gain.exponentialRampToValueAtTime(0.0001, ctxA.currentTime + d + 0.3);
+                    o.connect(g); g.connect(ctxA.destination);
+                    o.start(ctxA.currentTime + d);
+                    o.stop(ctxA.currentTime + d + 0.35);
+                });
+            } catch(e) {}
+        }
+
+        function extrairTimer(transcript) {
+            if (!/(?:me avise|me lembre|lembre|avise|timer|cron[oó]metro|alarme|defina|definir|ative|crie|deixe um)/i.test(transcript)) return null;
+            if (/\bmeia hora\b/i.test(transcript)) return { totalSeg: 30 * 60, minutos: 30 };
+            const t2 = transcript
+                .replace(/\bzero\b/g, '0').replace(/\bum\b/g, '1').replace(/\bdois\b/g, '2').replace(/\btr[eê]s\b/g, '3')
+                .replace(/\bquatro\b/g, '4').replace(/\bcinco\b/g, '5').replace(/\bseis\b/g, '6').replace(/\bsete\b/g, '7')
+                .replace(/\boito\b/g, '8').replace(/\bnove\b/g, '9').replace(/\bdez\b/g, '10').replace(/\bquinze\b/g, '15')
+                .replace(/\btrinta\b/g, '30').replace(/\bcinq[ûu]enta\b/g, '50').replace(/\bsessenta\b/g, '60')
+                .replace(/\bnoventa\b/g, '90').replace(/\bcem\b/g, '100');
+            const numMatch = t2.match(/(\d+)\s*(?:minutos?|horas?)/);
+            if (!numMatch) return null;
+            let minutos = parseInt(numMatch[1], 10);
+            if (minMatchHora(numMatch[0])) minutos *= 60;
+            const totalSeg = minutos * 60;
+            if (totalSeg < 60 || totalSeg > 12 * 3600) return null;
+            return { totalSeg, minutos };
+        }
+        function minMatchHora(txt) { return /hora/i.test(txt); }
+
+        function iniciarTimer(totalSeg, minutos) {
+            if (timerId) clearInterval(timerId);
+            timerEndsAt = Date.now() + totalSeg * 1000;
+            timerLabel = minutos >= 60 ? `${Math.round(minutos / 60)} ${minutos / 60 === 1 ? 'hora' : 'horas'}` : `${minutos} minutos`;
+            timerId = setInterval(atualizarHeaderTimer, 250);
+            if ('Notification' in window && Notification.permission === 'default') {
+                try { Notification.requestPermission(); } catch(e) {}
+            }
+        }
+
+        function cancelarTimer() {
+            if (timerId) {
+                clearInterval(timerId);
+                timerId = null;
+                timerEndsAt = 0;
+                timerLabel = '';
+                appHeader.textContent = 'Ultron';
+                return true;
+            }
+            return false;
         }
 
         // ==========================================
@@ -753,7 +824,6 @@
                     recognition.interimResults = false;
                     recognition.lang = 'pt-BR';
 
-                    // Controle de Estado para o Resgate de Sessão
                     recognition.onstart = () => {
                         isListening = true;
                         micBtn.style.display = 'none';
@@ -764,10 +834,16 @@
                         const transcript = lastResult[0].transcript.trim().toLowerCase();
                         if (!transcript) return;
 
-                        // NOVO: ignora falas capturadas durante uma busca em andamento
                         if (isSearching) return;
 
                         console.log("Comando detectado:", transcript);
+
+                        const desativarFaceMatch = transcript.match(/desativar modo (face|humano|rosto)|desligar modo (face|humano|rosto)|sair do modo (face|humano|rosto)|voltar a esfera|voltar à esfera|modo esfera|devolva a esfera|volta a ser (a|esfera)/i);
+                        const ativarFaceMatch = transcript.match(/ativar modo (face|humano|rosto)|liga[r]? modo (face|humano|rosto)|modo (face human|face|humano|rosto)|transforme[- ]se em (um )?(rosto|face|humano|ser humano)|ativa (o rosto|a face|o modo face)/i);
+
+                        const cancelarTimerMatch = transcript.match(/cancelar (o )?(timer|alarme|cron[oó]metro)|pare (o )?(timer|alarme)|desligue (o )?(timer|alarme)/i);
+                        const statusTimerMatch = transcript.match(/quanto (tempo )?falta no? (timer|alarme)|tempo restante no? (timer|alarme)|situa[çc][ãa]o do timer/i);
+                        const timerInfo = extrairTimer(transcript);
 
                         const desativarGenioMatch = transcript.match(/desativar modo gênio|desligar modo gênio|desativar modo genio|desligar modo genio|desativa o modo gênio|desliga o gênio|sair do modo gênio|voltar ao normal/i);
                         const ativarGenioMatch = transcript.match(/ativar modo gênio|ativar modo genio|ligar modo gênio/i) || (transcript.includes('modo gênio') && !transcript.includes('desativar') && !transcript.includes('desligar') && !transcript.includes('sair'));
@@ -790,12 +866,51 @@
                         const mathMatch = mathTranscript.match(mathRegex);
 
                         // ROTEAMENTO
-                        if (desativarGenioMatch) {
+                        if (cancelarTimerMatch) {
+                            if (cancelarTimer()) {
+                                responderComoUltron(`Timer cancelado, ${nomeUsuario}.`);
+                            } else {
+                                responderComoUltron(`Não há nenhum timer ativo, ${nomeUsuario}.`);
+                            }
+                        }
+                        else if (statusTimerMatch) {
+                            if (timerId) {
+                                const restante = (timerEndsAt - Date.now()) / 1000;
+                                const m = Math.floor(restante / 60);
+                                const s = Math.ceil(restante % 60);
+                                responderComoUltron(`Faltam ${m} minutos e ${s} segundos no seu timer, ${nomeUsuario}.`);
+                            } else {
+                                responderComoUltron(`Não há nenhum timer ativo, ${nomeUsuario}.`);
+                            }
+                        }
+                        else if (timerInfo) {
+                            iniciarTimer(timerInfo.totalSeg, timerInfo.minutos);
+                            responderComoUltron(`Timer definido, ${nomeUsuario}: ${timerLabel}. O contador está no painel superior.`);
+                        }
+                        else if (desativarFaceMatch) {
+                            if (!isFaceActive) {
+                                responderComoUltron(`Já estou na forma de nebulosa, ${nomeUsuario}.`);
+                            } else {
+                                isFaceActive = false;
+                                localStorage.setItem('utron.face', 'off');
+                                responderComoUltron(`Revertendo à forma estelar, ${nomeUsuario}.`);
+                            }
+                        }
+                        else if (ativarFaceMatch) {
+                            if (isFaceActive) {
+                                responderComoUltron(`O modo face human já está ativo, ${nomeUsuario}.`);
+                            } else {
+                                isFaceActive = true;
+                                localStorage.setItem('utron.face', 'on');
+                                responderComoUltron(`Ativando modo face human. A nebulosa está se condensando... observe, ${nomeUsuario}.`);
+                            }
+                        }
+                        else if (desativarGenioMatch) {
                             if (!isGenioActive) {
                                 responderComoUltron("O modo gênio já está desligado.");
                             } else {
                                 isGenioActive = false; 
-                                localStorage.setItem('utron.mode', 'normal'); // Salva na memória
+                                localStorage.setItem('utron.mode', 'normal');
                                 responderComoUltron("Desativando modo gênio. Retornando aos parâmetros normais.", () => {
                                     corBaseAlvo.copy(corBaseNormal);
                                     corAtivaAlvo.copy(corAtivaNormal);
@@ -807,7 +922,7 @@
                                 responderComoUltron(`O modo gênio já está ligado, ${nomeUsuario}.`);
                             } else {
                                 isGenioActive = true; 
-                                localStorage.setItem('utron.mode', 'genio'); // Salva na memória
+                                localStorage.setItem('utron.mode', 'genio');
                                 responderComoUltron("Ativando modo gênio.", () => {
                                     corBaseAlvo.copy(corBaseGenio);
                                     corAtivaAlvo.copy(corAtivaGenio);
@@ -844,7 +959,7 @@
                             responderComoUltron(`Entendido. A partir de agora, o chamarei de ${nomeUsuario}.`);
                         }
                         else if (transcript.includes('capacidade máxima') || transcript.includes('capacidade maxima')) {
-                            responderComoUltron(`${nomeUsuario}, minha rede neural agora está conectada à internet aberta. Posso consultar a Wikipédia, responder perguntas gerais e verificar o clima em qualquer cidade — tudo sem depender de serviços pagos.`);
+                            responderComoUltron(`${nomeUsuario}, meus sistemas atuais: nebulosa estelar com modo face human, internet aberta para pesquisa, clima, tarefas, timers de voz e memória persistente — tudo rodando no seu dispositivo, sem dependências pagas.`);
                         }
                         else if (transcript.includes('horas') || transcript.includes('hora')) {
                             const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -878,8 +993,6 @@
                         else if (transcript.includes('ultron') || transcript.includes('outro') || transcript.includes('olá') || transcript.includes('ola')) {
                             responderComoUltron(`Olá, ${nomeUsuario}. O que deseja hoje? Todos os sistemas estão operacionais.`);
                         } 
-                        // NOVO: qualquer coisa que não casar com um comando conhecido
-                        // agora vai para a BUSCA NA INTERNET (Wikipédia → DuckDuckGo)
                         else {
                             await processarPesquisa(transcript);
                         }
@@ -891,7 +1004,6 @@
                             try { 
                                 recognition.start(); 
                             } catch(e) {
-                                // Se der erro ao reiniciar (ex: aba em 2º plano no Safari), força mostrar o botão
                                 micBtn.style.display = 'flex';
                             }
                         }
@@ -899,7 +1011,6 @@
                     
                     recognition.onerror = (event) => {
                         console.warn("Erro de escuta:", event.error);
-                        // Restaura o botão na interface caso falhe a permissão ou rede
                         micBtn.style.display = 'flex';
                     };
 
@@ -913,8 +1024,6 @@
             }
         });
 
-        // --- SISTEMA DE RESGATE DE SESSÃO (APP EM SEGUNDO PLANO) ---
-        // Se você minimizar o Safari e voltar, ele tenta recuperar a audição ou devolver o botão
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
                 if (recognition && !isListening && !isUltronSpeaking && !isSearching) {
@@ -941,7 +1050,7 @@
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
         document.body.appendChild(renderer.domElement);
 
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -952,118 +1061,424 @@
         controls.maxDistance = 20; 
 
         // ==========================================
-        // GEOMETRIA E PARTICULAS
+        // NEBULOSA + FACE HUMAN (sistema de partículas)
         // ==========================================
-        const radius = 2.2;
-        const detail = 18; 
-        const geometry = new THREE.IcosahedronGeometry(radius, detail);
+        // Textura procedural: sprite circular suave (fumaça estelar)
+        function criarTexturaSuave() {
+            const c = document.createElement('canvas');
+            c.width = c.height = 64;
+            const ctx = c.getContext('2d');
+            const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+            g.addColorStop(0, 'rgba(255,255,255,1)');
+            g.addColorStop(0.35, 'rgba(255,255,255,0.55)');
+            g.addColorStop(0.7, 'rgba(255,255,255,0.12)');
+            g.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = g;
+            ctx.fillRect(0, 0, 64, 64);
+            return new THREE.CanvasTexture(c);
+        }
+        const softTex = criarTexturaSuave();
 
-        const positionAttribute = geometry.attributes.position;
-        const vertexCount = positionAttribute.count;
-        
-        const originalPositions = new Float32Array(vertexCount * 3);
-        const randomOffsets = new Float32Array(vertexCount);
-        const randomScales = new Float32Array(vertexCount); 
-        const baseRandomness = new Float32Array(vertexCount); 
-        const colors = new Float32Array(vertexCount * 3);
-        const tempColor = new THREE.Color();
+        // ---- NÚCLEO MORFÁVEL: a nebulosa que vira rosto ----
+        const N = 3200;
+        const positions = new Float32Array(N * 3);
+        const colors = new Float32Array(N * 3);
+        const origX = new Float32Array(N), origY = new Float32Array(N), origZ = new Float32Array(N);
+        const baseR = new Float32Array(N);
+        const seeds = new Float32Array(N);
+        const delays = new Float32Array(N);
+        const faceTX = new Float32Array(N), faceTY = new Float32Array(N), faceTZ = new Float32Array(N);
+        const nebCR = new Float32Array(N), nebCG = new Float32Array(N), nebCB = new Float32Array(N);
+        const faceCR = new Float32Array(N), faceCG = new Float32Array(N), faceCB = new Float32Array(N);
+        const parts = new Uint8Array(N); // 0 contorno | 1 olho | 2 nariz | 3 boca | 4 preenchimento
+        const eyeCY = new Float32Array(N);
 
-        for (let i = 0; i < vertexCount; i++) {
-            const x = positionAttribute.getX(i);
-            const y = positionAttribute.getY(i);
-            const z = positionAttribute.getZ(i);
-            
-            originalPositions[i * 3] = x;
-            originalPositions[i * 3 + 1] = y;
-            originalPositions[i * 3 + 2] = z;
+        // Paleta de nebulosa: roxo, magenta, azul, ciano, rosa, azul profundo
+        const palette = [
+            [0.54, 0.17, 0.89],
+            [0.85, 0.27, 0.94],
+            [0.22, 0.74, 0.97],
+            [0.13, 0.83, 0.93],
+            [0.96, 0.45, 0.71],
+            [0.23, 0.26, 0.72]
+        ];
 
-            randomOffsets[i] = Math.random() * Math.PI * 2;
-            randomScales[i] = 0.5 + Math.random() * 2.0; 
-            baseRandomness[i] = Math.random() * 0.3; 
-
-            colors[i * 3] = corBaseAtual.r;
-            colors[i * 3 + 1] = corBaseAtual.g;
-            colors[i * 3 + 2] = corBaseAtual.b;
+        // Contorno paramétrico da máscara (face de 3/4, estilo máscara grega/sleek)
+        const _fo = { x: 0, y: 0, z: 0 };
+        function faceOutline(t) {
+            const x0 = Math.cos(t), y0 = Math.sin(t);
+            let x = 1.0 * x0;
+            let y = 1.35 * y0;
+            if (y0 < 0) {
+                const jaw = Math.pow(-y0, 1.3);
+                x *= (1 - 0.52 * jaw);   // mandíbula afunila
+                y *= (1 - 0.10 * jaw);   // queixo arredondado
+            } else {
+                x *= 1 + 0.06 * y0;      // têmporas levemente largas
+            }
+            const z = 0.34 * (1 - (y / 1.35) * (y / 1.35)) * 0.9;
+            _fo.x = x; _fo.y = y; _fo.z = z;
+            return _fo;
         }
 
-        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        
-        const material = new THREE.PointsMaterial({
-            size: 0.025, 
-            vertexColors: true,
-            blending: THREE.NormalBlending, 
-            transparent: true,
-            opacity: 0.85, 
-            depthWrite: false
-        });
+        for (let i = 0; i < N; i++) {
+            const i3 = i * 3;
 
-        const points = new THREE.Points(geometry, material);
+            // ---- posição nebulosa: direção aleatória + raio com jitter ----
+            let dx, dy, dz;
+            do {
+                dx = Math.random() * 2 - 1;
+                dy = Math.random() * 2 - 1;
+                dz = Math.random() * 2 - 1;
+                const l2 = dx * dx + dy * dy + dz * dz;
+                if (l2 < 0.05 || l2 > 1) { dx = NaN; } else {
+                    const l = Math.sqrt(l2);
+                    dx /= l; dy /= l; dz /= l;
+                }
+            } while (isNaN(dx));
+            const r = 2.2 * (0.75 + Math.random() * 0.55);
+            origX[i] = dx * r; origY[i] = dy * r; origZ[i] = dz * r;
+            baseR[i] = r;
+            seeds[i] = Math.random();
+            delays[i] = Math.random() * 0.35; // atraso individual → transição "em fluxo"
+
+            // ---- cor nebulosa (paleta + brilho individual) ----
+            const pc = palette[Math.floor(Math.random() * palette.length)];
+            const bright = 0.7 + Math.random() * 0.5;
+            nebCR[i] = pc[0] * bright;
+            nebCG[i] = pc[1] * bright;
+            nebCB[i] = pc[2] * bright;
+
+            // ---- alvo da face (o que cada partícula vira no modo face) ----
+            const roll = Math.random();
+            if (roll < 0.45) {
+                // CONTORNO da máscara
+                parts[i] = 0;
+                const t = Math.random() * Math.PI * 2;
+                const f = faceOutline(t);
+                faceTX[i] = f.x; faceTY[i] = f.y; faceTZ[i] = f.z;
+                faceCR[i] = 0.62; faceCG[i] = 0.42; faceCB[i] = 1.0;
+            } else if (roll < 0.58) {
+                // OLHOS (duas fendas amêndoa brilhantes)
+                parts[i] = 1;
+                const side = Math.random() < 0.5 ? -1 : 1;
+                const a = Math.random() * Math.PI * 2;
+                const ex = Math.cos(a) * 0.30, ey = Math.sin(a) * 0.10;
+                const tilt = 0.14 * side;
+                const xr = ex * Math.cos(tilt) - ey * Math.sin(tilt);
+                const yr = ex * Math.sin(tilt) + ey * Math.cos(tilt);
+                faceTX[i] = side * 0.44 + xr;
+                faceTY[i] = 0.38 + yr;
+                faceTZ[i] = 0.34;
+                eyeCY[i] = 0.38;
+                faceCR[i] = 0.30; faceCG[i] = 0.95; faceCB[i] = 1.0;
+            } else if (roll < 0.65) {
+                // NARIZ (ponte + base)
+                parts[i] = 2;
+                let ny = 0.30 - Math.random() * 0.40;
+                let nx = (Math.random() - 0.5) * 0.05;
+                if (ny < -0.02) {
+                    nx = (Math.random() < 0.5 ? -1 : 1) * (0.03 + Math.random() * 0.07);
+                    ny = -0.08 - Math.random() * 0.08;
+                }
+                faceTX[i] = nx; faceTY[i] = ny; faceTZ[i] = 0.36;
+                faceCR[i] = 0.55; faceCG[i] = 0.45; faceCB[i] = 0.95;
+            } else if (roll < 0.74) {
+                // BOCA (arco sutil, leve sorriso)
+                parts[i] = 3;
+                const u = (Math.random() * 2 - 1) * 0.32;
+                faceTX[i] = u;
+                faceTY[i] = -0.62 + 0.035 * (1 - (u / 0.32) * (u / 0.32)) + (Math.random() - 0.5) * 0.02;
+                faceTZ[i] = 0.33;
+                faceCR[i] = 0.70; faceCG[i] = 0.50; faceCB[i] = 1.0;
+            } else {
+                // PREENCHIMENTO interno (máscara translúcida, bem apagado)
+                parts[i] = 4;
+                const t = Math.random() * Math.PI * 2;
+                const s = Math.pow(Math.random(), 0.65);
+                const f = faceOutline(t);
+                faceTX[i] = f.x * s;
+                faceTY[i] = f.y * s * 0.92;
+                faceTZ[i] = f.z * s * 0.55 + 0.05;
+                faceCR[i] = 0.21; faceCG[i] = 0.15; faceCB[i] = 0.37;
+            }
+        }
+
+        const mainGeometry = new THREE.BufferGeometry();
+        mainGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        mainGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+        const mainMaterial = new THREE.PointsMaterial({
+            size: 0.055,
+            map: softTex,
+            vertexColors: true,
+            blending: THREE.AdditiveBlending,
+            transparent: true,
+            opacity: 0.95,
+            depthWrite: false,
+            sizeAttenuation: true
+        });
+        const points = new THREE.Points(mainGeometry, mainMaterial);
         scene.add(points);
+
+        // ---- HALO EXTERNO (camada de poeira difusa) ----
+        const H = 700;
+        const haloPos = new Float32Array(H * 3);
+        const haloCol = new Float32Array(H * 3);
+        const haloPalette = [[0.45, 0.20, 0.90], [0.25, 0.50, 0.95], [0.70, 0.30, 0.85]];
+        for (let i = 0; i < H; i++) {
+            let dx = Math.random() * 2 - 1, dy = Math.random() * 2 - 1, dz = Math.random() * 2 - 1;
+            const l = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
+            dx /= l; dy /= l; dz /= l;
+            const r = 2.7 + Math.random() * 0.9;
+            haloPos[i * 3] = dx * r; haloPos[i * 3 + 1] = dy * r; haloPos[i * 3 + 2] = dz * r;
+            const pc = haloPalette[Math.floor(Math.random() * haloPalette.length)];
+            const b = 0.5 + Math.random() * 0.5;
+            haloCol[i * 3] = pc[0] * b; haloCol[i * 3 + 1] = pc[1] * b; haloCol[i * 3 + 2] = pc[2] * b;
+        }
+        const haloGeometry = new THREE.BufferGeometry();
+        haloGeometry.setAttribute('position', new THREE.BufferAttribute(haloPos, 3));
+        haloGeometry.setAttribute('color', new THREE.BufferAttribute(haloCol, 3));
+        const haloMaterial = new THREE.PointsMaterial({
+            size: 0.11, map: softTex, vertexColors: true,
+            blending: THREE.AdditiveBlending, transparent: true, opacity: 0.30, depthWrite: false
+        });
+        const halo = new THREE.Points(haloGeometry, haloMaterial);
+        scene.add(halo);
+
+        // ---- NÚCLEO GASOSO (centro brilhante) ----
+        const C = 420;
+        const corePos = new Float32Array(C * 3);
+        const coreCol = new Float32Array(C * 3);
+        function gauss() { let u = 0, v = 0; while (u === 0) u = Math.random(); while (v === 0) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+        for (let i = 0; i < C; i++) {
+            corePos[i * 3] = gauss() * 0.7;
+            corePos[i * 3 + 1] = gauss() * 0.7;
+            corePos[i * 3 + 2] = gauss() * 0.7;
+            const b = 0.6 + Math.random() * 0.6;
+            coreCol[i * 3] = 0.5 * b; coreCol[i * 3 + 1] = 0.7 * b; coreCol[i * 3 + 2] = 1.0 * b;
+        }
+        const coreGeometry = new THREE.BufferGeometry();
+        coreGeometry.setAttribute('position', new THREE.BufferAttribute(corePos, 3));
+        coreGeometry.setAttribute('color', new THREE.BufferAttribute(coreCol, 3));
+        const coreMaterial = new THREE.PointsMaterial({
+            size: 0.08, map: softTex, vertexColors: true,
+            blending: THREE.AdditiveBlending, transparent: true, opacity: 0.5, depthWrite: false
+        });
+        const core = new THREE.Points(coreGeometry, coreMaterial);
+        scene.add(core);
+
+        // ---- ESTRELAS DE FUNDO ----
+        const S = 550;
+        const starPos = new Float32Array(S * 3);
+        const starCol = new Float32Array(S * 3);
+        for (let i = 0; i < S; i++) {
+            let dx = Math.random() * 2 - 1, dy = Math.random() * 2 - 1, dz = Math.random() * 2 - 1;
+            const l = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
+            const r = 13 + Math.random() * 7;
+            starPos[i * 3] = dx / l * r; starPos[i * 3 + 1] = dy / l * r; starPos[i * 3 + 2] = dz / l * r;
+            const b = 0.5 + Math.random() * 0.5;
+            starCol[i * 3] = 0.8 * b; starCol[i * 3 + 1] = 0.85 * b; starCol[i * 3 + 2] = 1.0 * b;
+        }
+        const starGeometry = new THREE.BufferGeometry();
+        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+        starGeometry.setAttribute('color', new THREE.BufferAttribute(starCol, 3));
+        const starMaterial = new THREE.PointsMaterial({
+            size: 0.035, vertexColors: true, transparent: true, opacity: 0.55, depthWrite: false
+        });
+        const stars = new THREE.Points(starGeometry, starMaterial);
+        scene.add(stars);
+
+        // ---- GLOW CENTRAL (sprite de luz) ----
+        const glowMaterial = new THREE.SpriteMaterial({
+            map: softTex, color: 0x8a2be2, transparent: true, opacity: 0.25,
+            blending: THREE.AdditiveBlending, depthWrite: false
+        });
+        const glow = new THREE.Sprite(glowMaterial);
+        glow.scale.set(5.5, 5.5, 1);
+        scene.add(glow);
+        const whiteColor = new THREE.Color(1, 1, 1);
 
         // ==========================================
         // LOOP DE RENDERIZAÇÃO E ANIMAÇÃO
         // ==========================================
         const clock = new THREE.Clock();
+        let morph = isFaceActive ? 1 : 0;      // 0 = nebulosa, 1 = face
+        let genioBlend = isGenioActive ? 1 : 0;
+        let nebAngleY = 0, nebAngleX = 0;
+        let prevFaceBlend = isFaceActive ? 1 : 0;
+
+        function wrapAngle(a) {
+            while (a > Math.PI) a -= 2 * Math.PI;
+            while (a < -Math.PI) a += 2 * Math.PI;
+            return a;
+        }
 
         function animate() {
             requestAnimationFrame(animate);
 
-            const elapsedTime = clock.getElapsedTime();
-            controls.update(); 
+            const dt = Math.min(0.05, clock.getDelta());
+            const time = clock.elapsedTime;
 
-            // Interpolação suave para troca de cor
+            // Easing global
+            const morphTarget = isFaceActive ? 1 : 0;
+            morph += (morphTarget - morph) * 0.028;
+            if (Math.abs(morphTarget - morph) < 0.001) morph = morphTarget;
+            genioBlend += ((isGenioActive ? 1 : 0) - genioBlend) * 0.04;
+            const faceBlend = morph * morph * (3 - 2 * morph);
+
+            // Interpolação suave das cores de referência (header)
             corBaseAtual.lerp(corBaseAlvo, 0.03);
             corAtivaAtual.lerp(corAtivaAlvo, 0.03);
-
-            // Sincroniza dinamicamente o brilho (Glow) do Header com a cor exata da esfera
             const cAtivaCSS = `rgb(${Math.round(corAtivaAtual.r * 255)}, ${Math.round(corAtivaAtual.g * 255)}, ${Math.round(corAtivaAtual.b * 255)})`;
             appHeader.style.textShadow = `0 0 12px ${cAtivaCSS}`;
             appHeader.style.borderBottomColor = cAtivaCSS;
 
-            points.rotation.y = elapsedTime * 0.12;
-            points.rotation.x = elapsedTime * 0.08;
-
+            // ---- Volume da voz (simulado a partir do estado de fala) ----
             if (isUltronSpeaking) {
-                currentVolume = (Math.sin(elapsedTime * 20) * 0.5 + 0.5) * (Math.random() * 0.6 + 0.4) * 0.7;
+                currentVolume = (Math.sin(time * 20) * 0.5 + 0.5) * (Math.random() * 0.6 + 0.4) * 0.7;
             } else {
                 currentVolume = 0;
             }
-
             smoothedVolume += (currentVolume - smoothedVolume) * 0.15;
-            let activeVolume = Math.min(1.0, smoothedVolume * 2.5); 
+            const activeVolume = Math.min(1.0, smoothedVolume * 2.5);
 
-            const positions = points.geometry.attributes.position;
-            const colorAttribute = points.geometry.attributes.color; 
-            const normalVector = new THREE.Vector3();
-            
-            for (let i = 0; i < vertexCount; i++) {
-                const ox = originalPositions[i * 3];
-                const oy = originalPositions[i * 3 + 1];
-                const oz = originalPositions[i * 3 + 2];
-
-                normalVector.set(ox, oy, oz).normalize();
-                
-                const noise = Math.sin(elapsedTime * 2.5 + randomOffsets[i] + ox * 1.5) * 0.5 + 0.5;
-                
-                const baseDeformation = (0.08 + baseRandomness[i]) * noise;
-                const activeDeformation = activeVolume * 0.45 * noise * randomScales[i]; 
-                const totalDeformation = baseDeformation + activeDeformation;
-                
-                positions.setXYZ(
-                    i, 
-                    ox + normalVector.x * totalDeformation,
-                    oy + normalVector.y * totalDeformation,
-                    oz + normalVector.z * totalDeformation
-                );
-
-                const colorLerpFactor = Math.min(1.0, activeDeformation * 2.5); 
-                tempColor.copy(corBaseAtual).lerp(corAtivaAtual, colorLerpFactor);
-                
-                colorAttribute.setXYZ(i, tempColor.r, tempColor.g, tempColor.b);
+            // ---- Rotação: nebulosa gira livremente; face alinha ao eixo e "respira" ----
+            const inFace = faceBlend >= 0.5;
+            if (!inFace) {
+                if (prevFaceBlend >= 0.5) { nebAngleY = points.rotation.y; nebAngleX = points.rotation.x; }
+                nebAngleY += dt * 0.12;
+                nebAngleX += dt * 0.08;
+                points.rotation.y = nebAngleY;
+                points.rotation.x = nebAngleX;
+            } else {
+                points.rotation.y += wrapAngle(points.rotation.y) * -0.06;
+                points.rotation.x += points.rotation.x * -0.06;
+                points.rotation.y += Math.sin(time * 0.25) * 0.0012;
+                points.rotation.x += Math.sin(time * 0.17) * 0.0009;
             }
-            
-            positions.needsUpdate = true;
-            colorAttribute.needsUpdate = true; 
+            prevFaceBlend = faceBlend;
+
+            // ---- Piscada (olhos, só quando a face está formada) ----
+            let blinkScale = 1;
+            const cyc = time % 4.5;
+            if (cyc < 0.22 && faceBlend > 0.7) {
+                blinkScale = 1 - Math.sin(Math.PI * cyc / 0.22) * 0.92;
+            }
+
+            // ---- Camadas decorativas ----
+            halo.rotation.y = time * 0.03;
+            halo.rotation.z = time * 0.012;
+            haloMaterial.opacity = 0.30 * (1 - faceBlend * 0.85);
+            coreMaterial.opacity = 0.5 * (0.55 + 0.45 * Math.sin(time * 1.3)) * (1 - faceBlend * 0.92);
+            core.rotation.y = -time * 0.05;
+            stars.rotation.y = time * 0.004;
+            glowMaterial.opacity = (0.16 + activeVolume * 0.4) * (1 - faceBlend * 0.85);
+            glowMaterial.color.copy(corAtivaAtual).lerp(whiteColor, 0.4);
+
+            // ---- Atualização por partícula (nebulosa ⇄ face) ----
+            const posAttr = mainGeometry.attributes.position;
+            const colAttr = mainGeometry.attributes.color;
+            const nebAmp = 1 - 0.85 * faceBlend; // a nebulosa "condensa" na transformação
+
+            // Cor dos olhos por frame (ciano → verde no modo gênio)
+            const eyeR = 0.30;
+            const eyeG = 0.95 + 0.05 * genioBlend;
+            const eyeB = 1.0 - 0.70 * genioBlend;
+
+            for (let i = 0; i < N; i++) {
+                const i3 = i * 3;
+                const s1 = seeds[i];
+                const ox = origX[i], oy = origY[i], oz = origZ[i];
+
+                // --- posição nebulosa: ruído radial + rotação orgânica ---
+                const n1 = Math.sin(time * 0.40 + s1 * 6.283 + ox * 2.0);
+                const n2 = Math.cos(time * 0.31 + s1 * 4.17 + oy * 2.5);
+                const n3 = Math.sin(time * 0.52 + s1 * 5.31 + oz * 3.0);
+                const radial = (n1 * 0.35 + n2 * 0.25 + n3 * 0.20) * nebAmp;
+                // onda de pulso propagando para fora enquanto ele fala
+                const pulse = activeVolume * 0.40 * (1 - faceBlend) * (0.5 + 0.5 * Math.sin(time * 8 - baseR[i] * 3.0 + s1 * 3.0));
+
+                const swirlA = time * (0.05 + s1 * 0.12);
+                const cosS = Math.cos(swirlA), sinS = Math.sin(swirlA);
+                let nx = ox * cosS - oz * sinS;
+                let nz = ox * sinS + oz * cosS;
+                const ny = oy;
+                const len = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+                const r = baseR[i] + radial + pulse;
+                let px = nx / len * r;
+                let py = ny / len * r;
+                let pz = nz / len * r;
+
+                // --- morph para a face (com atraso individual = transição em fluxo) ---
+                let pLocal = morph * 1.4 - delays[i];
+                if (pLocal < 0) pLocal = 0;
+                else if (pLocal > 1) pLocal = 1;
+                const e = pLocal * pLocal * (3 - 2 * pLocal);
+
+                if (e > 0) {
+                    const fx = faceTX[i], fy = faceTY[i], fz = faceTZ[i];
+                    px += (fx - px) * e;
+                    py += (fy - py) * e;
+                    pz += (fz - pz) * e;
+
+                    // espiral de convergência durante a transição
+                    const sw = (1 - e) * (s1 - 0.5) * 1.6;
+                    const cs = Math.cos(sw), sn = Math.sin(sw);
+                    const rx = px * cs - pz * sn;
+                    pz = px * sn + pz * cs;
+                    px = rx;
+
+                    // micro-jitter de "vida" na face
+                    const jit = Math.sin(time * 1.6 + s1 * 9.0) * 0.008 * e;
+                    px += jit;
+                    py += jit * 0.7;
+                    pz += jit;
+
+                    // piscada dos olhos
+                    if (parts[i] === 1) {
+                        py = eyeCY[i] + (py - eyeCY[i]) * blinkScale;
+                    }
+                    // boca se movimenta quando ele fala
+                    if (parts[i] === 3 && activeVolume > 0.02) {
+                        py += Math.sin(time * 11 + s1 * 12) * 0.018 * activeVolume;
+                    }
+                }
+
+                posAttr.setXYZ(i, px, py, pz);
+
+                // --- cor ---
+                const pulseC = 0.72 + 0.28 * Math.sin(time * 0.6 + s1 * 6.283);
+                let cr = nebCR[i] * pulseC;
+                let cg = nebCG[i] * pulseC;
+                let cb = nebCB[i] * pulseC;
+
+                const en = activeVolume * (1 - faceBlend);
+                cr += en * 0.25; cg += en * 0.40; cb += en * 0.50;
+
+                if (e > 0) {
+                    let fcr = faceCR[i], fcg = faceCG[i], fcb = faceCB[i];
+                    if (parts[i] === 1) {
+                        // olhos brilham com a voz
+                        const og = 0.85 + activeVolume * 0.6;
+                        fcr = eyeR * og; fcg = eyeG * og; fcb = eyeB * og;
+                    } else if (parts[i] === 3) {
+                        const mg = 1 + activeVolume * 0.4;
+                        fcr *= mg; fcg *= mg; fcb *= mg;
+                    } else if (parts[i] === 4) {
+                        const fl = 0.7 + 0.3 * Math.sin(time * 2 + s1 * 20);
+                        fcr *= fl; fcg *= fl; fcb *= fl;
+                    }
+                    cr += (fcr - cr) * e;
+                    cg += (fcg - cg) * e;
+                    cb += (fcb - cb) * e;
+                }
+
+                colAttr.setXYZ(i, cr, cg, cb);
+            }
+
+            posAttr.needsUpdate = true;
+            colAttr.needsUpdate = true;
 
             renderer.render(scene, camera);
         }
