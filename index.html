@@ -11,19 +11,12 @@
             background-color: #05020a;
             font-family: sans-serif;
         }
-        canvas {
-            display: block;
-        }
-        
-        /* ==========================================
-           HEADER PREMIUM (Glassmorphism e Glow Sutil)
-           ========================================== */
+        canvas { display: block; }
+
         #app-header {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 60px;
+            top: 0; left: 0;
+            width: 100%; height: 60px;
             z-index: 10;
             display: flex;
             justify-content: center;
@@ -33,27 +26,25 @@
             font-weight: 800;
             letter-spacing: 4px;
             text-transform: uppercase;
-            background: rgba(5, 2, 12, 0.6); 
+            background: rgba(5, 2, 12, 0.6);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             transition: text-shadow 0.2s, border-color 0.2s;
         }
 
-        /* BOTÃO DO MICROFONE */
         #mic-btn {
             position: absolute;
-            bottom: 40px; 
+            bottom: 40px;
             left: 50%;
-            transform: translateX(-50%); 
+            transform: translateX(-50%);
             background-color: #8a2be2;
             color: #ffffff;
             border: none;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%; 
+            width: 60px; height: 60px;
+            border-radius: 50%;
             cursor: pointer;
-            font-size: 24px; 
+            font-size: 24px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -61,20 +52,17 @@
             transition: background-color 0.3s, transform 0.2s;
             box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
         }
-        #mic-btn:active {
-            transform: translateX(-50%) scale(0.9); 
-        }
+        #mic-btn:active { transform: translateX(-50%) scale(0.9); }
 
-        /* ONDAS SONORAS */
         #waveform {
             position: absolute;
-            bottom: 120px; 
+            bottom: 120px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             align-items: center;
             gap: 5px;
-            opacity: 0; 
+            opacity: 0;
             transition: opacity 0.3s ease;
             z-index: 5;
         }
@@ -95,18 +83,13 @@
             100% { transform: scaleY(1.2); }
         }
 
-        /* ==========================================
-           MENU LATERAL E TAREFAS
-           ========================================== */
         #menu-btn {
             position: absolute;
-            top: 10px; 
-            left: 15px;
+            top: 10px; left: 15px;
             background: rgba(255, 255, 255, 0.05);
             color: #ffffff;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            width: 40px;
-            height: 40px;
+            width: 40px; height: 40px;
             border-radius: 8px;
             cursor: pointer;
             font-size: 22px;
@@ -116,16 +99,12 @@
             align-items: center;
             transition: background 0.3s;
         }
-        #menu-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
+        #menu-btn:hover { background: rgba(255, 255, 255, 0.15); }
 
         #side-menu {
             position: absolute;
-            top: 0;
-            left: -320px;
-            width: 300px;
-            height: 100vh;
+            top: 0; left: -320px;
+            width: 300px; height: 100vh;
             background: rgba(10, 5, 20, 0.95);
             backdrop-filter: blur(15px);
             border-right: 2px solid rgba(138, 43, 226, 0.3);
@@ -136,10 +115,8 @@
             box-sizing: border-box;
             box-shadow: 10px 0 30px rgba(0,0,0,0.5);
         }
-        #side-menu.open {
-            left: 0;
-        }
-        
+        #side-menu.open { left: 0; }
+
         .menu-header {
             display: flex;
             justify-content: space-between;
@@ -149,10 +126,7 @@
             border-bottom: 2px solid rgba(255,255,255,0.1);
             padding-bottom: 15px;
         }
-        .menu-header h2 {
-            margin: 0;
-            font-size: 20px;
-        }
+        .menu-header h2 { margin: 0; font-size: 20px; }
         #close-btn {
             background: none;
             border: none;
@@ -163,11 +137,7 @@
         }
         #close-btn:hover { color: white; }
 
-        #main-nav {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+        #main-nav { list-style: none; padding: 0; margin: 0; }
         .nav-item {
             background: rgba(255, 255, 255, 0.05);
             padding: 15px;
@@ -181,13 +151,9 @@
             align-items: center;
             gap: 10px;
         }
-        .nav-item:hover {
-            background: rgba(138, 43, 226, 0.3);
-        }
+        .nav-item:hover { background: rgba(138, 43, 226, 0.3); }
 
-        #tasks-panel {
-            display: none; 
-        }
+        #tasks-panel { display: none; }
         #back-nav-btn {
             background: rgba(255,255,255,0.1);
             border: none;
@@ -205,8 +171,7 @@
 
         #task-list {
             list-style: none;
-            padding: 0;
-            margin: 0;
+            padding: 0; margin: 0;
             max-height: calc(100vh - 180px);
             overflow-y: auto;
         }
@@ -225,12 +190,7 @@
             to { opacity: 1; transform: translateX(0); }
         }
 
-        /* ==========================================
-           PAINEL DE BUSCAS RECENTES (Internet)
-           ========================================== */
-        #pesquisas-panel {
-            display: none;
-        }
+        #pesquisas-panel { display: none; }
         .panel-back-btn {
             background: rgba(255,255,255,0.1);
             border: none;
@@ -248,8 +208,7 @@
 
         #pesquisa-list {
             list-style: none;
-            padding: 0;
-            margin: 0;
+            padding: 0; margin: 0;
             max-height: calc(100vh - 180px);
             overflow-y: auto;
         }
@@ -264,15 +223,8 @@
             animation: fadeIn 0.3s ease;
             cursor: pointer;
         }
-        #pesquisa-list .q {
-            font-weight: bold;
-            color: #ffffff;
-        }
-        #pesquisa-list .meta {
-            color: rgba(255,255,255,0.5);
-            font-size: 12px;
-            margin-top: 4px;
-        }
+        #pesquisa-list .q { font-weight: bold; color: #ffffff; }
+        #pesquisa-list .meta { color: rgba(255,255,255,0.5); font-size: 12px; margin-top: 4px; }
         #pesquisa-list .sub {
             display: block;
             color: #7fd4ff;
@@ -285,9 +237,8 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
-    
-    <header id="app-header">Ultron</header>
 
+    <header id="app-header">Ultron</header>
     <button id="menu-btn" aria-label="Abrir Menu">☰</button>
 
     <div id="side-menu">
@@ -295,7 +246,7 @@
             <h2>Menu</h2>
             <button id="close-btn" aria-label="Fechar Menu">✖</button>
         </div>
-        
+
         <ul id="main-nav">
             <li class="nav-item" id="nav-tarefas-btn">📝 Tarefas Diárias</li>
             <li class="nav-item" id="nav-pesquisas-btn">🌐 Buscas Recentes</li>
@@ -313,18 +264,29 @@
     </div>
 
     <div id="waveform">
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
     </div>
 
     <button id="mic-btn" aria-label="Ativar IA">🎤</button>
 
     <script>
+        // ============================================================
+        // 📚 EDITE AQUI SUA BASE DE CONHECIMENTO LOCAL
+        // Adicione linhas no formato:
+        //   { chave: ["palavra ou frase", "outra variação"], resposta: "o que o Ultron vai falar" }
+        // Ele responde ANTES de ir na internet sempre que você usar
+        // uma das palavras-chave (comparação ignora acentos).
+        // ============================================================
+        const BASE_CONHECIMENTO = [
+            { chave: ["senha do wifi", "senha wifi", "wifi"],  resposta: "A senha do wifi é: EDITE_AQUI." },
+            { chave: ["meu email", "meu e-mail", "meu mail"],  resposta: "Seu e-mail é: EDITE_AQUI." },
+            { chave: ["meu endereco", "onde eu moro", "endereço"], resposta: "Seu endereço é: EDITE_AQUI." },
+            { chave: ["meu numero", "meu telefone", "telefone"], resposta: "Seu número é: EDITE_AQUI." }
+        ];
+        // ============================================================
+
         // ==========================================
-        // UI DO MENU E TAREFAS
+        // UI DO MENU E PAINÉIS
         // ==========================================
         const menuBtn = document.getElementById('menu-btn');
         const sideMenu = document.getElementById('side-menu');
@@ -343,8 +305,9 @@
         const pesquisasPanel = document.getElementById('pesquisas-panel');
         const pesquisaListEl = document.getElementById('pesquisa-list');
 
-        let tarefas = JSON.parse(localStorage.getItem('utron.tasks.v1')) || []; 
+        let tarefas = JSON.parse(localStorage.getItem('utron.tasks.v1')) || [];
         let pesquisas = JSON.parse(localStorage.getItem('utron.pesquisas.v1')) || [];
+        let fatos = JSON.parse(localStorage.getItem('utron.fatos.v1')) || [];
 
         function openSideMenu() {
             sideMenu.classList.add('open');
@@ -352,13 +315,11 @@
             tasksPanel.style.display = 'none';
             pesquisasPanel.style.display = 'none';
         }
-
         function openTasksPanel() {
             mainNav.style.display = 'none';
             tasksPanel.style.display = 'block';
             pesquisasPanel.style.display = 'none';
         }
-
         function openPesquisasPanel() {
             mainNav.style.display = 'none';
             tasksPanel.style.display = 'none';
@@ -367,18 +328,10 @@
 
         menuBtn.addEventListener('click', openSideMenu);
         closeBtn.addEventListener('click', () => sideMenu.classList.remove('open'));
-        
         navTarefasBtn.addEventListener('click', openTasksPanel);
-        backNavBtn.addEventListener('click', () => {
-            tasksPanel.style.display = 'none';
-            mainNav.style.display = 'block';
-        });
-
+        backNavBtn.addEventListener('click', () => { tasksPanel.style.display = 'none'; mainNav.style.display = 'block'; });
         navPesquisasBtn.addEventListener('click', openPesquisasPanel);
-        backPesquisasBtn.addEventListener('click', () => {
-            pesquisasPanel.style.display = 'none';
-            mainNav.style.display = 'block';
-        });
+        backPesquisasBtn.addEventListener('click', () => { pesquisasPanel.style.display = 'none'; mainNav.style.display = 'block'; });
 
         function atualizarListaTarefas() {
             taskListEl.innerHTML = '';
@@ -393,12 +346,12 @@
             }
             localStorage.setItem('utron.tasks.v1', JSON.stringify(tarefas));
         }
-        atualizarListaTarefas(); 
+        atualizarListaTarefas();
 
         function atualizarListaPesquisas() {
             pesquisaListEl.innerHTML = '';
             if (pesquisas.length === 0) {
-                pesquisaListEl.innerHTML = '<li style="border-left-color: gray; color: gray; cursor: default;">Nenhuma busca registrada ainda. Pergunte qualquer coisa para mim.</li>';
+                pesquisaListEl.innerHTML = '<li style="border-left-color: gray; color: gray; cursor: default;">Nenhuma busca registrada ainda. Diga "pesquisa sobre tal coisa".</li>';
                 return;
             }
             pesquisas.forEach((p) => {
@@ -416,10 +369,7 @@
                         let sub = document.createElement('span');
                         sub.className = 'sub';
                         sub.textContent = '↳ ' + l.titulo;
-                        sub.addEventListener('click', (ev) => {
-                            ev.stopPropagation();
-                            window.open(l.url, '_blank');
-                        });
+                        sub.addEventListener('click', (ev) => { ev.stopPropagation(); window.open(l.url, '_blank'); });
                         li.appendChild(sub);
                     });
                 }
@@ -444,98 +394,130 @@
         }
 
         // ==========================================
-        // VARIÁVEIS GLOBAIS DE ESTADO
+        // ESTADO GLOBAL
         // ==========================================
         let audioContext;
         let analyser;
         let dataArray;
         let currentVolume = 0;
         let smoothedVolume = 0;
-        
+
         let recognition = null;
-        let isUltronSpeaking = false; 
-        let currentUtterance = null; 
+        let isUltronSpeaking = false;
+        let currentUtterance = null;
+        let currentUtteranceText = '';
         let isListening = false;
         let isSearching = false;
+        let searchToken = 0;
 
         let nomeUsuario = localStorage.getItem('utron.name') || "senhor";
-        let isGenioActive = localStorage.getItem('utron.mode') === 'genio'; 
-        let isFaceActive = localStorage.getItem('utron.face') === 'on'; // NOVO: Modo Face Human
+        let isGenioActive = localStorage.getItem('utron.mode') === 'genio';
+        let isFaceActive = localStorage.getItem('utron.face') === 'on';
 
-        const corBaseNormal = new THREE.Color(0x8a2be2); 
-        const corAtivaNormal = new THREE.Color(0xff0000); 
-        const corBaseGenio = new THREE.Color(0x004d00); 
-        const corAtivaGenio = new THREE.Color(0x33ff33); 
+        // MEMÓRIA DE CONVERSA (contexto: o que foi dito antes)
+        let memoria = { ultimoTopico: '', ultimoResumo: '', ultimoComando: '', ultimoTs: 0 };
+
+        const corBaseNormal = new THREE.Color(0x8a2be2);
+        const corAtivaNormal = new THREE.Color(0xff0000);
+        const corBaseGenio = new THREE.Color(0x004d00);
+        const corAtivaGenio = new THREE.Color(0x33ff33);
 
         const corBaseAlvo = new THREE.Color(isGenioActive ? 0x004d00 : 0x8a2be2);
         const corAtivaAlvo = new THREE.Color(isGenioActive ? 0x33ff33 : 0xff0000);
         const corBaseAtual = new THREE.Color(isGenioActive ? 0x004d00 : 0x8a2be2);
         const corAtivaAtual = new THREE.Color(isGenioActive ? 0x33ff33 : 0xff0000);
 
-        window.speechSynthesis.onvoiceschanged = () => {
-            window.speechSynthesis.getVoices();
-        };
+        window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+
+        function registrarComando(transcript) {
+            memoria.ultimoComando = transcript;
+            memoria.ultimoTs = Date.now();
+        }
 
         // ==========================================
-        // FUNÇÃO DE FALA ROBUSTA
+        // FALA + BARGE-IN (ele te interrompe? não: você interrompe ELE)
+        // O microfone NUNCA é desligado durante a fala — se você falar,
+        // ele corta a si próprio e te escuta (com filtro anti-auto-escuta).
         // ==========================================
         function responderComoUltron(fraseDaVez, onEndCallback = null) {
             if (isUltronSpeaking) return;
-            
+
             isUltronSpeaking = true;
-            if (recognition) {
-                try { recognition.stop(); } catch(e) {}
-            }
-            
+            currentUtteranceText = fraseDaVez.toLowerCase();
+
             waveform.style.opacity = '1';
-            window.speechSynthesis.cancel(); 
+            window.speechSynthesis.cancel();
 
             currentUtterance = new SpeechSynthesisUtterance(fraseDaVez);
             currentUtterance.lang = 'pt-BR';
-            currentUtterance.pitch = 0.2; 
-            currentUtterance.rate = 0.85; 
-            currentUtterance.volume = 1.0; 
+            currentUtterance.pitch = 0.2;
+            currentUtterance.rate = 0.85;
+            currentUtterance.volume = 1.0;
 
             const vozes = window.speechSynthesis.getVoices();
-            const vozMasculinaOuPremium = vozes.find(voz => 
-                (voz.lang.includes('pt-BR') || voz.lang.includes('pt-PT')) && 
+            const vozMasculinaOuPremium = vozes.find(voz =>
+                (voz.lang.includes('pt-BR') || voz.lang.includes('pt-PT')) &&
                 (voz.name.includes('Premium') || voz.name.includes('Daniel') || voz.name.includes('Thiago') || voz.name.includes('Google'))
-            ) || vozes.find(voz => voz.lang.includes('pt')); 
+            ) || vozes.find(voz => voz.lang.includes('pt'));
 
             if (vozMasculinaOuPremium) {
                 currentUtterance.voice = vozMasculinaOuPremium;
             }
 
             const finalizarFala = () => {
-                isUltronSpeaking = false;
-                waveform.style.opacity = '0'; 
-                if (typeof onEndCallback === 'function') {
-                    onEndCallback();
-                } else if (recognition) {
-                    try { recognition.start(); } catch(e) { micBtn.style.display = 'flex'; } 
+                if (currentUtterance && currentUtterance.onend !== finalizarFala) {
+                    // fala cancelada por barge-in: o controle já mudou de mão
+                    if (isUltronSpeaking) {
+                        isUltronSpeaking = false;
+                        currentUtteranceText = '';
+                        waveform.style.opacity = '0';
+                        if (typeof onEndCallback === 'function') onEndCallback();
+                    }
+                    return;
                 }
+                isUltronSpeaking = false;
+                currentUtteranceText = '';
+                waveform.style.opacity = '0';
+                if (typeof onEndCallback === 'function') onEndCallback();
             };
 
             currentUtterance.onend = finalizarFala;
-            currentUtterance.onerror = finalizarFala;
+            currentUtterance.onerror = (ev) => {
+                // 'interrupted'/'canceled' virá do barge-in; trata como fim normal
+                finalizarFala();
+            };
 
             window.speechSynthesis.speak(currentUtterance);
+        }
+
+        function interromperFala() {
+            if (!isUltronSpeaking) return;
+            searchToken++; // aborta qualquer fluxo de busca em andamento
+            isSearching = false;
+            isUltronSpeaking = false;
+            currentUtteranceText = '';
+            waveform.style.opacity = '0';
+            try { window.speechSynthesis.cancel(); } catch(e) {}
+        }
+
+        function parecerAutoEscuta(transcript) {
+            if (!currentUtteranceText) return false;
+            const palavrasNovas = transcript.split(/\s+/).filter(w => w.length > 3);
+            if (palavrasNovas.length === 0) return false;
+            const palavrasUltron = new Set(currentUtteranceText.split(/\s+/).filter(w => w.length > 3));
+            const emComum = palavrasNovas.filter(w => palavrasUltron.has(w));
+            return emComum.length / palavrasNovas.length > 0.5;
         }
 
         function falar(frase) {
             return new Promise((resolve) => {
                 if (isUltronSpeaking) { resolve(); return; }
-                responderComoUltron(frase, () => {
-                    resolve();
-                    if (recognition && !isSearching) {
-                        try { recognition.start(); } catch(e) { micBtn.style.display = 'flex'; }
-                    }
-                });
+                responderComoUltron(frase, () => resolve());
             });
         }
 
         // ==========================================
-        // MÓDULO DE INTERNET (fontes abertas, sem chave, sem custo)
+        // MÓDULO DE INTERNET (fontes abertas, sem chave)
         // ==========================================
         async function httpGetJSON(url, timeoutMs = 6000) {
             const ctrl = new AbortController();
@@ -565,7 +547,7 @@
                 );
                 const paginas = (ext.query && ext.query.pages) ? Object.values(ext.query.pages) : [];
                 extResumo = (paginas[0] && paginas[0].extract) || '';
-            } catch (e) { /* segue com o snippet */ }
+            } catch (e) {}
 
             const resumo = (extResumo || primeiro.snippet || '').replace(/<[^>]*>/g, '');
             return {
@@ -663,10 +645,30 @@
             return corte + '...';
         }
 
-        async function processarPesquisa(consulta) {
+        // Busca SÓ com gatilho explícito ("pesquisa", "busca", "acha", "procura"...)
+        const TRIGGERS_BUSCA = /pesquis|busc|achar?\b|procur|na internet|na web|no google|me informa|informa sobre|me fala sobre|me diz sobre/i;
+
+        function temGatilhoBusca(transcript) {
+            return TRIGGERS_BUSCA.test(transcript);
+        }
+
+        function limparConsulta(transcript) {
+            let q = transcript
+                .replace(/^(ultron|ei|eai)\s*,?\s*/i, '')
+                .replace(/^(por favor|pra mim)\s*/i, '')
+                .replace(/^(me\s+)?(pesquise|pesquisar|pesquisa|busque|buscar|busca|acha|achar|procura|procure|procurar)\s+(na\s+internet|na\s+web|no\s+google|na\s+wikip[ée]dia|lá|la)\s*/i, '')
+                .replace(/^(me\s+)?(pesquise|pesquisar|pesquisa|busque|buscar|busca|acha|achar|procura|procure|procurar)\s*/i, '')
+                .replace(/^(sobre|de|me fala|me diz|qual é|quem é|o que é)\s+/i, '')
+                .trim();
+            return q.length >= 3 ? q : transcript;
+        }
+
+        async function processarPesquisa(consulta, prefixoResposta = '') {
             if (isSearching) return;
             isSearching = true;
+            const token = ++searchToken;
             await falar(`Consultando a rede, ${nomeUsuario}.`);
+            if (token !== searchToken) return; // foi interrompido
 
             let mensagemFinal;
             try {
@@ -674,39 +676,77 @@
                 const cidade = extrairCidade(consulta);
                 if (cidade) {
                     try { resultado = await buscarClima(cidade); } catch (e) { resultado = null; }
+                    if (token !== searchToken) return;
                 }
                 if (!resultado) {
                     try { resultado = await buscarWikipedia(consulta); } catch (e) { resultado = null; }
+                    if (token !== searchToken) return;
                 }
                 if (!resultado) {
                     try { resultado = await buscarDuckDuckGo(consulta); } catch (e) { resultado = null; }
+                    if (token !== searchToken) return;
                 }
 
                 if (resultado) {
                     const tamanho = isGenioActive ? 700 : 400;
-                    salvarPesquisa({
-                        pergunta: consulta,
-                        fonte: resultado.fonte,
-                        titulo: resultado.titulo,
-                        url: resultado.url,
-                        lista: resultado.lista
-                    });
-                    mensagemFinal = `Encontrei, ${nomeUsuario}. ${resultado.fonte}: ${resultado.titulo}. ${prepararParaFala(resultado.resumo, tamanho)}`;
+                    memoria.ultimoTopico = consulta;
+                    memoria.ultimoResumo = prepararParaFala(resultado.resumo, 400);
+                    salvarPesquisa({ pergunta: consulta, fonte: resultado.fonte, titulo: resultado.titulo, url: resultado.url, lista: resultado.lista });
+                    const inicio = prefixoResposta ? prefixoResposta + ' ' : 'Encontrei, ' + nomeUsuario + '. ';
+                    mensagemFinal = `${inicio}${resultado.fonte}: ${resultado.titulo}. ${prepararParaFala(resultado.resumo, tamanho)}`;
                 } else {
-                    mensagemFinal = `Procurei em toda a rede, ${nomeUsuario}, mas não encontrei nada sobre isso. Pode tentar reformular?`;
+                    mensagemFinal = `Procurei em toda a rede, ${nomeUsuario}, mas não encontrei nada sobre isso. Pode tentar com outras palavras?`;
                 }
             } catch (e) {
                 console.warn('Falha na busca:', e);
                 mensagemFinal = `Houve falha na conexão com a rede, ${nomeUsuario}. Verifique sua internet, por favor.`;
             }
 
+            if (token !== searchToken) return;
             isSearching = false;
             await falar(mensagemFinal);
         }
 
         // ==========================================
-        // NOVO: TIMER POR VOZ
-        // "me avise em 5 minutos" / "timer de 1 hora" / "cancelar timer"
+        // 📚 BASE DE CONHECIMENTO LOCAL + FATOS POR VOZ
+        // ==========================================
+        function normalizar(s) {
+            return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
+
+        function consultarBase(transcript) {
+            const t = normalizar(transcript);
+            for (const item of BASE_CONHECIMENTO) {
+                for (const chave of item.chave) {
+                    if (t.includes(normalizar(chave))) return item.resposta;
+                }
+            }
+            return null;
+        }
+
+        const PALAVRAS_PARA = new Set([
+            'que','meu','minha','meus','minhas','o','a','os','as','de','da','do','das','dos','em','no','na','nos','nas',
+            'é','e','com','para','pra','tem','ter','está','esta','este','foi','se','um','uma','ao','pela','pelo','mas',
+            'mais','quando','onde','qual','quais','me','eu','voc','você','voce','ja','ainda','tambem','so','sobre','depois','antes'
+        ]);
+
+        function palavrasSignificativas(s) {
+            return normalizar(s).split(/[^a-z0-9]+/).filter(w => w.length > 3 && !PALAVRAS_PARA.has(w));
+        }
+
+        function consultarFatos(transcript) {
+            const pt = palavrasSignificativas(transcript);
+            if (pt.length < 2) return null;
+            for (const f of fatos) {
+                const fw = new Set(palavrasSignificativas(f.frase));
+                const comuns = pt.filter(w => fw.has(w));
+                if (comuns.length >= 2) return f.frase;
+            }
+            return null;
+        }
+
+        // ==========================================
+        // ⏰ TIMERS RELATIVOS + ALARMES DE HORA ESPECÍFICA
         // ==========================================
         let timerId = null;
         let timerEndsAt = 0;
@@ -731,9 +771,9 @@
                 appHeader.textContent = 'Ultron';
                 tocarAlarme();
                 if ('Notification' in window && Notification.permission === 'granted') {
-                    try { new Notification('Ultron', { body: `Timer de ${timerLabel} concluído, ${nomeUsuario}.` }); } catch(e) {}
+                    try { new Notification('Ultron', { body: `${timerLabel} concluído, ${nomeUsuario}.` }); } catch(e) {}
                 }
-                responderComoUltron(`Tempo esgotado, ${nomeUsuario}. Seu timer de ${timerLabel} terminou.`);
+                responderComoUltron(`Tempo esgotado, ${nomeUsuario}. ${timerLabel} terminou.`);
                 return;
             }
             appHeader.textContent = `Ultron ⏰ ${formatarTempo(restante)}`;
@@ -757,6 +797,45 @@
             } catch(e) {}
         }
 
+        function extrairAlarme(transcript) {
+            // "me acorda às 7" / "alarme das 7 da manhã" / "me avise às 14:30"
+            if (!/(?:acorda|acorde|avise|alarme|toque|lembre)/i.test(transcript)) return null;
+            if (/meia[- ]noite/i.test(transcript)) {
+                const alvo = montarHoraAlvo(0, 0);
+                if (alvo) return alvo;
+            }
+            if (/meio dia/i.test(transcript)) {
+                const alvo = montarHoraAlvo(12, 0);
+                if (alvo) return alvo;
+            }
+            const m = transcript.match(/(\d{1,2})(?::(\d{2}))?\s*(?:horas?|h)?\s*(da\s+(manh[ãa]|tarde|noite|madrugada))?/i);
+            if (!m) return null;
+            const idxNum = transcript.indexOf(m[0]);
+            const depois = transcript.slice(idxNum + m[0].length);
+            if (/^minutos?/i.test(depois)) return null; // é timer relativo, não alarme
+            let hora = parseInt(m[1], 10);
+            const min = m[2] ? parseInt(m[2], 10) : 0;
+            const periodo = m[3];
+            if (hora < 1 || hora > 23 || min > 59) return null;
+            if (periodo) {
+                if (periodo === 'tarde' && hora < 12) hora += 12;
+                if (periodo === 'noite' && hora < 19) hora += 12;
+                if (periodo === 'madrugada' && hora > 5) hora -= 12;
+            }
+            return montarHoraAlvo(hora, min);
+        }
+
+        function montarHoraAlvo(hora, min) {
+            const agora = new Date();
+            const alvo = new Date(agoro);
+            alvo.setHours(hora, min, 0, 0);
+            if (alvo <= agora) alvo.setDate(alvo.getDate() + 1);
+            return {
+                timestamp: alvo.getTime(),
+                label: `o alarme das ${String(hora).padStart(2, '0')}:${String(min).padStart(2, '0')}`
+            };
+        }
+
         function extrairTimer(transcript) {
             if (!/(?:me avise|me lembre|lembre|avise|timer|cron[oó]metro|alarme|defina|definir|ative|crie|deixe um)/i.test(transcript)) return null;
             if (/\bmeia hora\b/i.test(transcript)) return { totalSeg: 30 * 60, minutos: 30 };
@@ -769,17 +848,16 @@
             const numMatch = t2.match(/(\d+)\s*(?:minutos?|horas?)/);
             if (!numMatch) return null;
             let minutos = parseInt(numMatch[1], 10);
-            if (minMatchHora(numMatch[0])) minutos *= 60;
+            if (/hora/i.test(numMatch[0])) minutos *= 60;
             const totalSeg = minutos * 60;
             if (totalSeg < 60 || totalSeg > 12 * 3600) return null;
             return { totalSeg, minutos };
         }
-        function minMatchHora(txt) { return /hora/i.test(txt); }
 
-        function iniciarTimer(totalSeg, minutos) {
+        function ativarTimer(endTs, label) {
             if (timerId) clearInterval(timerId);
-            timerEndsAt = Date.now() + totalSeg * 1000;
-            timerLabel = minutos >= 60 ? `${Math.round(minutos / 60)} ${minutos / 60 === 1 ? 'hora' : 'horas'}` : `${minutos} minutos`;
+            timerEndsAt = endTs;
+            timerLabel = label;
             timerId = setInterval(atualizarHeaderTimer, 250);
             if ('Notification' in window && Notification.permission === 'default') {
                 try { Notification.requestPermission(); } catch(e) {}
@@ -787,15 +865,36 @@
         }
 
         function cancelarTimer() {
-            if (timerId) {
-                clearInterval(timerId);
-                timerId = null;
-                timerEndsAt = 0;
-                timerLabel = '';
-                appHeader.textContent = 'Ultron';
-                return true;
+            if (!timerId) return false;
+            clearInterval(timerId);
+            timerId = null;
+            timerEndsAt = 0;
+            timerLabel = '';
+            appHeader.textContent = 'Ultron';
+            return true;
+        }
+
+        // ==========================================
+        // 🧠 CONTEXTO: seguir a conversa e orientar soluções
+        // ==========================================
+        function detectarContexto(transcript) {
+            if (!memoria.ultimoTopico || (Date.now() - memoria.ultimoTs > 10 * 60 * 1000)) return null;
+            const problema = /(nao funciona|nao esta funcionando|nao esta funcio|errou|deu errado|quebrou|travou|falhou|nao entendi|nada a ver|esta errado|nao gostei|errado|nao resolveu)/i.test(transcript);
+            const questao = /^(e |ent[ãa]o |ai |a[íi] |da[íi] |dai |como |o que |qual |quais |por que |porque |quando |onde |quanto |e como |e qual |isso |daquilo |e ai)/i.test(transcript) && transcript.split(/\s+/).length <= 10;
+            if (!problema && !questao) return null;
+            if (problema) {
+                return {
+                    tipo: 'problema',
+                    consulta: memoria.ultimoTopico + ' solucao problemas como resolver',
+                    prefixo: `Sobre ${memoria.ultimoTopico}, somando com o problema que você relatou, a melhor saída que encontrei:`
+                };
             }
-            return false;
+            const limpa = transcript.replace(/^(e |ent[ãa]o |ai |a[íi] |da[íi] |dai |e como |e o que |e qual |como |o que |qual |quais |por que |porque |quando |onde |quanto |isso |daquilo )+/i, '').trim();
+            return {
+                tipo: 'questao',
+                consulta: (limpa.length >= 3 ? memoria.ultimoTopico + ' ' + limpa : memoria.ultimoTopico),
+                prefixo: `Combinando o que conversamos sobre ${memoria.ultimoTopico} com a sua pergunta:`
+            };
         }
 
         // ==========================================
@@ -807,20 +906,20 @@
                 window.speechSynthesis.speak(unlockSpeech);
 
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                
+
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 analyser = audioContext.createAnalyser();
-                analyser.fftSize = 256; 
-                
+                analyser.fftSize = 256;
+
                 const source = audioContext.createMediaStreamSource(stream);
                 source.connect(analyser);
-                
+
                 dataArray = new Uint8Array(analyser.frequencyBinCount);
 
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 if (SpeechRecognition) {
                     recognition = new SpeechRecognition();
-                    recognition.continuous = true; 
+                    recognition.continuous = true;
                     recognition.interimResults = false;
                     recognition.lang = 'pt-BR';
 
@@ -834,66 +933,82 @@
                         const transcript = lastResult[0].transcript.trim().toLowerCase();
                         if (!transcript) return;
 
+                        // ---- BARGE-IN: você falou durante a fala dele ----
+                        if (isUltronSpeaking) {
+                            const conf = lastResult[0].confidence;
+                            if (conf !== undefined && conf < 0.5) return; // ruído / voz fraca
+                            if (parecerAutoEscuta(transcript)) return;    // ele ouviu a si mesmo
+                            interromperFala();                            // você tem a palavra
+                        }
+
                         if (isSearching) return;
 
                         console.log("Comando detectado:", transcript);
+                        registrarComando(transcript);
 
-                        const desativarFaceMatch = transcript.match(/desativar modo (face|humano|rosto)|desligar modo (face|humano|rosto)|sair do modo (face|humano|rosto)|voltar a esfera|voltar à esfera|modo esfera|devolva a esfera|volta a ser (a|esfera)/i);
-                        const ativarFaceMatch = transcript.match(/ativar modo (face|humano|rosto)|liga[r]? modo (face|humano|rosto)|modo (face human|face|humano|rosto)|transforme[- ]se em (um )?(rosto|face|humano|ser humano)|ativa (o rosto|a face|o modo face)/i);
-
+                        // ---- INTENTS DUROS ----
                         const cancelarTimerMatch = transcript.match(/cancelar (o )?(timer|alarme|cron[oó]metro)|pare (o )?(timer|alarme)|desligue (o )?(timer|alarme)/i);
                         const statusTimerMatch = transcript.match(/quanto (tempo )?falta no? (timer|alarme)|tempo restante no? (timer|alarme)|situa[çc][ãa]o do timer/i);
+                        const alarmeInfo = extrairAlarme(transcript);
                         const timerInfo = extrairTimer(transcript);
 
-                        const desativarGenioMatch = transcript.match(/desativar modo gênio|desligar modo gênio|desativar modo genio|desligar modo genio|desativa o modo gênio|desliga o gênio|sair do modo gênio|voltar ao normal/i);
-                        const ativarGenioMatch = transcript.match(/ativar modo gênio|ativar modo genio|ligar modo gênio/i) || (transcript.includes('modo gênio') && !transcript.includes('desativar') && !transcript.includes('desligar') && !transcript.includes('sair'));
+                        // Face Human — variações amplas (STT pode entregar "face humana", "face human", "modo face"...)
+                        const desativarFaceMatch = transcript.match(/desativar modo (face|humano|rosto)|desligar modo (face|humano|rosto)|sair do modo (face|humano|rosto)|voltar a esfera|voltar à esfera|modo esfera|devolva a esfera|volta a ser (a|esfera)|desativa (o |a )?(rosto|face)/i);
+                        const ativarFaceMatch = transcript.match(/face ?huma?na?|modo (face|humano|rosto)|ativar (o |a )?(rosto|face|humano)|ativa (o |a )?(rosto|face|humano)|liga (o |a )?(rosto|face)|transforme[- ]se (em|para|pra) (um )?(rosto|face|humano|ser humano)|modo rosto/i);
+
+                        const desativarGenioMatch = transcript.match(/desativar modo g[eê]nio|desligar modo g[eê]nio|desativa o modo g[eê]nio|desliga o g[eê]nio|sair do modo g[eê]nio|voltar ao normal/i);
+                        const ativarGenioMatch = transcript.match(/ativar modo g[eê]nio|liga[r]? modo g[eê]nio/i) || (transcript.includes('modo gênio') && !transcript.includes('desativar') && !transcript.includes('desligar') && !transcript.includes('sair'));
+
+                        const salvarFatoMatch = transcript.match(/(?:salve na mem[óo]ria|salvar na mem[óo]ria|guarde que|aprenda que|memorize que|memorize)\s+(.+)/i);
+                        const limparMemoriaMatch = transcript.match(/apague (minha|sua) mem[óo]ria|limpe a mem[óo]ria|esvazie a mem[óo]ria/i);
+                        const repetirMatch = transcript.match(/repete|diga de novo|o que (voce|você) disse/i);
 
                         const registroRegex = /(?:registrar|salvar|anotar|registre|anote|salve)(?:\s+(?:nova tarefa|tarefa|compromissos?|que|um compromisso|uma tarefa))?\s+(.+)/i;
                         const registroMatch = transcript.match(registroRegex);
 
-                        const leituraTarefasRegex = /quais (?:são as )?tarefas|o que tenho para fazer|o que há para hoje|ler tarefas|meus compromissos/i;
+                        const leituraTarefasRegex = /quais (?:s[ãa]o as )?tarefas|o que tenho para fazer|o que h[áa] para hoje|ler tarefas|meus compromissos/i;
                         const leituraMatch = transcript.match(leituraTarefasRegex);
 
                         const nomeRegex = /(?:meu nome [ée]|me chamo)\s+([a-zàáâãéèêíïóôõöúçñ]+)/i;
                         const nomeMatch = transcript.match(nomeRegex);
 
                         let mathTranscript = transcript
-                            .replace(/\bzero\b/g, '0').replace(/\bum\b/g, '1').replace(/\bdois\b/g, '2').replace(/\btrês\b/g, '3')
+                            .replace(/\bzero\b/g, '0').replace(/\bum\b/g, '1').replace(/\bdois\b/g, '2').replace(/\btr[eê]s\b/g, '3')
                             .replace(/\bquatro\b/g, '4').replace(/\bcinco\b/g, '5').replace(/\bseis\b/g, '6').replace(/\bsete\b/g, '7')
                             .replace(/\boito\b/g, '8').replace(/\bnove\b/g, '9').replace(/\bdez\b/g, '10');
-                            
+
                         const mathRegex = /(\d+(?:[.,]\d+)?)\s*(mais|somada? a?|\+|menos|-|vezes|\*|x|multiplicado(?: por)?|dividido(?: por| para| pra)?|\/)\s*(\d+(?:[.,]\d+)?)/i;
                         const mathMatch = mathTranscript.match(mathRegex);
 
                         // ROTEAMENTO
                         if (cancelarTimerMatch) {
-                            if (cancelarTimer()) {
-                                responderComoUltron(`Timer cancelado, ${nomeUsuario}.`);
-                            } else {
-                                responderComoUltron(`Não há nenhum timer ativo, ${nomeUsuario}.`);
-                            }
+                            responderComoUltron(cancelarTimer() ? `Timer cancelado, ${nomeUsuario}.` : `Não há nenhum timer ativo, ${nomeUsuario}.`);
                         }
                         else if (statusTimerMatch) {
                             if (timerId) {
                                 const restante = (timerEndsAt - Date.now()) / 1000;
                                 const m = Math.floor(restante / 60);
                                 const s = Math.ceil(restante % 60);
-                                responderComoUltron(`Faltam ${m} minutos e ${s} segundos no seu timer, ${nomeUsuario}.`);
+                                responderComoUltron(`Faltam ${m} minutos e ${s} segundos. ${timerLabel}, ${nomeUsuario}.`);
                             } else {
                                 responderComoUltron(`Não há nenhum timer ativo, ${nomeUsuario}.`);
                             }
                         }
+                        else if (alarmeInfo) {
+                            ativarTimer(alarmeInfo.timestamp, `seu ${alarmeInfo.label}`);
+                            responderComoUltron(`Alarme definido, ${nomeUsuario}: ${alarmeInfo.label}. O contador está no painel superior.`);
+                        }
                         else if (timerInfo) {
-                            iniciarTimer(timerInfo.totalSeg, timerInfo.minutos);
-                            responderComoUltron(`Timer definido, ${nomeUsuario}: ${timerLabel}. O contador está no painel superior.`);
+                            ativarTimer(Date.now() + timerInfo.totalSeg * 1000, `o timer de ${timerInfo.minutos >= 60 ? Math.round(timerInfo.minutos / 60) + (timerInfo.minutos / 60 === 1 ? ' hora' : ' horas') : timerInfo.minutos + ' minutos'}`);
+                            responderComoUltron(`Timer definido, ${nomeUsuario}: ${timerInfo.minutos} minutos. O contador está no painel superior.`);
                         }
                         else if (desativarFaceMatch) {
                             if (!isFaceActive) {
-                                responderComoUltron(`Já estou na forma de nebulosa, ${nomeUsuario}.`);
+                                responderComoUltron(`Já estou na forma de esfera, ${nomeUsuario}.`);
                             } else {
                                 isFaceActive = false;
                                 localStorage.setItem('utron.face', 'off');
-                                responderComoUltron(`Revertendo à forma estelar, ${nomeUsuario}.`);
+                                responderComoUltron(`Revertendo à forma de esfera, ${nomeUsuario}.`);
                             }
                         }
                         else if (ativarFaceMatch) {
@@ -902,14 +1017,14 @@
                             } else {
                                 isFaceActive = true;
                                 localStorage.setItem('utron.face', 'on');
-                                responderComoUltron(`Ativando modo face human. A nebulosa está se condensando... observe, ${nomeUsuario}.`);
+                                responderComoUltron(`Ativando modo face human. Observe a transformação, ${nomeUsuario}.`);
                             }
                         }
                         else if (desativarGenioMatch) {
                             if (!isGenioActive) {
                                 responderComoUltron("O modo gênio já está desligado.");
                             } else {
-                                isGenioActive = false; 
+                                isGenioActive = false;
                                 localStorage.setItem('utron.mode', 'normal');
                                 responderComoUltron("Desativando modo gênio. Retornando aos parâmetros normais.", () => {
                                     corBaseAlvo.copy(corBaseNormal);
@@ -921,29 +1036,41 @@
                             if (isGenioActive) {
                                 responderComoUltron(`O modo gênio já está ligado, ${nomeUsuario}.`);
                             } else {
-                                isGenioActive = true; 
+                                isGenioActive = true;
                                 localStorage.setItem('utron.mode', 'genio');
                                 responderComoUltron("Ativando modo gênio.", () => {
                                     corBaseAlvo.copy(corBaseGenio);
                                     corAtivaAlvo.copy(corAtivaGenio);
-                                    setTimeout(() => { responderComoUltron("Modo gênio ativado."); }, 1200); 
+                                    setTimeout(() => { responderComoUltron("Modo gênio ativado."); }, 1200);
                                 });
                             }
+                        }
+                        else if (salvarFatoMatch) {
+                            const frase = salvarFatoMatch[1].trim().replace(/[.?!]+$/, '');
+                            fatos.push({ frase, data: new Date().toLocaleString('pt-BR') });
+                            fatos = fatos.slice(0, 30);
+                            localStorage.setItem('utron.fatos.v1', JSON.stringify(fatos));
+                            responderComoUltron(`Memorizado, ${nomeUsuario}. Eu disse: ${frase}.`);
+                        }
+                        else if (limparMemoriaMatch) {
+                            fatos = [];
+                            localStorage.setItem('utron.fatos.v1', JSON.stringify(fatos));
+                            responderComoUltron(`Memória de fatos apagada, ${nomeUsuario}.`);
+                        }
+                        else if (repetirMatch) {
+                            responderComoUltron(memoria.ultimoResumo ? `Última informação: ${memoria.ultimoResumo}` : `Não há nada anterior para repetir, ${nomeUsuario}.`);
                         }
                         else if (registroMatch) {
                             let novaTarefa = registroMatch[1].trim();
                             novaTarefa = novaTarefa.charAt(0).toUpperCase() + novaTarefa.slice(1);
-                            
-                            tarefas.push(novaTarefa); 
-                            atualizarListaTarefas();  
-                            
-                            sideMenu.classList.add('open'); 
-                            openTasksPanel(); 
-                            
+                            tarefas.push(novaTarefa);
+                            atualizarListaTarefas();
+                            sideMenu.classList.add('open');
+                            openTasksPanel();
                             responderComoUltron(`Anotado, ${nomeUsuario}. Registrei a seguinte tarefa: ${novaTarefa}.`);
                         }
                         else if (leituraMatch) {
-                            sideMenu.classList.add('open'); 
+                            sideMenu.classList.add('open');
                             openTasksPanel();
                             if (tarefas.length === 0) {
                                 responderComoUltron(`${nomeUsuario}, você não tem nenhuma tarefa ou compromisso registrado para hoje.`);
@@ -955,11 +1082,11 @@
                         }
                         else if (nomeMatch) {
                             nomeUsuario = nomeMatch[1].charAt(0).toUpperCase() + nomeMatch[1].slice(1);
-                            localStorage.setItem('utron.name', nomeUsuario); 
+                            localStorage.setItem('utron.name', nomeUsuario);
                             responderComoUltron(`Entendido. A partir de agora, o chamarei de ${nomeUsuario}.`);
                         }
                         else if (transcript.includes('capacidade máxima') || transcript.includes('capacidade maxima')) {
-                            responderComoUltron(`${nomeUsuario}, meus sistemas atuais: nebulosa estelar com modo face human, internet aberta para pesquisa, clima, tarefas, timers de voz e memória persistente — tudo rodando no seu dispositivo, sem dependências pagas.`);
+                            responderComoUltron(`${nomeUsuario}, meus sistemas atuais: esfera com efeitos de plasma e modo face human, internet aberta para pesquisa sob comando, alarmes de hora, timers, tarefas, memória local de fatos e interrupção de voz. Tudo rodando no seu dispositivo.`);
                         }
                         else if (transcript.includes('horas') || transcript.includes('hora')) {
                             const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -971,18 +1098,18 @@
                             let operador = mathMatch[2].toLowerCase();
                             let resultado;
 
-                            if (operador.includes('mais') || operador.includes('somad') || operador === '+') { 
-                                resultado = num1 + num2; 
-                            } else if (operador.includes('menos') || operador === '-') { 
-                                resultado = num1 - num2; 
-                            } else if (operador.includes('vezes') || operador.includes('multiplicado') || operador === '*' || operador === 'x') { 
-                                resultado = num1 * num2; 
-                            } else if (operador.includes('dividido') || operador === '/') { 
+                            if (operador.includes('mais') || operador.includes('somad') || operador === '+') {
+                                resultado = num1 + num2;
+                            } else if (operador.includes('menos') || operador === '-') {
+                                resultado = num1 - num2;
+                            } else if (operador.includes('vezes') || operador.includes('multiplicado') || operador === '*' || operador === 'x') {
+                                resultado = num1 * num2;
+                            } else if (operador.includes('dividido') || operador === '/') {
                                 if (num2 === 0) {
                                     responderComoUltron(`Não é possível dividir por zero, ${nomeUsuario}.`);
                                     return;
                                 }
-                                resultado = num1 / num2; 
+                                resultado = num1 / num2;
                             }
 
                             if (resultado !== undefined) {
@@ -992,26 +1119,58 @@
                         }
                         else if (transcript.includes('ultron') || transcript.includes('outro') || transcript.includes('olá') || transcript.includes('ola')) {
                             responderComoUltron(`Olá, ${nomeUsuario}. O que deseja hoje? Todos os sistemas estão operacionais.`);
-                        } 
+                        }
+                        // ---- BASE DE CONHECIMENTO LOCAL (antes da internet) ----
                         else {
-                            await processarPesquisa(transcript);
+                            const daBase = consultarBase(transcript);
+                            if (daBase) {
+                                salvarPesquisa({ pergunta: transcript, fonte: 'Base local', titulo: daBase.slice(0, 60), url: '', lista: [] });
+                                responderComoUltron(`Da minha base local, ${nomeUsuario}: ${daBase}`);
+                            }
+                            else {
+                                const fato = consultarFatos(transcript);
+                                if (fato) {
+                                    responderComoUltron(`Você me ensinou antes, ${nomeUsuario}: ${fato}.`);
+                                }
+                                else if (temGatilhoBusca(transcript)) {
+                                    await processarPesquisa(limparConsulta(transcript));
+                                }
+                                else {
+                                    // CONTEXTO: continuação da conversa / relato de problema
+                                    const contexto = detectarContexto(transcript);
+                                    if (contexto) {
+                                        await processarPesquisa(contexto.consulta, contexto.prefixo);
+                                    }
+                                    else if (/^(ok|okay|t(a|á)m?|entendi|entendido|combinado|show|perfeito|ótimo|otimo|legal|valeu|obrigado|obrigada|beleza|show de bola|pode ser|fechado|isso|sim|nao)$|^o k$/i.test(transcript)) {
+                                        responderComoUltron(/obrigad/i.test(transcript) ? `Sempre à disposição, ${nomeUsuario}.` : `Às ordens, ${nomeUsuario}.`);
+                                    }
+                                    else {
+                                        const respostasErro = [
+                                            "Desculpe, não entendi o comando. Poderia repetir?",
+                                            "Perdão, não tenho resposta para isso no momento.",
+                                            "Não compreendi, senhor. Pode reformular a instrução?"
+                                        ];
+                                        responderComoUltron(respostasErro[Math.floor(Math.random() * respostasErro.length)]);
+                                    }
+                                }
+                            }
                         }
                     };
 
                     recognition.onend = () => {
                         isListening = false;
-                        if (!isUltronSpeaking && !isSearching && recognition) {
-                            try { 
-                                recognition.start(); 
+                        if (!isUltronSpeaking && recognition && !recognition.active) {
+                            try {
+                                recognition.start();
                             } catch(e) {
                                 micBtn.style.display = 'flex';
                             }
                         }
                     };
-                    
+
                     recognition.onerror = (event) => {
                         console.warn("Erro de escuta:", event.error);
-                        micBtn.style.display = 'flex';
+                        if (!recognition.active) micBtn.style.display = 'flex';
                     };
 
                     recognition.start();
@@ -1026,9 +1185,9 @@
 
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
-                if (recognition && !isListening && !isUltronSpeaking && !isSearching) {
-                    try { 
-                        recognition.start(); 
+                if (recognition && !isListening && !isUltronSpeaking && !isSearching && !recognition.active) {
+                    try {
+                        recognition.start();
                     } catch(e) {
                         micBtn.style.display = 'flex';
                     }
@@ -1041,12 +1200,12 @@
         });
 
         // ==========================================
-        // SETUP DE CENA, CÂMERA E RENDERER
+        // 3D: CENA, CÂMERA, RENDERER
         // ==========================================
         const scene = new THREE.Scene();
-        
+
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 7; 
+        camera.position.z = 7;
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -1054,16 +1213,154 @@
         document.body.appendChild(renderer.domElement);
 
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true; 
+        controls.enableDamping = true;
         controls.dampingFactor = 0.05;
-        controls.enablePan = false; 
-        controls.minDistance = 0.1; 
-        controls.maxDistance = 20; 
+        controls.enablePan = false;
+        controls.minDistance = 0.1;
+        controls.maxDistance = 20;
 
         // ==========================================
-        // NEBULOSA + FACE HUMAN (sistema de partículas)
+        // ESFERA DE PLASMA — shader de GPU (leve e bonito)
+        // Rim glow (fresnel), ruído simplex animado,
+        // anéis de pulso na fala, sparkles e cores em fluxo.
         // ==========================================
-        // Textura procedural: sprite circular suave (fumaça estelar)
+        const NOISE_GLSL = `
+        vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+        vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+        vec4 permute(vec4 x) { return mod289(((x * 34.0) + 1.0) * x); }
+        vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+        float snoise(vec3 v) {
+            const vec2 C = vec2(1.0 / 6.0, 1.0 / 3.0);
+            const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+            vec3 i = floor(v + dot(v, C.yyy));
+            vec3 x0 = v - i + dot(i, C.xxx);
+            vec3 g = step(x0.yzx, x0.xyz);
+            vec3 l = 1.0 - g;
+            vec3 i1 = min(g.xyz, l.zxy);
+            vec3 i2 = max(g.xyz, l.zxy);
+            vec3 x1 = x0 - i1 + C.xxx;
+            vec3 x2 = x0 - i2 + C.yyy;
+            vec3 x3 = x0 - D.yyy;
+            i = mod289(i);
+            vec4 p = permute(permute(permute(
+                i.z + vec4(0.0, i1.z, i2.z, 1.0))
+                + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+                + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+            float n_ = 0.142857142857;
+            vec3 ns = n_ * D.wyz - D.xzx;
+            vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+            vec4 x_ = floor(j * ns.z);
+            vec4 y_ = floor(j - 7.0 * x_);
+            vec4 x = x_ * ns.x + ns.yyyy;
+            vec4 y = y_ * ns.x + ns.yyyy;
+            vec4 h = 1.0 - abs(x) - abs(y);
+            vec4 b0 = vec4(x.xy, y.xy);
+            vec4 b1 = vec4(x.zw, y.zw);
+            vec4 s0 = floor(b0) * 2.0 + 1.0;
+            vec4 s1 = floor(b1) * 2.0 + 1.0;
+            vec4 sh = -step(h, vec4(0.0));
+            vec4 a0 = b0.xzyw + s0.xzyw * sh.xxyy;
+            vec4 a1 = b1.xzyw + s1.xzyw * sh.zzww;
+            vec3 p0 = vec3(a0.xy, h.x);
+            vec3 p1 = vec3(a0.zw, h.y);
+            vec3 p2 = vec3(a1.xy, h.z);
+            vec3 p3 = vec3(a1.zw, h.w);
+            vec4 norm = taylorInvSqrt(vec4(dot(p0, p0), dot(p1, p1), dot(p2, p2), dot(p3, p3)));
+            p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+            vec4 m = max(0.6 - vec4(dot(x0, x0), dot(x1, x1), dot(x2, x2), dot(x3, x3)), 0.0);
+            m = m * m;
+            return 42.0 * dot(m * m, vec4(dot(p0, x0), dot(p1, x1), dot(p2, x2), dot(p3, x3)));
+        }
+        `;
+
+        const esferaGeometry = new THREE.IcosahedronGeometry(2.2, 7);
+        const vCount = esferaGeometry.attributes.position.count;
+        const randArr = new Float32Array(vCount);
+        for (let i = 0; i < vCount; i++) randArr[i] = Math.random();
+        esferaGeometry.setAttribute('aRand', new THREE.BufferAttribute(randArr, 1));
+
+        const esferaUniforms = {
+            uTime: { value: 0 },
+            uPulse: { value: 0 },
+            uFace: { value: isFaceActive ? 1 : 0 },
+            uGenio: { value: isGenioActive ? 1 : 0 }
+        };
+
+        const esferaMaterial = new THREE.ShaderMaterial({
+            uniforms: esferaUniforms,
+            transparent: true,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+            vertexShader: NOISE_GLSL + `
+                uniform float uTime;
+                uniform float uPulse;
+                uniform float uFace;
+                uniform float uGenio;
+                attribute float aRand;
+                varying vec3 vColor;
+                varying float vAlpha;
+
+                void main() {
+                    vec3 dir = normalize(position);
+                    float t = uTime * 0.35;
+
+                    float n1 = snoise(dir * 1.6 + vec3(0.0, t, t * 0.7));
+                    float n2 = snoise(dir * 3.4 - vec3(t * 0.6, 0.0, t));
+                    float noise01 = (n1 * 0.65 + n2 * 0.35) * 0.5 + 0.5;
+
+                    float disp = 0.05 + 0.10 * noise01 + uPulse * 0.12 * max(0.0, n2);
+                    disp *= (1.0 - uFace * 0.85);
+                    vec3 p = position + dir * disp;
+
+                    vec4 mv = modelViewMatrix * vec4(p, 1.0);
+
+                    vec3 nView = normalize(normalMatrix * dir);
+                    vec3 vView = normalize(-mv.xyz);
+                    float fres = pow(1.0 - abs(dot(nView, vView)), 2.0);
+
+                    vec3 deep = mix(vec3(0.06, 0.01, 0.18), vec3(0.0, 0.06, 0.02), uGenio);
+                    vec3 mid  = mix(vec3(0.48, 0.12, 0.85), vec3(0.0, 0.40, 0.08), uGenio);
+                    vec3 hot  = mix(vec3(0.20, 0.85, 1.00), vec3(0.30, 1.00, 0.35), uGenio);
+
+                    float bands = smoothstep(0.25, 0.8, noise01);
+                    vec3 base = mix(deep, mid, bands);
+                    base = mix(base, hot, smoothstep(0.72, 0.97, noise01) * (0.55 + uPulse * 0.6));
+
+                    float ring = pow(max(0.0, sin(dir.y * 5.0 - uTime * 7.0 + n1 * 2.0)), 6.0) * uPulse * 0.9;
+                    float spark = step(0.985, fract(aRand * 91.7 + sin(uTime * 3.0 + aRand * 40.0) * 0.02))
+                                  * (0.5 + 0.5 * sin(uTime * 9.0 + aRand * 100.0));
+
+                    vec3 col = base * (0.55 + 0.6 * noise01);
+                    col += hot * (fres * (0.9 + uPulse * 1.2));
+                    col += hot * ring;
+                    col += vec3(1.0) * spark * 0.9;
+
+                    vColor = col;
+                    vAlpha = clamp((0.35 + 0.65 * fres + ring * 0.5 + spark) * (1.0 - uFace), 0.0, 1.0);
+
+                    float size = (1.6 + 2.6 * aRand) * (1.0 + uPulse * 0.5);
+                    gl_PointSize = size * (140.0 / -mv.z);
+                    gl_Position = projectionMatrix * mv;
+                }
+            `,
+            fragmentShader: `
+                varying vec3 vColor;
+                varying float vAlpha;
+                void main() {
+                    vec2 c = gl_PointCoord - 0.5;
+                    float d = length(c) * 2.0;
+                    float falloff = 1.0 - smoothstep(0.15, 1.0, d);
+                    float core = (1.0 - smoothstep(0.0, 0.5, d)) * 0.7;
+                    float a = (falloff * 0.8 + core) * vAlpha;
+                    if (a < 0.01) discard;
+                    gl_FragColor = vec4(vColor, a);
+                }
+            `
+        });
+        const esfera = new THREE.Points(esferaGeometry, esferaMaterial);
+        scene.add(esfera);
+
+        // ---- Poeira orbital sutil (profundidade, sem peso) ----
         function criarTexturaSuave() {
             const c = document.createElement('canvas');
             c.width = c.height = 64;
@@ -1079,196 +1376,31 @@
         }
         const softTex = criarTexturaSuave();
 
-        // ---- NÚCLEO MORFÁVEL: a nebulosa que vira rosto ----
-        const N = 3200;
-        const positions = new Float32Array(N * 3);
-        const colors = new Float32Array(N * 3);
-        const origX = new Float32Array(N), origY = new Float32Array(N), origZ = new Float32Array(N);
-        const baseR = new Float32Array(N);
-        const seeds = new Float32Array(N);
-        const delays = new Float32Array(N);
-        const faceTX = new Float32Array(N), faceTY = new Float32Array(N), faceTZ = new Float32Array(N);
-        const nebCR = new Float32Array(N), nebCG = new Float32Array(N), nebCB = new Float32Array(N);
-        const faceCR = new Float32Array(N), faceCG = new Float32Array(N), faceCB = new Float32Array(N);
-        const parts = new Uint8Array(N); // 0 contorno | 1 olho | 2 nariz | 3 boca | 4 preenchimento
-        const eyeCY = new Float32Array(N);
-
-        // Paleta de nebulosa: roxo, magenta, azul, ciano, rosa, azul profundo
-        const palette = [
-            [0.54, 0.17, 0.89],
-            [0.85, 0.27, 0.94],
-            [0.22, 0.74, 0.97],
-            [0.13, 0.83, 0.93],
-            [0.96, 0.45, 0.71],
-            [0.23, 0.26, 0.72]
-        ];
-
-        // Contorno paramétrico da máscara (face de 3/4, estilo máscara grega/sleek)
-        const _fo = { x: 0, y: 0, z: 0 };
-        function faceOutline(t) {
-            const x0 = Math.cos(t), y0 = Math.sin(t);
-            let x = 1.0 * x0;
-            let y = 1.35 * y0;
-            if (y0 < 0) {
-                const jaw = Math.pow(-y0, 1.3);
-                x *= (1 - 0.52 * jaw);   // mandíbula afunila
-                y *= (1 - 0.10 * jaw);   // queixo arredondado
-            } else {
-                x *= 1 + 0.06 * y0;      // têmporas levemente largas
-            }
-            const z = 0.34 * (1 - (y / 1.35) * (y / 1.35)) * 0.9;
-            _fo.x = x; _fo.y = y; _fo.z = z;
-            return _fo;
-        }
-
-        for (let i = 0; i < N; i++) {
-            const i3 = i * 3;
-
-            // ---- posição nebulosa: direção aleatória + raio com jitter ----
-            let dx, dy, dz;
-            do {
-                dx = Math.random() * 2 - 1;
-                dy = Math.random() * 2 - 1;
-                dz = Math.random() * 2 - 1;
-                const l2 = dx * dx + dy * dy + dz * dz;
-                if (l2 < 0.05 || l2 > 1) { dx = NaN; } else {
-                    const l = Math.sqrt(l2);
-                    dx /= l; dy /= l; dz /= l;
-                }
-            } while (isNaN(dx));
-            const r = 2.2 * (0.75 + Math.random() * 0.55);
-            origX[i] = dx * r; origY[i] = dy * r; origZ[i] = dz * r;
-            baseR[i] = r;
-            seeds[i] = Math.random();
-            delays[i] = Math.random() * 0.35; // atraso individual → transição "em fluxo"
-
-            // ---- cor nebulosa (paleta + brilho individual) ----
-            const pc = palette[Math.floor(Math.random() * palette.length)];
-            const bright = 0.7 + Math.random() * 0.5;
-            nebCR[i] = pc[0] * bright;
-            nebCG[i] = pc[1] * bright;
-            nebCB[i] = pc[2] * bright;
-
-            // ---- alvo da face (o que cada partícula vira no modo face) ----
-            const roll = Math.random();
-            if (roll < 0.45) {
-                // CONTORNO da máscara
-                parts[i] = 0;
-                const t = Math.random() * Math.PI * 2;
-                const f = faceOutline(t);
-                faceTX[i] = f.x; faceTY[i] = f.y; faceTZ[i] = f.z;
-                faceCR[i] = 0.62; faceCG[i] = 0.42; faceCB[i] = 1.0;
-            } else if (roll < 0.58) {
-                // OLHOS (duas fendas amêndoa brilhantes)
-                parts[i] = 1;
-                const side = Math.random() < 0.5 ? -1 : 1;
-                const a = Math.random() * Math.PI * 2;
-                const ex = Math.cos(a) * 0.30, ey = Math.sin(a) * 0.10;
-                const tilt = 0.14 * side;
-                const xr = ex * Math.cos(tilt) - ey * Math.sin(tilt);
-                const yr = ex * Math.sin(tilt) + ey * Math.cos(tilt);
-                faceTX[i] = side * 0.44 + xr;
-                faceTY[i] = 0.38 + yr;
-                faceTZ[i] = 0.34;
-                eyeCY[i] = 0.38;
-                faceCR[i] = 0.30; faceCG[i] = 0.95; faceCB[i] = 1.0;
-            } else if (roll < 0.65) {
-                // NARIZ (ponte + base)
-                parts[i] = 2;
-                let ny = 0.30 - Math.random() * 0.40;
-                let nx = (Math.random() - 0.5) * 0.05;
-                if (ny < -0.02) {
-                    nx = (Math.random() < 0.5 ? -1 : 1) * (0.03 + Math.random() * 0.07);
-                    ny = -0.08 - Math.random() * 0.08;
-                }
-                faceTX[i] = nx; faceTY[i] = ny; faceTZ[i] = 0.36;
-                faceCR[i] = 0.55; faceCG[i] = 0.45; faceCB[i] = 0.95;
-            } else if (roll < 0.74) {
-                // BOCA (arco sutil, leve sorriso)
-                parts[i] = 3;
-                const u = (Math.random() * 2 - 1) * 0.32;
-                faceTX[i] = u;
-                faceTY[i] = -0.62 + 0.035 * (1 - (u / 0.32) * (u / 0.32)) + (Math.random() - 0.5) * 0.02;
-                faceTZ[i] = 0.33;
-                faceCR[i] = 0.70; faceCG[i] = 0.50; faceCB[i] = 1.0;
-            } else {
-                // PREENCHIMENTO interno (máscara translúcida, bem apagado)
-                parts[i] = 4;
-                const t = Math.random() * Math.PI * 2;
-                const s = Math.pow(Math.random(), 0.65);
-                const f = faceOutline(t);
-                faceTX[i] = f.x * s;
-                faceTY[i] = f.y * s * 0.92;
-                faceTZ[i] = f.z * s * 0.55 + 0.05;
-                faceCR[i] = 0.21; faceCG[i] = 0.15; faceCB[i] = 0.37;
-            }
-        }
-
-        const mainGeometry = new THREE.BufferGeometry();
-        mainGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        mainGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-        const mainMaterial = new THREE.PointsMaterial({
-            size: 0.055,
-            map: softTex,
-            vertexColors: true,
-            blending: THREE.AdditiveBlending,
-            transparent: true,
-            opacity: 0.95,
-            depthWrite: false,
-            sizeAttenuation: true
-        });
-        const points = new THREE.Points(mainGeometry, mainMaterial);
-        scene.add(points);
-
-        // ---- HALO EXTERNO (camada de poeira difusa) ----
-        const H = 700;
-        const haloPos = new Float32Array(H * 3);
-        const haloCol = new Float32Array(H * 3);
-        const haloPalette = [[0.45, 0.20, 0.90], [0.25, 0.50, 0.95], [0.70, 0.30, 0.85]];
-        for (let i = 0; i < H; i++) {
+        const D = 320;
+        const dustPos = new Float32Array(D * 3);
+        const dustCol = new Float32Array(D * 3);
+        const dustPalette = [[0.45, 0.20, 0.90], [0.25, 0.50, 0.95], [0.70, 0.30, 0.85]];
+        for (let i = 0; i < D; i++) {
             let dx = Math.random() * 2 - 1, dy = Math.random() * 2 - 1, dz = Math.random() * 2 - 1;
             const l = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
             dx /= l; dy /= l; dz /= l;
-            const r = 2.7 + Math.random() * 0.9;
-            haloPos[i * 3] = dx * r; haloPos[i * 3 + 1] = dy * r; haloPos[i * 3 + 2] = dz * r;
-            const pc = haloPalette[Math.floor(Math.random() * haloPalette.length)];
+            const r = 2.7 + Math.random() * 1.0;
+            dustPos[i * 3] = dx * r; dustPos[i * 3 + 1] = dy * r; dustPos[i * 3 + 2] = dz * r;
+            const pc = dustPalette[Math.floor(Math.random() * dustPalette.length)];
             const b = 0.5 + Math.random() * 0.5;
-            haloCol[i * 3] = pc[0] * b; haloCol[i * 3 + 1] = pc[1] * b; haloCol[i * 3 + 2] = pc[2] * b;
+            dustCol[i * 3] = pc[0] * b; dustCol[i * 3 + 1] = pc[1] * b; dustCol[i * 3 + 2] = pc[2] * b;
         }
-        const haloGeometry = new THREE.BufferGeometry();
-        haloGeometry.setAttribute('position', new THREE.BufferAttribute(haloPos, 3));
-        haloGeometry.setAttribute('color', new THREE.BufferAttribute(haloCol, 3));
-        const haloMaterial = new THREE.PointsMaterial({
-            size: 0.11, map: softTex, vertexColors: true,
-            blending: THREE.AdditiveBlending, transparent: true, opacity: 0.30, depthWrite: false
+        const dustGeometry = new THREE.BufferGeometry();
+        dustGeometry.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+        dustGeometry.setAttribute('color', new THREE.BufferAttribute(dustCol, 3));
+        const dustMaterial = new THREE.PointsMaterial({
+            size: 0.07, map: softTex, vertexColors: true,
+            blending: THREE.AdditiveBlending, transparent: true, opacity: 0.22, depthWrite: false
         });
-        const halo = new THREE.Points(haloGeometry, haloMaterial);
-        scene.add(halo);
+        const dust = new THREE.Points(dustGeometry, dustMaterial);
+        scene.add(dust);
 
-        // ---- NÚCLEO GASOSO (centro brilhante) ----
-        const C = 420;
-        const corePos = new Float32Array(C * 3);
-        const coreCol = new Float32Array(C * 3);
-        function gauss() { let u = 0, v = 0; while (u === 0) u = Math.random(); while (v === 0) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
-        for (let i = 0; i < C; i++) {
-            corePos[i * 3] = gauss() * 0.7;
-            corePos[i * 3 + 1] = gauss() * 0.7;
-            corePos[i * 3 + 2] = gauss() * 0.7;
-            const b = 0.6 + Math.random() * 0.6;
-            coreCol[i * 3] = 0.5 * b; coreCol[i * 3 + 1] = 0.7 * b; coreCol[i * 3 + 2] = 1.0 * b;
-        }
-        const coreGeometry = new THREE.BufferGeometry();
-        coreGeometry.setAttribute('position', new THREE.BufferAttribute(corePos, 3));
-        coreGeometry.setAttribute('color', new THREE.BufferAttribute(coreCol, 3));
-        const coreMaterial = new THREE.PointsMaterial({
-            size: 0.08, map: softTex, vertexColors: true,
-            blending: THREE.AdditiveBlending, transparent: true, opacity: 0.5, depthWrite: false
-        });
-        const core = new THREE.Points(coreGeometry, coreMaterial);
-        scene.add(core);
-
-        // ---- ESTRELAS DE FUNDO ----
+        // ---- Estrelas de fundo ----
         const S = 550;
         const starPos = new Float32Array(S * 3);
         const starCol = new Float32Array(S * 3);
@@ -1289,21 +1421,148 @@
         const stars = new THREE.Points(starGeometry, starMaterial);
         scene.add(stars);
 
-        // ---- GLOW CENTRAL (sprite de luz) ----
+        // ---- Glow central ----
         const glowMaterial = new THREE.SpriteMaterial({
-            map: softTex, color: 0x8a2be2, transparent: true, opacity: 0.25,
+            map: softTex, color: 0x8a2be2, transparent: true, opacity: 0.22,
             blending: THREE.AdditiveBlending, depthWrite: false
         });
         const glow = new THREE.Sprite(glowMaterial);
-        glow.scale.set(5.5, 5.5, 1);
+        glow.scale.set(5.0, 5.0, 1);
         scene.add(glow);
         const whiteColor = new THREE.Color(1, 1, 1);
 
         // ==========================================
-        // LOOP DE RENDERIZAÇÃO E ANIMAÇÃO
+        // FACE HUMAN — partículas que condensam no rosto
+        // (só visível e processado durante o modo face)
+        // ==========================================
+        const N = 3200;
+        const positions = new Float32Array(N * 3);
+        const colors = new Float32Array(N * 3);
+        const origX = new Float32Array(N), origY = new Float32Array(N), origZ = new Float32Array(N);
+        const baseR = new Float32Array(N);
+        const seeds = new Float32Array(N);
+        const delays = new Float32Array(N);
+        const faceTX = new Float32Array(N), faceTY = new Float32Array(N), faceTZ = new Float32Array(N);
+        const nebCR = new Float32Array(N), nebCG = new Float32Array(N), nebCB = new Float32Array(N);
+        const faceCR = new Float32Array(N), faceCG = new Float32Array(N), faceCB = new Float32Array(N);
+        const parts = new Uint8Array(N);
+        const eyeCY = new Float32Array(N);
+
+        const palette = [
+            [0.54, 0.17, 0.89],
+            [0.85, 0.27, 0.94],
+            [0.22, 0.74, 0.97],
+            [0.13, 0.83, 0.93],
+            [0.96, 0.45, 0.71],
+            [0.23, 0.26, 0.72]
+        ];
+
+        const _fo = { x: 0, y: 0, z: 0 };
+        function faceOutline(t) {
+            const x0 = Math.cos(t), y0 = Math.sin(t);
+            let x = 1.0 * x0;
+            let y = 1.35 * y0;
+            if (y0 < 0) {
+                const jaw = Math.pow(-y0, 1.3);
+                x *= (1 - 0.52 * jaw);
+                y *= (1 - 0.10 * jaw);
+            } else {
+                x *= 1 + 0.06 * y0;
+            }
+            const z = 0.34 * (1 - (y / 1.35) * (y / 1.35)) * 0.9;
+            _fo.x = x; _fo.y = y; _fo.z = z;
+            return _fo;
+        }
+
+        for (let i = 0; i < N; i++) {
+            let dx, dy, dz;
+            do {
+                dx = Math.random() * 2 - 1;
+                dy = Math.random() * 2 - 1;
+                dz = Math.random() * 2 - 1;
+                const l2 = dx * dx + dy * dy + dz * dz;
+                if (l2 < 0.05 || l2 > 1) { dx = NaN; } else {
+                    const l = Math.sqrt(l2);
+                    dx /= l; dy /= l; dz /= l;
+                }
+            } while (isNaN(dx));
+            const r = 2.2 * (0.75 + Math.random() * 0.55);
+            origX[i] = dx * r; origY[i] = dy * r; origZ[i] = dz * r;
+            baseR[i] = r;
+            seeds[i] = Math.random();
+            delays[i] = Math.random() * 0.35;
+
+            const pc = palette[Math.floor(Math.random() * palette.length)];
+            const bright = 0.7 + Math.random() * 0.5;
+            nebCR[i] = pc[0] * bright;
+            nebCG[i] = pc[1] * bright;
+            nebCB[i] = pc[2] * bright;
+
+            const roll = Math.random();
+            if (roll < 0.45) {
+                parts[i] = 0;
+                const t = Math.random() * Math.PI * 2;
+                const f = faceOutline(t);
+                faceTX[i] = f.x; faceTY[i] = f.y; faceTZ[i] = f.z;
+                faceCR[i] = 0.62; faceCG[i] = 0.42; faceCB[i] = 1.0;
+            } else if (roll < 0.58) {
+                parts[i] = 1;
+                const side = Math.random() < 0.5 ? -1 : 1;
+                const a = Math.random() * Math.PI * 2;
+                const ex = Math.cos(a) * 0.30, ey = Math.sin(a) * 0.10;
+                const tilt = 0.14 * side;
+                const xr = ex * Math.cos(tilt) - ey * Math.sin(tilt);
+                const yr = ex * Math.sin(tilt) + ey * Math.cos(tilt);
+                faceTX[i] = side * 0.44 + xr;
+                faceTY[i] = 0.38 + yr;
+                faceTZ[i] = 0.34;
+                eyeCY[i] = 0.38;
+                faceCR[i] = 0.30; faceCG[i] = 0.95; faceCB[i] = 1.0;
+            } else if (roll < 0.65) {
+                parts[i] = 2;
+                let ny = 0.30 - Math.random() * 0.40;
+                let nx = (Math.random() - 0.5) * 0.05;
+                if (ny < -0.02) {
+                    nx = (Math.random() < 0.5 ? -1 : 1) * (0.03 + Math.random() * 0.07);
+                    ny = -0.08 - Math.random() * 0.08;
+                }
+                faceTX[i] = nx; faceTY[i] = ny; faceTZ[i] = 0.36;
+                faceCR[i] = 0.55; faceCG[i] = 0.45; faceCB[i] = 0.95;
+            } else if (roll < 0.74) {
+                parts[i] = 3;
+                const u = (Math.random() * 2 - 1) * 0.32;
+                faceTX[i] = u;
+                faceTY[i] = -0.62 + 0.035 * (1 - (u / 0.32) * (u / 0.32)) + (Math.random() - 0.5) * 0.02;
+                faceTZ[i] = 0.33;
+                faceCR[i] = 0.70; faceCG[i] = 0.50; faceCB[i] = 1.0;
+            } else {
+                parts[i] = 4;
+                const t = Math.random() * Math.PI * 2;
+                const s = Math.pow(Math.random(), 0.65);
+                const f = faceOutline(t);
+                faceTX[i] = f.x * s;
+                faceTY[i] = f.y * s * 0.92;
+                faceTZ[i] = f.z * s * 0.55 + 0.05;
+                faceCR[i] = 0.21; faceCG[i] = 0.15; faceCB[i] = 0.37;
+            }
+        }
+
+        const faceGeometry = new THREE.BufferGeometry();
+        faceGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        faceGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        const faceMaterial = new THREE.PointsMaterial({
+            size: 0.055, map: softTex, vertexColors: true,
+            blending: THREE.AdditiveBlending, transparent: true, opacity: 0, depthWrite: false
+        });
+        const facePoints = new THREE.Points(faceGeometry, faceMaterial);
+        facePoints.visible = false;
+        scene.add(facePoints);
+
+        // ==========================================
+        // LOOP DE ANIMAÇÃO
         // ==========================================
         const clock = new THREE.Clock();
-        let morph = isFaceActive ? 1 : 0;      // 0 = nebulosa, 1 = face
+        let morph = isFaceActive ? 1 : 0;
         let genioBlend = isGenioActive ? 1 : 0;
         let nebAngleY = 0, nebAngleX = 0;
         let prevFaceBlend = isFaceActive ? 1 : 0;
@@ -1320,21 +1579,18 @@
             const dt = Math.min(0.05, clock.getDelta());
             const time = clock.elapsedTime;
 
-            // Easing global
             const morphTarget = isFaceActive ? 1 : 0;
             morph += (morphTarget - morph) * 0.028;
             if (Math.abs(morphTarget - morph) < 0.001) morph = morphTarget;
             genioBlend += ((isGenioActive ? 1 : 0) - genioBlend) * 0.04;
             const faceBlend = morph * morph * (3 - 2 * morph);
 
-            // Interpolação suave das cores de referência (header)
             corBaseAtual.lerp(corBaseAlvo, 0.03);
             corAtivaAtual.lerp(corAtivaAlvo, 0.03);
             const cAtivaCSS = `rgb(${Math.round(corAtivaAtual.r * 255)}, ${Math.round(corAtivaAtual.g * 255)}, ${Math.round(corAtivaAtual.b * 255)})`;
             appHeader.style.textShadow = `0 0 12px ${cAtivaCSS}`;
             appHeader.style.borderBottomColor = cAtivaCSS;
 
-            // ---- Volume da voz (simulado a partir do estado de fala) ----
             if (isUltronSpeaking) {
                 currentVolume = (Math.sin(time * 20) * 0.5 + 0.5) * (Math.random() * 0.6 + 0.4) * 0.7;
             } else {
@@ -1343,142 +1599,143 @@
             smoothedVolume += (currentVolume - smoothedVolume) * 0.15;
             const activeVolume = Math.min(1.0, smoothedVolume * 2.5);
 
-            // ---- Rotação: nebulosa gira livremente; face alinha ao eixo e "respira" ----
+            // ---- Uniforms do shader da esfera ----
+            esferaUniforms.uTime.value = time;
+            esferaUniforms.uPulse.value = activeVolume;
+            esferaUniforms.uFace.value = morph;
+            esferaUniforms.uGenio.value = genioBlend;
+
             const inFace = faceBlend >= 0.5;
             if (!inFace) {
-                if (prevFaceBlend >= 0.5) { nebAngleY = points.rotation.y; nebAngleX = points.rotation.x; }
+                if (prevFaceBlend >= 0.5) { nebAngleY = esfera.rotation.y; nebAngleX = esfera.rotation.x; }
                 nebAngleY += dt * 0.12;
                 nebAngleX += dt * 0.08;
-                points.rotation.y = nebAngleY;
-                points.rotation.x = nebAngleX;
+                esfera.rotation.y = nebAngleY;
+                esfera.rotation.x = nebAngleX;
             } else {
-                points.rotation.y += wrapAngle(points.rotation.y) * -0.06;
-                points.rotation.x += points.rotation.x * -0.06;
-                points.rotation.y += Math.sin(time * 0.25) * 0.0012;
-                points.rotation.x += Math.sin(time * 0.17) * 0.0009;
+                esfera.rotation.y += wrapAngle(esfera.rotation.y) * -0.06;
+                esfera.rotation.x += esfera.rotation.x * -0.06;
+                esfera.rotation.y += Math.sin(time * 0.25) * 0.0012;
+                esfera.rotation.x += Math.sin(time * 0.17) * 0.0009;
             }
             prevFaceBlend = faceBlend;
 
-            // ---- Piscada (olhos, só quando a face está formada) ----
-            let blinkScale = 1;
-            const cyc = time % 4.5;
-            if (cyc < 0.22 && faceBlend > 0.7) {
-                blinkScale = 1 - Math.sin(Math.PI * cyc / 0.22) * 0.92;
-            }
+            // Esfera dissolvida/encolhida durante a face
+            const escalaEsfera = 1 - 0.4 * faceBlend;
+            esfera.scale.setScalar(escalaEsfera);
+            esfera.visible = faceBlend < 0.999;
 
-            // ---- Camadas decorativas ----
-            halo.rotation.y = time * 0.03;
-            halo.rotation.z = time * 0.012;
-            haloMaterial.opacity = 0.30 * (1 - faceBlend * 0.85);
-            coreMaterial.opacity = 0.5 * (0.55 + 0.45 * Math.sin(time * 1.3)) * (1 - faceBlend * 0.92);
-            core.rotation.y = -time * 0.05;
+            // Poeira e estrelas
+            dust.rotation.y = time * 0.03;
+            dust.rotation.z = time * 0.012;
+            dustMaterial.opacity = 0.22 * (1 - faceBlend * 0.85);
             stars.rotation.y = time * 0.004;
-            glowMaterial.opacity = (0.16 + activeVolume * 0.4) * (1 - faceBlend * 0.85);
+            glowMaterial.opacity = (0.14 + activeVolume * 0.35) * (1 - faceBlend * 0.7);
             glowMaterial.color.copy(corAtivaAtual).lerp(whiteColor, 0.4);
 
-            // ---- Atualização por partícula (nebulosa ⇄ face) ----
-            const posAttr = mainGeometry.attributes.position;
-            const colAttr = mainGeometry.attributes.color;
-            const nebAmp = 1 - 0.85 * faceBlend; // a nebulosa "condensa" na transformação
+            // ---- Partículas da face (só quando morfas) ----
+            facePoints.visible = morph > 0.01;
+            if (morph > 0.01) {
+                faceMaterial.opacity = faceBlend;
+                const posAttr = faceGeometry.attributes.position;
+                const colAttr = faceGeometry.attributes.color;
+                const nebAmp = 1 - 0.85 * faceBlend;
 
-            // Cor dos olhos por frame (ciano → verde no modo gênio)
-            const eyeR = 0.30;
-            const eyeG = 0.95 + 0.05 * genioBlend;
-            const eyeB = 1.0 - 0.70 * genioBlend;
+                const eyeR = 0.30;
+                const eyeG = 0.95 + 0.05 * genioBlend;
+                const eyeB = 1.0 - 0.70 * genioBlend;
 
-            for (let i = 0; i < N; i++) {
-                const i3 = i * 3;
-                const s1 = seeds[i];
-                const ox = origX[i], oy = origY[i], oz = origZ[i];
-
-                // --- posição nebulosa: ruído radial + rotação orgânica ---
-                const n1 = Math.sin(time * 0.40 + s1 * 6.283 + ox * 2.0);
-                const n2 = Math.cos(time * 0.31 + s1 * 4.17 + oy * 2.5);
-                const n3 = Math.sin(time * 0.52 + s1 * 5.31 + oz * 3.0);
-                const radial = (n1 * 0.35 + n2 * 0.25 + n3 * 0.20) * nebAmp;
-                // onda de pulso propagando para fora enquanto ele fala
-                const pulse = activeVolume * 0.40 * (1 - faceBlend) * (0.5 + 0.5 * Math.sin(time * 8 - baseR[i] * 3.0 + s1 * 3.0));
-
-                const swirlA = time * (0.05 + s1 * 0.12);
-                const cosS = Math.cos(swirlA), sinS = Math.sin(swirlA);
-                let nx = ox * cosS - oz * sinS;
-                let nz = ox * sinS + oz * cosS;
-                const ny = oy;
-                const len = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
-                const r = baseR[i] + radial + pulse;
-                let px = nx / len * r;
-                let py = ny / len * r;
-                let pz = nz / len * r;
-
-                // --- morph para a face (com atraso individual = transição em fluxo) ---
-                let pLocal = morph * 1.4 - delays[i];
-                if (pLocal < 0) pLocal = 0;
-                else if (pLocal > 1) pLocal = 1;
-                const e = pLocal * pLocal * (3 - 2 * pLocal);
-
-                if (e > 0) {
-                    const fx = faceTX[i], fy = faceTY[i], fz = faceTZ[i];
-                    px += (fx - px) * e;
-                    py += (fy - py) * e;
-                    pz += (fz - pz) * e;
-
-                    // espiral de convergência durante a transição
-                    const sw = (1 - e) * (s1 - 0.5) * 1.6;
-                    const cs = Math.cos(sw), sn = Math.sin(sw);
-                    const rx = px * cs - pz * sn;
-                    pz = px * sn + pz * cs;
-                    px = rx;
-
-                    // micro-jitter de "vida" na face
-                    const jit = Math.sin(time * 1.6 + s1 * 9.0) * 0.008 * e;
-                    px += jit;
-                    py += jit * 0.7;
-                    pz += jit;
-
-                    // piscada dos olhos
-                    if (parts[i] === 1) {
-                        py = eyeCY[i] + (py - eyeCY[i]) * blinkScale;
-                    }
-                    // boca se movimenta quando ele fala
-                    if (parts[i] === 3 && activeVolume > 0.02) {
-                        py += Math.sin(time * 11 + s1 * 12) * 0.018 * activeVolume;
-                    }
+                let blinkScale = 1;
+                const cyc = time % 4.5;
+                if (cyc < 0.22 && faceBlend > 0.7) {
+                    blinkScale = 1 - Math.sin(Math.PI * cyc / 0.22) * 0.92;
                 }
 
-                posAttr.setXYZ(i, px, py, pz);
+                for (let i = 0; i < N; i++) {
+                    const i3 = i * 3;
+                    const s1 = seeds[i];
+                    const ox = origX[i], oy = origY[i], oz = origZ[i];
 
-                // --- cor ---
-                const pulseC = 0.72 + 0.28 * Math.sin(time * 0.6 + s1 * 6.283);
-                let cr = nebCR[i] * pulseC;
-                let cg = nebCG[i] * pulseC;
-                let cb = nebCB[i] * pulseC;
+                    const n1 = Math.sin(time * 0.40 + s1 * 6.283 + ox * 2.0);
+                    const n2 = Math.cos(time * 0.31 + s1 * 4.17 + oy * 2.5);
+                    const n3 = Math.sin(time * 0.52 + s1 * 5.31 + oz * 3.0);
+                    const radial = (n1 * 0.35 + n2 * 0.25 + n3 * 0.20) * nebAmp;
+                    const pulse = activeVolume * 0.40 * (1 - faceBlend) * (0.5 + 0.5 * Math.sin(time * 8 - baseR[i] * 3.0 + s1 * 3.0));
 
-                const en = activeVolume * (1 - faceBlend);
-                cr += en * 0.25; cg += en * 0.40; cb += en * 0.50;
+                    const swirlA = time * (0.05 + s1 * 0.12);
+                    const cosS = Math.cos(swirlA), sinS = Math.sin(swirlA);
+                    const nx = ox * cosS - oz * sinS;
+                    const nz0 = ox * sinS + oz * cosS;
+                    const ny = oy;
+                    const len = Math.sqrt(nx * nx + ny * ny + nz0 * nz0) || 1;
+                    const r = baseR[i] + radial + pulse;
+                    let px = nx / len * r;
+                    let py = ny / len * r;
+                    let pz = nz0 / len * r;
 
-                if (e > 0) {
-                    let fcr = faceCR[i], fcg = faceCG[i], fcb = faceCB[i];
-                    if (parts[i] === 1) {
-                        // olhos brilham com a voz
-                        const og = 0.85 + activeVolume * 0.6;
-                        fcr = eyeR * og; fcg = eyeG * og; fcb = eyeB * og;
-                    } else if (parts[i] === 3) {
-                        const mg = 1 + activeVolume * 0.4;
-                        fcr *= mg; fcg *= mg; fcb *= mg;
-                    } else if (parts[i] === 4) {
-                        const fl = 0.7 + 0.3 * Math.sin(time * 2 + s1 * 20);
-                        fcr *= fl; fcg *= fl; fcb *= fl;
+                    let pLocal = morph * 1.4 - delays[i];
+                    if (pLocal < 0) pLocal = 0;
+                    else if (pLocal > 1) pLocal = 1;
+                    const e = pLocal * pLocal * (3 - 2 * pLocal);
+
+                    if (e > 0) {
+                        const fx = faceTX[i], fy = faceTY[i], fz = faceTZ[i];
+                        px += (fx - px) * e;
+                        py += (fy - py) * e;
+                        pz += (fz - pz) * e;
+
+                        const sw = (1 - e) * (s1 - 0.5) * 1.6;
+                        const cs = Math.cos(sw), sn = Math.sin(sw);
+                        const rx = px * cs - pz * sn;
+                        pz = px * sn + pz * cs;
+                        px = rx;
+
+                        const jit = Math.sin(time * 1.6 + s1 * 9.0) * 0.008 * e;
+                        px += jit;
+                        py += jit * 0.7;
+                        pz += jit;
+
+                        if (parts[i] === 1) {
+                            py = eyeCY[i] + (py - eyeCY[i]) * blinkScale;
+                        }
+                        if (parts[i] === 3 && activeVolume > 0.02) {
+                            py += Math.sin(time * 11 + s1 * 12) * 0.018 * activeVolume;
+                        }
                     }
-                    cr += (fcr - cr) * e;
-                    cg += (fcg - cg) * e;
-                    cb += (fcb - cb) * e;
+
+                    posAttr.setXYZ(i, px, py, pz);
+
+                    const pulseC = 0.72 + 0.28 * Math.sin(time * 0.6 + s1 * 6.283);
+                    let cr = nebCR[i] * pulseC;
+                    let cg = nebCG[i] * pulseC;
+                    let cb = nebCB[i] * pulseC;
+
+                    const en = activeVolume * (1 - faceBlend);
+                    cr += en * 0.25; cg += en * 0.40; cb += en * 0.50;
+
+                    if (e > 0) {
+                        let fcr = faceCR[i], fcg = faceCG[i], fcb = faceCB[i];
+                        if (parts[i] === 1) {
+                            const og = 0.85 + activeVolume * 0.6;
+                            fcr = eyeR * og; fcg = eyeG * og; fcb = eyeB * og;
+                        } else if (parts[i] === 3) {
+                            const mg = 1 + activeVolume * 0.4;
+                            fcr *= mg; fcg *= mg; fcb *= mg;
+                        } else if (parts[i] === 4) {
+                            const fl = 0.7 + 0.3 * Math.sin(time * 2 + s1 * 20);
+                            fcr *= fl; fcg *= fl; fcb *= fl;
+                        }
+                        cr += (fcr - cr) * e;
+                        cg += (fcg - cg) * e;
+                        cb += (fcb - cb) * e;
+                    }
+
+                    colAttr.setXYZ(i, cr, cg, cb);
                 }
 
-                colAttr.setXYZ(i, cr, cg, cb);
+                posAttr.needsUpdate = true;
+                colAttr.needsUpdate = true;
             }
-
-            posAttr.needsUpdate = true;
-            colAttr.needsUpdate = true;
 
             renderer.render(scene, camera);
         }
