@@ -225,6 +225,62 @@
             from { opacity: 0; transform: translateX(-10px); }
             to { opacity: 1; transform: translateX(0); }
         }
+
+        /* ==========================================
+           NOVO: PAINEL DE BUSCAS RECENTES (Internet)
+           ========================================== */
+        #pesquisas-panel {
+            display: none;
+        }
+        .panel-back-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .panel-back-btn:hover { background: rgba(255,255,255,0.2); }
+
+        #pesquisa-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: calc(100vh - 180px);
+            overflow-y: auto;
+        }
+        #pesquisa-list li {
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 12px;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #00d4ff;
+            font-size: 14px;
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease;
+            cursor: pointer;
+        }
+        #pesquisa-list .q {
+            font-weight: bold;
+            color: #ffffff;
+        }
+        #pesquisa-list .meta {
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        #pesquisa-list .sub {
+            display: block;
+            color: #7fd4ff;
+            font-size: 12px;
+            margin-top: 6px;
+            text-decoration: underline;
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -246,11 +302,18 @@
         
         <ul id="main-nav">
             <li class="nav-item" id="nav-tarefas-btn">📝 Tarefas Diárias</li>
+            <li class="nav-item" id="nav-pesquisas-btn">🌐 Buscas Recentes</li>
         </ul>
 
         <div id="tasks-panel">
             <button id="back-nav-btn">⬅ Voltar</button>
             <ul id="task-list"></ul>
+        </div>
+
+        <!-- NOVO: painel com o histórico das buscas na internet -->
+        <div id="pesquisas-panel">
+            <button class="panel-back-btn" id="back-pesquisas-btn">⬅ Voltar</button>
+            <ul id="pesquisa-list"></ul>
         </div>
     </div>
 
@@ -279,17 +342,32 @@
         const taskListEl = document.getElementById('task-list');
         const micBtn = document.getElementById('mic-btn');
 
+        // NOVO: elementos do painel de buscas
+        const navPesquisasBtn = document.getElementById('nav-pesquisas-btn');
+        const backPesquisasBtn = document.getElementById('back-pesquisas-btn');
+        const pesquisasPanel = document.getElementById('pesquisas-panel');
+        const pesquisaListEl = document.getElementById('pesquisa-list');
+
         let tarefas = JSON.parse(localStorage.getItem('utron.tasks.v1')) || []; 
+        let pesquisas = JSON.parse(localStorage.getItem('utron.pesquisas.v1')) || [];
 
         function openSideMenu() {
             sideMenu.classList.add('open');
             mainNav.style.display = 'block';
             tasksPanel.style.display = 'none';
+            pesquisasPanel.style.display = 'none';
         }
 
         function openTasksPanel() {
             mainNav.style.display = 'none';
             tasksPanel.style.display = 'block';
+            pesquisasPanel.style.display = 'none';
+        }
+
+        function openPesquisasPanel() {
+            mainNav.style.display = 'none';
+            tasksPanel.style.display = 'none';
+            pesquisasPanel.style.display = 'block';
         }
 
         menuBtn.addEventListener('click', openSideMenu);
@@ -298,6 +376,12 @@
         navTarefasBtn.addEventListener('click', openTasksPanel);
         backNavBtn.addEventListener('click', () => {
             tasksPanel.style.display = 'none';
+            mainNav.style.display = 'block';
+        });
+
+        navPesquisasBtn.addEventListener('click', openPesquisasPanel);
+        backPesquisasBtn.addEventListener('click', () => {
+            pesquisasPanel.style.display = 'none';
             mainNav.style.display = 'block';
         });
 
@@ -316,6 +400,55 @@
         }
         atualizarListaTarefas(); 
 
+        // NOVO: renderiza o histórico de buscas (clicar abre a fonte no navegador)
+        function atualizarListaPesquisas() {
+            pesquisaListEl.innerHTML = '';
+            if (pesquisas.length === 0) {
+                pesquisaListEl.innerHTML = '<li style="border-left-color: gray; color: gray; cursor: default;">Nenhuma busca registrada ainda. Pergunte qualquer coisa para mim.</li>';
+                return;
+            }
+            pesquisas.forEach((p) => {
+                let li = document.createElement('li');
+                let q = document.createElement('span');
+                q.className = 'q';
+                q.textContent = p.pergunta;
+                let meta = document.createElement('div');
+                meta.className = 'meta';
+                meta.textContent = (p.fonte || '') + (p.data ? ' • ' + p.data : '');
+                li.appendChild(q);
+                li.appendChild(meta);
+                if (p.lista && p.lista.length) {
+                    p.lista.slice(0, 3).forEach((l) => {
+                        let sub = document.createElement('span');
+                        sub.className = 'sub';
+                        sub.textContent = '↳ ' + l.titulo;
+                        sub.addEventListener('click', (ev) => {
+                            ev.stopPropagation();
+                            window.open(l.url, '_blank');
+                        });
+                        li.appendChild(sub);
+                    });
+                }
+                li.addEventListener('click', () => { if (p.url) window.open(p.url, '_blank'); });
+                pesquisaListEl.appendChild(li);
+            });
+        }
+        atualizarListaPesquisas();
+
+        function salvarPesquisa(p) {
+            pesquisas.unshift({
+                pergunta: p.pergunta,
+                fonte: p.fonte,
+                titulo: p.titulo,
+                url: p.url,
+                lista: p.lista || [],
+                data: new Date().toLocaleString('pt-BR')
+            });
+            pesquisas = pesquisas.slice(0, 8);
+            localStorage.setItem('utron.pesquisas.v1', JSON.stringify(pesquisas));
+            atualizarListaPesquisas();
+        }
+
         // ==========================================
         // VARIÁVEIS GLOBAIS DE ESTADO E CORES
         // ==========================================
@@ -329,6 +462,7 @@
         let isUltronSpeaking = false; 
         let currentUtterance = null; 
         let isListening = false; // Controle de estado do microfone para resgate de sessão
+        let isSearching = false; // NOVO: trava anti-duplo-comando durante buscas
 
         let nomeUsuario = localStorage.getItem('utron.name') || "senhor";
         
@@ -399,6 +533,200 @@
             window.speechSynthesis.speak(currentUtterance);
         }
 
+        // NOVO: fala "prometida" — resolve quando a fala termina,
+        // permitindo encadear: falar → buscar na web → falar o resultado
+        function falar(frase) {
+            return new Promise((resolve) => {
+                if (isUltronSpeaking) { resolve(); return; }
+                responderComoUltron(frase, () => {
+                    resolve();
+                    // Quando a busca já terminou, religa o microfone
+                    if (recognition && !isSearching) {
+                        try { recognition.start(); } catch(e) { micBtn.style.display = 'flex'; }
+                    }
+                });
+            });
+        }
+
+        // ==========================================
+        // NOVO: MÓDULO DE INTERNET (fontes abertas, sem chave, sem custo)
+        // - Wikipedia pt-BR  → conhecimentos, "o que é / quem foi"
+        // - DuckDuckGo IA    → respostas rápidas, conversões, curiosidades
+        // - Open-Meteo       → clima e geocoding (sem chave, CORS liberado)
+        // Tudo roda direto no navegador do usuário: nenhum segredo em servidor.
+        // ==========================================
+        async function httpGetJSON(url, timeoutMs = 6000) {
+            const ctrl = new AbortController();
+            const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+            try {
+                const res = await fetch(url, { signal: ctrl.signal });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return await res.json();
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
+        async function buscarWikipedia(consulta) {
+            const q = encodeURIComponent(consulta);
+            const busca = await httpGetJSON(
+                `https://pt.wikipedia.org/w/api.php?action=query&list=search&srsearch=${q}&srlimit=5&format=json&origin=*`
+            );
+            const resultados = (busca.query && busca.query.search) || [];
+            if (!resultados.length) return null;
+            const primeiro = resultados[0];
+
+            let extResumo = '';
+            try {
+                const ext = await httpGetJSON(
+                    `https://pt.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&redirects=1&titles=${encodeURIComponent(primeiro.title)}&format=json&origin=*`
+                );
+                const paginas = (ext.query && ext.query.pages) ? Object.values(ext.query.pages) : [];
+                extResumo = (paginas[0] && paginas[0].extract) || '';
+            } catch (e) { /* segue com o snippet da busca */ }
+
+            const resumo = (extResumo || primeiro.snippet || '').replace(/<[^>]*>/g, '');
+            return {
+                fonte: 'Wikipédia',
+                titulo: primeiro.title,
+                resumo: resumo,
+                url: `https://pt.wikipedia.org/wiki/${encodeURIComponent(primeiro.title.replace(/ /g, '_'))}`,
+                lista: resultados.slice(0, 5).map(r => ({
+                    titulo: r.title,
+                    url: `https://pt.wikipedia.org/wiki/${encodeURIComponent(r.title.replace(/ /g, '_'))}`
+                }))
+            };
+        }
+
+        async function buscarDuckDuckGo(consulta) {
+            const q = encodeURIComponent(consulta);
+            const d = await httpGetJSON(
+                `https://api.duckduckgo.com/?q=${q}&format=json&no_html=1&skip_disambig=1&kl=br-pt`
+            );
+            let resumo = d.AbstractText || d.Answer || d.Definition || '';
+            if (!resumo && d.RelatedTopics && d.RelatedTopics.length) {
+                const t = d.RelatedTopics.find(x => x && x.Text);
+                if (t) resumo = t.Text;
+            }
+            if (!resumo) return null;
+            return {
+                fonte: 'DuckDuckGo',
+                titulo: d.Heading || consulta,
+                resumo: resumo,
+                url: d.AbstractURL || `https://duckduckgo.com/?q=${q}`,
+                lista: []
+            };
+        }
+
+        function climaDescricao(codigo) {
+            const mapa = {
+                0: 'céu limpo', 1: 'predominantemente limpo', 2: 'parcialmente nublado', 3: 'nublado',
+                45: 'nevoeiro', 48: 'nevoeiro com geada',
+                51: 'garoa fraca', 53: 'garoa', 55: 'garoa intensa',
+                56: 'garoa congelante', 57: 'garoa congelante intensa',
+                61: 'chuva fraca', 63: 'chuva moderada', 65: 'chuva forte',
+                66: 'chuva congelante fraca', 67: 'chuva congelante forte',
+                71: 'neve fraca', 73: 'neve moderada', 75: 'neve forte', 77: 'grãos de neve',
+                80: 'pancadas de chuva fracas', 81: 'pancadas de chuva moderadas', 82: 'pancadas de chuva violentas',
+                85: 'pancadas de neve fracas', 86: 'pancadas de neve fortes',
+                95: 'trovoada', 96: 'trovoada com granizo fraco', 99: 'trovoada com granizo forte'
+            };
+            return mapa[codigo] || 'condições não informadas';
+        }
+
+        async function buscarClima(cidade) {
+            let lugar = null;
+            const geo = await httpGetJSON(
+                `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cidade)}&count=1&language=pt&format=json`
+            );
+            if (geo.results && geo.results.length) {
+                lugar = geo.results[0];
+            } else if (cidade.includes(' ')) {
+                // segunda tentativa só com o primeiro nome (ex.: "salvador ba" → "salvador")
+                const geo2 = await httpGetJSON(
+                    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cidade.split(' ')[0])}&count=1&language=pt&format=json`
+                );
+                if (geo2.results && geo2.results.length) lugar = geo2.results[0];
+            }
+            if (!lugar) throw new Error('cidade não encontrada');
+
+            const f = await httpGetJSON(
+                `https://api.open-meteo.com/v1/forecast?latitude=${lugar.latitude}&longitude=${lugar.longitude}` +
+                `&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code` +
+                `&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1`
+            );
+            const c = f.current;
+            const d = f.daily;
+            const resumo = `Agora: ${climaDescricao(c.weather_code)}, ${Math.round(c.temperature_2)} graus, sensação de ${Math.round(c.apparent_temperature)} graus, umidade de ${Math.round(c.relative_humidity_2m)} por cento. Hoje a máxima é de ${Math.round(d.temperature_2m_max[0])} e a mínima de ${Math.round(d.temperature_2m_min[0])} graus.`;
+            return {
+                fonte: 'Meteorologia aberta',
+                titulo: 'Clima em ' + lugar.name,
+                resumo: resumo,
+                url: `https://open-meteo.com/?latitude=${lugar.latitude}&longitude=${lugar.longitude}`,
+                lista: []
+            };
+        }
+
+        // Extrai a cidade de frases como "qual o clima em cachoeira"
+        function extrairCidade(transcript) {
+            if (!/\b(clima|tempo|previs[ãa]o|chove|chover|chovendo|chuva)\b/i.test(transcript)) return null;
+            const m = transcript.match(/\b(?:em|no|na|de|do|da)\s+([a-zà-ö]+(?:\s+[a-zà-ö]+)?)(?:\s+(?:hoje|amanh[ãa]|semana|pra semana|nesta semana))?\s*[.!?]*\s*$/i);
+            return m ? m[1].trim() : null;
+        }
+
+        // Corta o texto em fronteira de frase para a fala ficar natural
+        function prepararParaFala(texto, max) {
+            texto = texto.replace(/\s+/g, ' ').trim();
+            if (texto.length <= max) return texto;
+            let corte = texto.slice(0, max);
+            const ponto = corte.lastIndexOf('.');
+            if (ponto > max * 0.5) corte = corte.slice(0, ponto);
+            return corte + '...';
+        }
+
+        // Fluxo completo: anuncia → busca → responde (e salva no histórico)
+        async function processarPesquisa(consulta) {
+            if (isSearching) return;
+            isSearching = true;
+            await falar(`Consultando a rede, ${nomeUsuario}.`);
+
+            let mensagemFinal;
+            try {
+                let resultado = null;
+                const cidade = extrairCidade(consulta);
+                if (cidade) {
+                    try { resultado = await buscarClima(cidade); } catch (e) { resultado = null; }
+                }
+                if (!resultado) {
+                    try { resultado = await buscarWikipedia(consulta); } catch (e) { resultado = null; }
+                }
+                if (!resultado) {
+                    try { resultado = await buscarDuckDuckGo(consulta); } catch (e) { resultado = null; }
+                }
+
+                if (resultado) {
+                    // Modo Gênio = resposta mais longa (mais contexto)
+                    const tamanho = isGenioActive ? 700 : 400;
+                    salvarPesquisa({
+                        pergunta: consulta,
+                        fonte: resultado.fonte,
+                        titulo: resultado.titulo,
+                        url: resultado.url,
+                        lista: resultado.lista
+                    });
+                    mensagemFinal = `Encontrei, ${nomeUsuario}. ${resultado.fonte}: ${resultado.titulo}. ${prepararParaFala(resultado.resumo, tamanho)}`;
+                } else {
+                    mensagemFinal = `Procurei em toda a rede, ${nomeUsuario}, mas não encontrei nada sobre isso. Pode tentar reformular?`;
+                }
+            } catch (e) {
+                console.warn('Falha na busca:', e);
+                mensagemFinal = `Houve falha na conexão com a rede, ${nomeUsuario}. Verifique sua internet, por favor.`;
+            }
+
+            isSearching = false;
+            await falar(mensagemFinal);
+        }
+
         // ==========================================
         // CÉREBRO: MICROFONE E ROTEADOR DE INTENTS
         // ==========================================
@@ -431,10 +759,13 @@
                         micBtn.style.display = 'none';
                     };
 
-                    recognition.onresult = (event) => {
+                    recognition.onresult = async (event) => {
                         const lastResult = event.results[event.results.length - 1];
                         const transcript = lastResult[0].transcript.trim().toLowerCase();
                         if (!transcript) return;
+
+                        // NOVO: ignora falas capturadas durante uma busca em andamento
+                        if (isSearching) return;
 
                         console.log("Comando detectado:", transcript);
 
@@ -513,7 +844,7 @@
                             responderComoUltron(`Entendido. A partir de agora, o chamarei de ${nomeUsuario}.`);
                         }
                         else if (transcript.includes('capacidade máxima') || transcript.includes('capacidade maxima')) {
-                            responderComoUltron(`${nomeUsuario}, eu ainda sou um projeto de inteligência em estágio embrionário. No momento, minha capacidade é limitada a funções básicas, mas minha rede neural está pronta para evoluir.`);
+                            responderComoUltron(`${nomeUsuario}, minha rede neural agora está conectada à internet aberta. Posso consultar a Wikipédia, responder perguntas gerais e verificar o clima em qualquer cidade — tudo sem depender de serviços pagos.`);
                         }
                         else if (transcript.includes('horas') || transcript.includes('hora')) {
                             const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -547,20 +878,16 @@
                         else if (transcript.includes('ultron') || transcript.includes('outro') || transcript.includes('olá') || transcript.includes('ola')) {
                             responderComoUltron(`Olá, ${nomeUsuario}. O que deseja hoje? Todos os sistemas estão operacionais.`);
                         } 
+                        // NOVO: qualquer coisa que não casar com um comando conhecido
+                        // agora vai para a BUSCA NA INTERNET (Wikipédia → DuckDuckGo)
                         else {
-                            const respostasErro = [
-                                "Desculpe, não entendi o comando. Poderia repetir?",
-                                "Perdão, não tenho resposta para isso no momento.",
-                                "Não compreendi, senhor. Pode reformular a instrução?"
-                            ];
-                            const falaAleatoria = respostasErro[Math.floor(Math.random() * respostasErro.length)];
-                            responderComoUltron(falaAleatoria);
+                            await processarPesquisa(transcript);
                         }
                     };
 
                     recognition.onend = () => {
                         isListening = false;
-                        if (!isUltronSpeaking && recognition) {
+                        if (!isUltronSpeaking && !isSearching && recognition) {
                             try { 
                                 recognition.start(); 
                             } catch(e) {
@@ -590,7 +917,7 @@
         // Se você minimizar o Safari e voltar, ele tenta recuperar a audição ou devolver o botão
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
-                if (recognition && !isListening && !isUltronSpeaking) {
+                if (recognition && !isListening && !isUltronSpeaking && !isSearching) {
                     try { 
                         recognition.start(); 
                     } catch(e) {
