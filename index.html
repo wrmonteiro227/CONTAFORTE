@@ -77,7 +77,6 @@
         .bar:nth-child(3) { height: 45px; animation-duration: 0.35s; }
         .bar:nth-child(4) { height: 22px; animation-duration: 0.2s; }
         .bar:nth-child(5) { height: 15px; animation-duration: 0.45s; }
-
         @keyframes soundWave {
             0% { transform: scaleY(0.3); }
             100% { transform: scaleY(1.2); }
@@ -100,6 +99,25 @@
             transition: background 0.3s;
         }
         #menu-btn:hover { background: rgba(255, 255, 255, 0.15); }
+
+        /* BOTÃO COPIAR CÓDIGO */
+        #copy-btn {
+            position: absolute;
+            top: 10px; right: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            border: 1px solid rgba(64, 220, 255, 0.25);
+            width: 40px; height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            z-index: 25;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s;
+        }
+        #copy-btn:active { background: rgba(64, 220, 255, 0.25); }
 
         #side-menu {
             position: absolute;
@@ -232,6 +250,211 @@
             margin-top: 6px;
             text-decoration: underline;
         }
+
+        /* ==========================================
+           HUD CENTRAL (avisos / countdown / alertas)
+           ========================================== */
+        #hud-center {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px; height: 150px;
+            z-index: 12;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.45s ease;
+        }
+        #hud-center.active { opacity: 1; }
+        #hud-center svg {
+            position: absolute;
+            inset: 0;
+            transform: rotate(-90deg);
+        }
+        .hud-bg { fill: none; stroke: rgba(64, 220, 255, 0.14); stroke-width: 2; }
+        .hud-fg {
+            fill: none;
+            stroke: rgba(64, 220, 255, 0.9);
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-dasharray: 326.73;
+            stroke-dashoffset: 0;
+            filter: drop-shadow(0 0 6px rgba(64, 220, 255, 0.8));
+        }
+        #hud-content {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 2px;
+        }
+        #hud-icon { font-size: 14px; }
+        #hud-time {
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #cfeeff;
+            text-shadow: 0 0 12px rgba(64, 220, 255, 0.9);
+        }
+        #hud-label {
+            font-size: 9px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(160, 220, 240, 0.75);
+            text-align: center;
+            padding: 0 14px;
+        }
+        #hud-center.alert .hud-fg {
+            stroke: rgba(255, 77, 106, 0.95);
+            filter: drop-shadow(0 0 8px rgba(255, 77, 106, 0.9));
+            animation: hudPulse 0.8s infinite;
+        }
+        #hud-center.alert #hud-time {
+            font-size: 13px;
+            letter-spacing: 1px;
+            color: #ffd7de;
+            text-shadow: 0 0 14px rgba(255, 77, 106, 0.9);
+        }
+        #hud-center.alert #hud-icon { animation: hudPulse 0.8s infinite; }
+        @keyframes hudPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.35; }
+        }
+
+        /* TOAST */
+        #toast {
+            position: fixed;
+            bottom: 110px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: rgba(10, 20, 30, 0.92);
+            border: 1px solid rgba(64, 220, 255, 0.5);
+            color: #cfeeff;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 40;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* ==========================================
+           CHAT
+           ========================================== */
+        #chat-panel {
+            position: fixed;
+            left: 0; right: 0; bottom: 0;
+            height: 72vh;
+            background: rgba(6, 3, 14, 0.93);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-top: 1px solid rgba(64, 220, 255, 0.35);
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
+            z-index: 18;
+            transform: translateY(105%);
+            transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+            display: flex;
+            flex-direction: column;
+            color: white;
+        }
+        #chat-panel.open { transform: translateY(0); }
+        #chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .chat-title {
+            font-size: 13px;
+            letter-spacing: 3px;
+            font-weight: 800;
+            color: #7fe3ff;
+            text-shadow: 0 0 8px rgba(64, 220, 255, 0.6);
+        }
+        #chat-close {
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            width: 30px; height: 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        #chat-msgs {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .msg {
+            max-width: 82%;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.35;
+            animation: fadeIn 0.25s ease;
+            word-wrap: break-word;
+        }
+        .msg .hora {
+            display: block;
+            font-size: 9px;
+            opacity: 0.5;
+            margin-top: 3px;
+            letter-spacing: 1px;
+        }
+        .msg.user {
+            align-self: flex-end;
+            background: rgba(138, 43, 226, 0.35);
+            border: 1px solid rgba(138, 43, 226, 0.5);
+            border-bottom-right-radius: 2px;
+        }
+        .msg.ai {
+            align-self: flex-start;
+            background: rgba(64, 220, 255, 0.12);
+            border: 1px solid rgba(64, 220, 255, 0.3);
+            border-bottom-left-radius: 2px;
+        }
+        #chat-empty {
+            text-align: center;
+            color: rgba(160, 220, 240, 0.4);
+            font-size: 12px;
+            letter-spacing: 1px;
+            margin-top: 30px;
+        }
+        #chat-input-row {
+            display: flex;
+            gap: 8px;
+            padding: 10px 14px calc(14px + env(safe-area-inset-bottom));
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        #chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(64, 220, 255, 0.25);
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+        }
+        #chat-input:focus { border-color: rgba(64, 220, 255, 0.7); }
+        #chat-send {
+            background: rgba(138, 43, 226, 0.6);
+            border: none;
+            color: white;
+            width: 44px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -240,26 +463,52 @@
 
     <header id="app-header">Ultron</header>
     <button id="menu-btn" aria-label="Abrir Menu">☰</button>
+    <button id="copy-btn" aria-label="Copiar código">⧉</button>
 
     <div id="side-menu">
         <div class="menu-header">
             <h2>Menu</h2>
             <button id="close-btn" aria-label="Fechar Menu">✖</button>
         </div>
-
         <ul id="main-nav">
             <li class="nav-item" id="nav-tarefas-btn">📝 Tarefas Diárias</li>
             <li class="nav-item" id="nav-pesquisas-btn">🌐 Buscas Recentes</li>
         </ul>
-
         <div id="tasks-panel">
             <button id="back-nav-btn">⬅ Voltar</button>
             <ul id="task-list"></ul>
         </div>
-
         <div id="pesquisas-panel">
             <button class="panel-back-btn" id="back-pesquisas-btn">⬅ Voltar</button>
             <ul id="pesquisa-list"></ul>
+        </div>
+    </div>
+
+    <!-- HUD CENTRAL (avisos tecnológicos) -->
+    <div id="hud-center">
+        <svg viewBox="0 0 120 120" width="150" height="150">
+            <circle class="hud-bg" cx="60" cy="60" r="52"></circle>
+            <circle class="hud-fg" id="hud-fg" cx="60" cy="60" r="52"></circle>
+        </svg>
+        <div id="hud-content">
+            <div id="hud-icon">⏰</div>
+            <div id="hud-time">--:--</div>
+            <div id="hud-label">STANDBY</div>
+        </div>
+    </div>
+
+    <!-- CHAT -->
+    <div id="chat-panel">
+        <div id="chat-header">
+            <span class="chat-title">◈ CHAT ULTRON</span>
+            <button id="chat-close" aria-label="Fechar Chat">✖</button>
+        </div>
+        <div id="chat-msgs">
+            <div id="chat-empty">SISTEMA DE COMUNICAÇÃO POR TEXTO ATIVO</div>
+        </div>
+        <div id="chat-input-row">
+            <input id="chat-input" type="text" placeholder="Digite um comando (ex: pesquisa sobre X)..." autocomplete="off">
+            <button id="chat-send" aria-label="Enviar">➤</button>
         </div>
     </div>
 
@@ -269,13 +518,12 @@
 
     <button id="mic-btn" aria-label="Ativar IA">🎤</button>
 
+    <div id="toast"></div>
+
     <script>
         // ============================================================
         // 📚 EDITE AQUI SUA BASE DE CONHECIMENTO LOCAL
-        // Adicione linhas no formato:
-        //   { chave: ["palavra ou frase", "outra variação"], resposta: "o que o Ultron vai falar" }
-        // Ele responde ANTES de ir na internet sempre que você usar
-        // uma das palavras-chave (comparação ignora acentos).
+        //   { chave: ["palavra ou frase", "variação"], resposta: "o que o Ultron fala" }
         // ============================================================
         const BASE_CONHECIMENTO = [
             { chave: ["senha do wifi", "senha wifi", "wifi"],  resposta: "A senha do wifi é: EDITE_AQUI." },
@@ -286,7 +534,7 @@
         // ============================================================
 
         // ==========================================
-        // UI DO MENU E PAINÉIS
+        // UI: MENU, PAINÉIS, HUD, CHAT, TOAST, COPY
         // ==========================================
         const menuBtn = document.getElementById('menu-btn');
         const sideMenu = document.getElementById('side-menu');
@@ -299,16 +547,51 @@
         const micBtn = document.getElementById('mic-btn');
         const appHeader = document.getElementById('app-header');
         const waveform = document.getElementById('waveform');
+        const toastEl = document.getElementById('toast');
+        const copyBtn = document.getElementById('copy-btn');
 
         const navPesquisasBtn = document.getElementById('nav-pesquisas-btn');
         const backPesquisasBtn = document.getElementById('back-pesquisas-btn');
         const pesquisasPanel = document.getElementById('pesquisas-panel');
         const pesquisaListEl = document.getElementById('pesquisa-list');
 
+        const hudEl = document.getElementById('hud-center');
+        const hudFg = document.getElementById('hud-fg');
+        const hudIcon = document.getElementById('hud-icon');
+        const hudTime = document.getElementById('hud-time');
+        const hudLabel = document.getElementById('hud-label');
+
+        const chatPanel = document.getElementById('chat-panel');
+        const chatMsgs = document.getElementById('chat-msgs');
+        const chatInput = document.getElementById('chat-input');
+        const chatSend = document.getElementById('chat-send');
+        const chatClose = document.getElementById('chat-close');
+
         let tarefas = JSON.parse(localStorage.getItem('utron.tasks.v1')) || [];
         let pesquisas = JSON.parse(localStorage.getItem('utron.pesquisas.v1')) || [];
         let fatos = JSON.parse(localStorage.getItem('utron.fatos.v1')) || [];
 
+        // ---- Toast ----
+        let toastTimer = null;
+        function toast(msg) {
+            toastEl.textContent = msg;
+            toastEl.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2800);
+        }
+
+        // ---- Copiar código inteiro ----
+        copyBtn.addEventListener('click', async () => {
+            try {
+                const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+                await navigator.clipboard.writeText(html);
+                toast('✅ Código copiado! Cole no seu index.html.');
+            } catch (e) {
+                toast('Não foi possível copiar automaticamente.');
+            }
+        });
+
+        // ---- Menu ----
         function openSideMenu() {
             sideMenu.classList.add('open');
             mainNav.style.display = 'block';
@@ -325,7 +608,6 @@
             tasksPanel.style.display = 'none';
             pesquisasPanel.style.display = 'block';
         }
-
         menuBtn.addEventListener('click', openSideMenu);
         closeBtn.addEventListener('click', () => sideMenu.classList.remove('open'));
         navTarefasBtn.addEventListener('click', openTasksPanel);
@@ -393,6 +675,97 @@
             atualizarListaPesquisas();
         }
 
+        // ---- HUD central ----
+        const HUD_CIRC = 2 * Math.PI * 52;
+        let hudHideTimer = null;
+        function hudFlash(icon, title, label, dur) {
+            clearTimeout(hudHideTimer);
+            hudIcon.textContent = icon;
+            hudTime.textContent = title;
+            hudLabel.textContent = label || '';
+            hudFg.style.strokeDashoffset = '0';
+            hudEl.classList.add('active');
+            hudHideTimer = setTimeout(() => hudEl.classList.remove('active'), dur || 2600);
+        }
+        function hudCountdown(restMs, totalMs, label) {
+            hudIcon.textContent = '⏰';
+            hudTime.textContent = formatarTempo(restMs / 1000);
+            hudLabel.textContent = label;
+            const prog = Math.max(0, Math.min(1, restMs / totalMs));
+            hudFg.style.strokeDashoffset = String(HUD_CIRC * (1 - prog));
+            hudEl.classList.add('active');
+        }
+        function hudAlert(icon, title, label) {
+            clearTimeout(hudHideTimer);
+            hudIcon.textContent = icon;
+            hudTime.textContent = title;
+            hudLabel.textContent = label || '';
+            hudFg.style.strokeDashoffset = '0';
+            hudEl.classList.add('active', 'alert');
+            hudHideTimer = setTimeout(() => { hudEl.classList.remove('active', 'alert'); }, 6000);
+        }
+        function hudEsconder() {
+            clearTimeout(hudHideTimer);
+            hudEl.classList.remove('active', 'alert');
+        }
+
+        // ---- Chat ----
+        let historicoChat = [];
+        let isChatOpen = false;
+        function pushMsg(quem, texto) {
+            historicoChat.push({ quem, texto, hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) });
+            historicoChat = historicoChat.slice(-60);
+            if (isChatOpen) renderChat();
+        }
+        function renderChat() {
+            chatMsgs.innerHTML = '';
+            if (historicoChat.length === 0) {
+                chatMsgs.innerHTML = '<div id="chat-empty">SISTEMA DE COMUNICAÇÃO POR TEXTO ATIVO</div>';
+                return;
+            }
+            historicoChat.forEach((m) => {
+                const d = document.createElement('div');
+                d.className = 'msg ' + (m.quem === 'user' ? 'user' : 'ai');
+                const t = document.createElement('span');
+                t.textContent = m.texto;
+                const h = document.createElement('span');
+                h.className = 'hora';
+                h.textContent = (m.quem === 'user' ? 'VOCÊ' : 'ULTRON') + ' • ' + m.hora;
+                d.appendChild(t);
+                d.appendChild(h);
+                chatMsgs.appendChild(d);
+            });
+            chatMsgs.scrollTop = chatMsgs.scrollHeight;
+        }
+        function abrirChat() {
+            if (isChatOpen) return;
+            isChatOpen = true;
+            chatPanel.classList.add('open');
+            renderChat();
+            setTimeout(() => chatInput.focus(), 450);
+            hudFlash('💬', 'CHAT ABERTO', 'digite ou fale');
+        }
+        function fecharChat() {
+            if (!isChatOpen) return;
+            isChatOpen = false;
+            chatPanel.classList.remove('open');
+            chatInput.blur();
+        }
+        async function enviarChat() {
+            const texto = chatInput.value.trim();
+            if (!texto) return;
+            chatInput.value = '';
+            pushMsg('user', texto);
+            if (isSearching) {
+                pushMsg('ultron', 'Um instante, estou finalizando a consulta anterior.');
+                return;
+            }
+            await processarComando(texto.toLowerCase());
+        }
+        chatSend.addEventListener('click', enviarChat);
+        chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') enviarChat(); });
+        chatClose.addEventListener('click', fecharChat);
+
         // ==========================================
         // ESTADO GLOBAL
         // ==========================================
@@ -414,7 +787,7 @@
         let isGenioActive = localStorage.getItem('utron.mode') === 'genio';
         let isFaceActive = localStorage.getItem('utron.face') === 'on';
 
-        // MEMÓRIA DE CONVERSA (contexto: o que foi dito antes)
+        // Memória de conversa (contexto)
         let memoria = { ultimoTopico: '', ultimoResumo: '', ultimoComando: '', ultimoTs: 0 };
 
         const corBaseNormal = new THREE.Color(0x8a2be2);
@@ -435,15 +808,14 @@
         }
 
         // ==========================================
-        // FALA + BARGE-IN (ele te interrompe? não: você interrompe ELE)
-        // O microfone NUNCA é desligado durante a fala — se você falar,
-        // ele corta a si próprio e te escuta (com filtro anti-auto-escuta).
+        // FALA + BARGE-IN
         // ==========================================
         function responderComoUltron(fraseDaVez, onEndCallback = null) {
             if (isUltronSpeaking) return;
 
             isUltronSpeaking = true;
             currentUtteranceText = fraseDaVez.toLowerCase();
+            pushMsg('ultron', fraseDaVez);
 
             waveform.style.opacity = '1';
             window.speechSynthesis.cancel();
@@ -466,7 +838,6 @@
 
             const finalizarFala = () => {
                 if (currentUtterance && currentUtterance.onend !== finalizarFala) {
-                    // fala cancelada por barge-in: o controle já mudou de mão
                     if (isUltronSpeaking) {
                         isUltronSpeaking = false;
                         currentUtteranceText = '';
@@ -482,17 +853,14 @@
             };
 
             currentUtterance.onend = finalizarFala;
-            currentUtterance.onerror = (ev) => {
-                // 'interrupted'/'canceled' virá do barge-in; trata como fim normal
-                finalizarFala();
-            };
+            currentUtterance.onerror = () => finalizarFala();
 
             window.speechSynthesis.speak(currentUtterance);
         }
 
         function interromperFala() {
             if (!isUltronSpeaking) return;
-            searchToken++; // aborta qualquer fluxo de busca em andamento
+            searchToken++;
             isSearching = false;
             isUltronSpeaking = false;
             currentUtteranceText = '';
@@ -645,12 +1013,8 @@
             return corte + '...';
         }
 
-        // Busca SÓ com gatilho explícito ("pesquisa", "busca", "acha", "procura"...)
+        // Busca SÓ com gatilho explícito
         const TRIGGERS_BUSCA = /pesquis|busc|achar?\b|procur|na internet|na web|no google|me informa|informa sobre|me fala sobre|me diz sobre/i;
-
-        function temGatilhoBusca(transcript) {
-            return TRIGGERS_BUSCA.test(transcript);
-        }
 
         function limparConsulta(transcript) {
             let q = transcript
@@ -663,12 +1027,12 @@
             return q.length >= 3 ? q : transcript;
         }
 
-        async function processarPesquisa(consulta, prefixoResposta = '') {
+        async function processarPesquisa(consulta, prefixoResposta) {
             if (isSearching) return;
             isSearching = true;
             const token = ++searchToken;
-            await falar(`Consultando a rede, ${nomeUsuario}.`);
-            if (token !== searchToken) return; // foi interrompido
+            await falar(`Consultando a rede.`);
+            if (token !== searchToken) return;
 
             let mensagemFinal;
             try {
@@ -692,14 +1056,14 @@
                     memoria.ultimoTopico = consulta;
                     memoria.ultimoResumo = prepararParaFala(resultado.resumo, 400);
                     salvarPesquisa({ pergunta: consulta, fonte: resultado.fonte, titulo: resultado.titulo, url: resultado.url, lista: resultado.lista });
-                    const inicio = prefixoResposta ? prefixoResposta + ' ' : 'Encontrei, ' + nomeUsuario + '. ';
+                    const inicio = prefixoResposta ? prefixoResposta + ' ' : 'Encontrei. ';
                     mensagemFinal = `${inicio}${resultado.fonte}: ${resultado.titulo}. ${prepararParaFala(resultado.resumo, tamanho)}`;
                 } else {
-                    mensagemFinal = `Procurei em toda a rede, ${nomeUsuario}, mas não encontrei nada sobre isso. Pode tentar com outras palavras?`;
+                    mensagemFinal = `Procurei na rede, mas não encontrei nada sobre isso. Pode tentar com outras palavras?`;
                 }
             } catch (e) {
                 console.warn('Falha na busca:', e);
-                mensagemFinal = `Houve falha na conexão com a rede, ${nomeUsuario}. Verifique sua internet, por favor.`;
+                mensagemFinal = `Falha na conexão com a rede. Verifique sua internet, por favor.`;
             }
 
             if (token !== searchToken) return;
@@ -746,10 +1110,11 @@
         }
 
         // ==========================================
-        // ⏰ TIMERS RELATIVOS + ALARMES DE HORA ESPECÍFICA
+        // ⏰ TIMERS + ALARMES (com HUD central)
         // ==========================================
         let timerId = null;
         let timerEndsAt = 0;
+        let timerTotalMs = 0;
         let timerLabel = '';
 
         function formatarTempo(seg) {
@@ -762,21 +1127,21 @@
             return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
         }
 
-        function atualizarHeaderTimer() {
-            const restante = (timerEndsAt - Date.now()) / 1000;
-            if (restante <= 0) {
+        function atualizarTimer() {
+            const restMs = timerEndsAt - Date.now();
+            if (restMs <= 0) {
                 clearInterval(timerId);
                 timerId = null;
                 timerEndsAt = 0;
-                appHeader.textContent = 'Ultron';
+                hudAlert('⏰', 'TEMPO ESGOTADO', timerLabel);
                 tocarAlarme();
                 if ('Notification' in window && Notification.permission === 'granted') {
-                    try { new Notification('Ultron', { body: `${timerLabel} concluído, ${nomeUsuario}.` }); } catch(e) {}
+                    try { new Notification('Ultron', { body: `${timerLabel} concluído.` }); } catch(e) {}
                 }
-                responderComoUltron(`Tempo esgotado, ${nomeUsuario}. ${timerLabel} terminou.`);
+                responderComoUltron(`Tempo esgotado. ${timerLabel} terminou.`);
                 return;
             }
-            appHeader.textContent = `Ultron ⏰ ${formatarTempo(restante)}`;
+            hudCountdown(restMs, timerTotalMs, timerLabel);
         }
 
         function tocarAlarme() {
@@ -798,21 +1163,14 @@
         }
 
         function extrairAlarme(transcript) {
-            // "me acorda às 7" / "alarme das 7 da manhã" / "me avise às 14:30"
             if (!/(?:acorda|acorde|avise|alarme|toque|lembre)/i.test(transcript)) return null;
-            if (/meia[- ]noite/i.test(transcript)) {
-                const alvo = montarHoraAlvo(0, 0);
-                if (alvo) return alvo;
-            }
-            if (/meio dia/i.test(transcript)) {
-                const alvo = montarHoraAlvo(12, 0);
-                if (alvo) return alvo;
-            }
+            if (/meia[- ]noite/i.test(transcript)) return montarHoraAlvo(0, 0);
+            if (/meio dia/i.test(transcript)) return montarHoraAlvo(12, 0);
             const m = transcript.match(/(\d{1,2})(?::(\d{2}))?\s*(?:horas?|h)?\s*(da\s+(manh[ãa]|tarde|noite|madrugada))?/i);
             if (!m) return null;
             const idxNum = transcript.indexOf(m[0]);
             const depois = transcript.slice(idxNum + m[0].length);
-            if (/^minutos?/i.test(depois)) return null; // é timer relativo, não alarme
+            if (/^minutos?/i.test(depois)) return null; // timer relativo, não alarme
             let hora = parseInt(m[1], 10);
             const min = m[2] ? parseInt(m[2], 10) : 0;
             const periodo = m[3];
@@ -827,13 +1185,12 @@
 
         function montarHoraAlvo(hora, min) {
             const agora = new Date();
-            const alvo = new Date(agoro);
+            const alvo = new Date(agora);
             alvo.setHours(hora, min, 0, 0);
             if (alvo <= agora) alvo.setDate(alvo.getDate() + 1);
-            return {
-                timestamp: alvo.getTime(),
-                label: `o alarme das ${String(hora).padStart(2, '0')}:${String(min).padStart(2, '0')}`
-            };
+            const hh = String(hora).padStart(2, '0');
+            const mm = String(min).padStart(2, '0');
+            return { timestamp: alvo.getTime(), hora, min, hhmm: `${hh}:${mm}` };
         }
 
         function extrairTimer(transcript) {
@@ -857,8 +1214,9 @@
         function ativarTimer(endTs, label) {
             if (timerId) clearInterval(timerId);
             timerEndsAt = endTs;
+            timerTotalMs = Math.max(1000, endTs - Date.now());
             timerLabel = label;
-            timerId = setInterval(atualizarHeaderTimer, 250);
+            timerId = setInterval(atualizarTimer, 250);
             if ('Notification' in window && Notification.permission === 'default') {
                 try { Notification.requestPermission(); } catch(e) {}
             }
@@ -870,7 +1228,7 @@
             timerId = null;
             timerEndsAt = 0;
             timerLabel = '';
-            appHeader.textContent = 'Ultron';
+            hudEsconder();
             return true;
         }
 
@@ -886,19 +1244,275 @@
                 return {
                     tipo: 'problema',
                     consulta: memoria.ultimoTopico + ' solucao problemas como resolver',
-                    prefixo: `Sobre ${memoria.ultimoTopico}, somando com o problema que você relatou, a melhor saída que encontrei:`
+                    prefixo: `Sobre ${memoria.ultimoTopico}, somando com o problema relatado, a melhor saída que encontrei:`
                 };
             }
             const limpa = transcript.replace(/^(e |ent[ãa]o |ai |a[íi] |da[íi] |dai |e como |e o que |e qual |como |o que |qual |quais |por que |porque |quando |onde |quanto |isso |daquilo )+/i, '').trim();
             return {
                 tipo: 'questao',
                 consulta: (limpa.length >= 3 ? memoria.ultimoTopico + ' ' + limpa : memoria.ultimoTopico),
-                prefixo: `Combinando o que conversamos sobre ${memoria.ultimoTopico} com a sua pergunta:`
+                prefixo: `Combinando o que conversamos sobre ${memoria.ultimoTopico} com a pergunta:`
             };
         }
 
         // ==========================================
-        // CÉREBRO: MICROFONE E ROTEADOR DE INTENTS
+        // 🧠 ROTEADOR DE INTENTS (comum: voz + chat)
+        // ==========================================
+        const STOP_RE = /(t[áa] bom pode parar|pode parar|cala a boca|para de falar|pare de falar|sil[eê]ncio|chega de falar|para agora|pare agora|\bchega\b|\bbasta\b|ok,? t[áa] bom|t[áa] bom)/i;
+        const CHAT_OPEN_RE = /ativar chat|abrir chat|abre o chat|mostra (o |a )?chat|chamar o chat|paine?l de chat|tela de chat/i;
+        const CHAT_CLOSE_RE = /fechar chat|fecha o chat|fecha o painel|sair do chat|desativar chat|fecha a tela|fecha a janela/i;
+
+        async function processarComando(transcript) {
+            console.log("Comando detectado:", transcript);
+            registrarComando(transcript);
+
+            // ---- Intents duros ----
+            const cancelarTimerMatch = transcript.match(/cancelar (o )?(timer|alarme|cron[oó]metro)|pare (o )?(timer|alarme)|desligue (o )?(timer|alarme)/i);
+            const statusTimerMatch = transcript.match(/quanto (tempo )?falta no? (timer|alarme)|tempo restante no? (timer|alarme)|situa[çc][ãa]o do timer/i);
+            const alarmeInfo = extrairAlarme(transcript);
+            const timerInfo = extrairTimer(transcript);
+
+            const chatOpenMatch = CHAT_OPEN_RE.test(transcript);
+            const chatCloseMatch = CHAT_CLOSE_RE.test(transcript);
+
+            const desativarFaceMatch = transcript.match(/desativar modo (face|humano|rosto)|desligar modo (face|humano|rosto)|sair do modo (face|humano|rosto)|voltar a esfera|voltar à esfera|modo esfera|devolva a esfera|volta a ser (a|esfera)|desativa (o |a )?(rosto|face)/i);
+            const ativarFaceMatch = transcript.match(/face ?huma?na?|modo (face|humano|rosto)|ativar (o |a )?(rosto|face|humano)|ativa (o |a )?(rosto|face|humano)|liga (o |a )?(rosto|face)|transforme[- ]se (em|para|pra) (um )?(rosto|face|humano|ser humano)|modo rosto/i);
+
+            const desativarGenioMatch = transcript.match(/desativar modo g[eê]nio|desligar modo g[eê]nio|desativa o modo g[eê]nio|desliga o g[eê]nio|sair do modo g[eê]nio|voltar ao normal/i);
+            const ativarGenioMatch = transcript.match(/ativar modo g[eê]nio|liga[r]? modo g[eê]nio/i) || (transcript.includes('modo gênio') && !transcript.includes('desativar') && !transcript.includes('desligar') && !transcript.includes('sair'));
+
+            const salvarFatoMatch = transcript.match(/(?:salve na mem[óo]ria|salvar na mem[óo]ria|guarde que|aprenda que|memorize que|memorize)\s+(.+)/i);
+            const limparMemoriaMatch = transcript.match(/apague (minha|sua) mem[óo]ria|limpe a mem[óo]ria|esvazie a mem[óo]ria/i);
+            const repetirMatch = transcript.match(/repete|diga de novo|o que (voce|você) disse/i);
+
+            const registroRegex = /(?:registrar|salvar|anotar|registre|anote|salve)(?:\s+(?:nova tarefa|tarefa|compromissos?|que|um compromisso|uma tarefa))?\s+(.+)/i;
+            const registroMatch = transcript.match(registroRegex);
+
+            const leituraTarefasRegex = /quais (?:s[ãa]o as )?tarefas|o que tenho para fazer|o que h[áa] para hoje|ler tarefas|meus compromissos/i;
+            const leituraMatch = transcript.match(leituraTarefasRegex);
+
+            const nomeRegex = /(?:meu nome [ée]|me chamo)\s+([a-zàáâãéèêíïóôõöúçñ]+)/i;
+            const nomeMatch = transcript.match(nomeRegex);
+
+            let mathTranscript = transcript
+                .replace(/\bzero\b/g, '0').replace(/\bum\b/g, '1').replace(/\bdois\b/g, '2').replace(/\btr[eê]s\b/g, '3')
+                .replace(/\bquatro\b/g, '4').replace(/\bcinco\b/g, '5').replace(/\bseis\b/g, '6').replace(/\bsete\b/g, '7')
+                .replace(/\boito\b/g, '8').replace(/\bnove\b/g, '9').replace(/\bdez\b/g, '10');
+
+            const mathRegex = /(\d+(?:[.,]\d+)?)\s*(mais|somada? a?|\+|menos|-|vezes|\*|x|multiplicado(?: por)?|dividido(?: por| para| pra)?|\/)\s*(\d+(?:[.,]\d+)?)/i;
+            const mathMatch = mathTranscript.match(mathRegex);
+
+            const saudacaoMatch = /\b(ol[aá]|oi|opa|bom dia|boa tarde|boa noite|e a[ií]|eai)\b/i.test(transcript) || transcript.includes('ultron') || transcript.includes('outro');
+
+            // ROTEAMENTO
+            if (cancelarTimerMatch) {
+                responderComoUltron(cancelarTimer() ? 'Timer cancelado.' : 'Não há nenhum timer ativo.');
+            }
+            else if (statusTimerMatch) {
+                if (timerId) {
+                    const restante = (timerEndsAt - Date.now()) / 1000;
+                    const m = Math.floor(restante / 60);
+                    const s = Math.ceil(restante % 60);
+                    responderComoUltron(`Faltam ${m} minutos e ${s} segundos. ${timerLabel}.`);
+                } else {
+                    responderComoUltron('Não há nenhum timer ativo.');
+                }
+            }
+            else if (alarmeInfo) {
+                ativarTimer(alarmeInfo.timestamp, `o alarme das ${alarmeInfo.hhmm}`);
+                responderComoUltron(`Alarme definido: às ${alarmeInfo.hhmm}.`);
+                hudFlash('⏰', 'DEFINIDO', `alarme às ${alarmeInfo.hhmm}`);
+            }
+            else if (timerInfo) {
+                const rotulo = timerInfo.minutos >= 60
+                    ? `${Math.round(timerInfo.minutos / 60)} ${timerInfo.minutos / 60 === 1 ? 'hora' : 'horas'}`
+                    : `${timerInfo.minutos} minutos`;
+                ativarTimer(Date.now() + timerInfo.totalSeg * 1000, `o timer de ${rotulo}`);
+                responderComoUltron(`Timer definido: ${rotulo}.`);
+                hudFlash('⏳', 'DEFINIDO', `timer de ${rotulo}`);
+            }
+            else if (chatOpenMatch) {
+                abrirChat();
+                responderComoUltron('Chat aberto. Digite ou continue falando.');
+            }
+            else if (chatCloseMatch) {
+                fecharChat();
+                responderComoUltron('Chat fechado.');
+            }
+            else if (desativarFaceMatch) {
+                if (!isFaceActive) {
+                    responderComoUltron('Já estou na forma de esfera.');
+                } else {
+                    isFaceActive = false;
+                    localStorage.setItem('utron.face', 'off');
+                    responderComoUltron('Revertendo à forma de esfera.');
+                    hudFlash('◉', 'MODO FACE', 'desativado');
+                }
+            }
+            else if (ativarFaceMatch) {
+                if (isFaceActive) {
+                    responderComoUltron('O modo face human já está ativo.');
+                } else {
+                    isFaceActive = true;
+                    localStorage.setItem('utron.face', 'on');
+                    responderComoUltron('Modo face human ativado. Observe a transformação.');
+                    hudFlash('◉', 'MODO FACE HUMAN', 'ativado');
+                }
+            }
+            else if (desativarGenioMatch) {
+                if (!isGenioActive) {
+                    responderComoUltron('O modo gênio já está desligado.');
+                } else {
+                    isGenioActive = false;
+                    localStorage.setItem('utron.mode', 'normal');
+                    responderComoUltron('Modo gênio desativado.', () => {
+                        corBaseAlvo.copy(corBaseNormal);
+                        corAtivaAlvo.copy(corAtivaNormal);
+                    });
+                    hudFlash('⚡', 'MODO GÊNIO', 'desativado');
+                }
+            }
+            else if (ativarGenioMatch) {
+                if (isGenioActive) {
+                    responderComoUltron('O modo gênio já está ligado.');
+                } else {
+                    isGenioActive = true;
+                    localStorage.setItem('utron.mode', 'genio');
+                    responderComoUltron('Modo gênio ativado.', () => {
+                        corBaseAlvo.copy(corBaseGenio);
+                        corAtivaAlvo.copy(corAtivaGenio);
+                    });
+                    hudFlash('⚡', 'MODO GÊNIO', 'ativado');
+                }
+            }
+            else if (salvarFatoMatch) {
+                const frase = salvarFatoMatch[1].trim().replace(/[.?!]+$/, '');
+                fatos.push({ frase, data: new Date().toLocaleString('pt-BR') });
+                fatos = fatos.slice(0, 30);
+                localStorage.setItem('utron.fatos.v1', JSON.stringify(fatos));
+                responderComoUltron('Memorizado.');
+                hudFlash('🧠', 'MEMORIZADO', frase.slice(0, 34) + (frase.length > 34 ? '…' : ''));
+            }
+            else if (limparMemoriaMatch) {
+                fatos = [];
+                localStorage.setItem('utron.fatos.v1', JSON.stringify(fatos));
+                responderComoUltron('Memória de fatos apagada.');
+            }
+            else if (repetirMatch) {
+                responderComoUltron(memoria.ultimoResumo ? `Última informação: ${memoria.ultimoResumo}` : 'Não há nada anterior para repetir.');
+            }
+            else if (registroMatch) {
+                let novaTarefa = registroMatch[1].trim();
+                novaTarefa = novaTarefa.charAt(0).toUpperCase() + novaTarefa.slice(1);
+                tarefas.push(novaTarefa);
+                atualizarListaTarefas();
+                sideMenu.classList.add('open');
+                openTasksPanel();
+                responderComoUltron(`Anotado. Registrei: ${novaTarefa}.`);
+            }
+            else if (leituraMatch) {
+                sideMenu.classList.add('open');
+                openTasksPanel();
+                if (tarefas.length === 0) {
+                    responderComoUltron('Você não tem nenhuma tarefa registrada para hoje.');
+                } else {
+                    let textoTarefas = tarefas.join(". ");
+                    let plural = tarefas.length === 1 ? 'tarefa registrada' : 'tarefas registradas';
+                    responderComoUltron(`Você tem ${tarefas.length} ${plural}. São elas: ${textoTarefas}.`);
+                }
+            }
+            else if (nomeMatch) {
+                nomeUsuario = nomeMatch[1].charAt(0).toUpperCase() + nomeMatch[1].slice(1);
+                localStorage.setItem('utron.name', nomeUsuario);
+                responderComoUltron(`Entendido. A partir de agora, o chamarei de ${nomeUsuario}.`);
+            }
+            else if (transcript.includes('capacidade máxima') || transcript.includes('capacidade maxima')) {
+                responderComoUltron('Meus sistemas atuais: esfera de plasma com modo face human holográfico, chat por texto e voz, internet aberta para pesquisa sob comando, alarmes de hora e timers com aviso central, tarefas, memória local e interrupção de voz. Tudo rodando no seu dispositivo.');
+            }
+            else if (transcript.includes('horas') || transcript.includes('hora')) {
+                const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                responderComoUltron(`Agora são exatamente ${time}.`);
+            }
+            else if (mathMatch) {
+                let num1 = parseFloat(mathMatch[1].replace(',', '.'));
+                let num2 = parseFloat(mathMatch[3].replace(',', '.'));
+                let operador = mathMatch[2].toLowerCase();
+                let resultado;
+
+                if (operador.includes('mais') || operador.includes('somad') || operador === '+') {
+                    resultado = num1 + num2;
+                } else if (operador.includes('menos') || operador === '-') {
+                    resultado = num1 - num2;
+                } else if (operador.includes('vezes') || operador.includes('multiplicado') || operador === '*' || operador === 'x') {
+                    resultado = num1 * num2;
+                } else if (operador.includes('dividido') || operador === '/') {
+                    if (num2 === 0) {
+                        responderComoUltron('Não é possível dividir por zero.');
+                        return;
+                    }
+                    resultado = num1 / num2;
+                }
+
+                if (resultado !== undefined) {
+                    if (!Number.isInteger(resultado)) resultado = resultado.toFixed(2);
+                    responderComoUltron(`${num1} ${operador} ${num2} é igual a ${resultado}.`);
+                }
+            }
+            else if (saudacaoMatch) {
+                const hoje = new Date().toDateString();
+                const ultimaSaud = localStorage.getItem('utron.lastGreet') || '';
+                if (ultimaSaud !== hoje) {
+                    localStorage.setItem('utron.lastGreet', hoje);
+                    responderComoUltron(`Olá, ${nomeUsuario}. Todos os sistemas estão operacionais.`);
+                } else {
+                    const n = parseInt(localStorage.getItem('utron.greetCount') || '0', 10) + 1;
+                    localStorage.setItem('utron.greetCount', String(n));
+                    const varia = [`Oi, ${nomeUsuario}.`, 'Oi.', 'Oi, estou escutando.'][n % 3];
+                    responderComoUltron(varia);
+                }
+            }
+            else {
+                // ---- Base de conhecimento local (antes da internet) ----
+                const daBase = consultarBase(transcript);
+                if (daBase) {
+                    salvarPesquisa({ pergunta: transcript, fonte: 'Base local', titulo: daBase.slice(0, 60), url: '', lista: [] });
+                    responderComoUltron(`Da minha base local: ${daBase}`);
+                }
+                else {
+                    const fato = consultarFatos(transcript);
+                    if (fato) {
+                        responderComoUltron(`Você me ensinou antes: ${fato}.`);
+                    }
+                    else if (TRIGGERS_BUSCA.test(transcript)) {
+                        await processarPesquisa(limparConsulta(transcript));
+                    }
+                    else {
+                        // ---- Contexto: continuação / relato de problema ----
+                        const contexto = detectarContexto(transcript);
+                        if (contexto) {
+                            await processarPesquisa(contexto.consulta, contexto.prefixo);
+                        }
+                        else if (/^(ok|okay|t[áa]m?|t[áa] bom|entendi|entendido|combinado|show|perfeito|ótimo|otimo|legal|valeu|obrigado|obrigada|beleza|show de bola|pode ser|fechado|isso|sim|nao)$|^o k$/i.test(transcript)) {
+                            responderComoUltron(/obrigad/i.test(transcript) ? 'Sempre à disposição.' : 'Às ordens.');
+                        }
+                        else if (STOP_RE.test(transcript)) {
+                            responderComoUltron('Compreendido.');
+                        }
+                        else {
+                            const respostasErro = [
+                                "Desculpe, não entendi o comando. Poderia repetir?",
+                                "Perdão, não tenho resposta para isso no momento.",
+                                "Não compreendi. Pode reformular a instrução?"
+                            ];
+                            responderComoUltron(respostasErro[Math.floor(Math.random() * respostasErro.length)]);
+                        }
+                    }
+                }
+            }
+        }
+
+        // ==========================================
+        // CÉREBRO: MICROFONE (voz)
         // ==========================================
         micBtn.addEventListener('click', async () => {
             try {
@@ -934,227 +1548,18 @@
                         if (!transcript) return;
 
                         // ---- BARGE-IN: você falou durante a fala dele ----
+                        const isStop = STOP_RE.test(transcript);
                         if (isUltronSpeaking) {
                             const conf = lastResult[0].confidence;
-                            if (conf !== undefined && conf < 0.5) return; // ruído / voz fraca
-                            if (parecerAutoEscuta(transcript)) return;    // ele ouviu a si mesmo
-                            interromperFala();                            // você tem a palavra
+                            if (conf !== undefined && conf < 0.5 && !isStop) return;
+                            if (!isStop && parecerAutoEscuta(transcript)) return;
+                            interromperFala();
+                            if (isStop) return; // silêncio: só parou
                         }
 
                         if (isSearching) return;
 
-                        console.log("Comando detectado:", transcript);
-                        registrarComando(transcript);
-
-                        // ---- INTENTS DUROS ----
-                        const cancelarTimerMatch = transcript.match(/cancelar (o )?(timer|alarme|cron[oó]metro)|pare (o )?(timer|alarme)|desligue (o )?(timer|alarme)/i);
-                        const statusTimerMatch = transcript.match(/quanto (tempo )?falta no? (timer|alarme)|tempo restante no? (timer|alarme)|situa[çc][ãa]o do timer/i);
-                        const alarmeInfo = extrairAlarme(transcript);
-                        const timerInfo = extrairTimer(transcript);
-
-                        // Face Human — variações amplas (STT pode entregar "face humana", "face human", "modo face"...)
-                        const desativarFaceMatch = transcript.match(/desativar modo (face|humano|rosto)|desligar modo (face|humano|rosto)|sair do modo (face|humano|rosto)|voltar a esfera|voltar à esfera|modo esfera|devolva a esfera|volta a ser (a|esfera)|desativa (o |a )?(rosto|face)/i);
-                        const ativarFaceMatch = transcript.match(/face ?huma?na?|modo (face|humano|rosto)|ativar (o |a )?(rosto|face|humano)|ativa (o |a )?(rosto|face|humano)|liga (o |a )?(rosto|face)|transforme[- ]se (em|para|pra) (um )?(rosto|face|humano|ser humano)|modo rosto/i);
-
-                        const desativarGenioMatch = transcript.match(/desativar modo g[eê]nio|desligar modo g[eê]nio|desativa o modo g[eê]nio|desliga o g[eê]nio|sair do modo g[eê]nio|voltar ao normal/i);
-                        const ativarGenioMatch = transcript.match(/ativar modo g[eê]nio|liga[r]? modo g[eê]nio/i) || (transcript.includes('modo gênio') && !transcript.includes('desativar') && !transcript.includes('desligar') && !transcript.includes('sair'));
-
-                        const salvarFatoMatch = transcript.match(/(?:salve na mem[óo]ria|salvar na mem[óo]ria|guarde que|aprenda que|memorize que|memorize)\s+(.+)/i);
-                        const limparMemoriaMatch = transcript.match(/apague (minha|sua) mem[óo]ria|limpe a mem[óo]ria|esvazie a mem[óo]ria/i);
-                        const repetirMatch = transcript.match(/repete|diga de novo|o que (voce|você) disse/i);
-
-                        const registroRegex = /(?:registrar|salvar|anotar|registre|anote|salve)(?:\s+(?:nova tarefa|tarefa|compromissos?|que|um compromisso|uma tarefa))?\s+(.+)/i;
-                        const registroMatch = transcript.match(registroRegex);
-
-                        const leituraTarefasRegex = /quais (?:s[ãa]o as )?tarefas|o que tenho para fazer|o que h[áa] para hoje|ler tarefas|meus compromissos/i;
-                        const leituraMatch = transcript.match(leituraTarefasRegex);
-
-                        const nomeRegex = /(?:meu nome [ée]|me chamo)\s+([a-zàáâãéèêíïóôõöúçñ]+)/i;
-                        const nomeMatch = transcript.match(nomeRegex);
-
-                        let mathTranscript = transcript
-                            .replace(/\bzero\b/g, '0').replace(/\bum\b/g, '1').replace(/\bdois\b/g, '2').replace(/\btr[eê]s\b/g, '3')
-                            .replace(/\bquatro\b/g, '4').replace(/\bcinco\b/g, '5').replace(/\bseis\b/g, '6').replace(/\bsete\b/g, '7')
-                            .replace(/\boito\b/g, '8').replace(/\bnove\b/g, '9').replace(/\bdez\b/g, '10');
-
-                        const mathRegex = /(\d+(?:[.,]\d+)?)\s*(mais|somada? a?|\+|menos|-|vezes|\*|x|multiplicado(?: por)?|dividido(?: por| para| pra)?|\/)\s*(\d+(?:[.,]\d+)?)/i;
-                        const mathMatch = mathTranscript.match(mathRegex);
-
-                        // ROTEAMENTO
-                        if (cancelarTimerMatch) {
-                            responderComoUltron(cancelarTimer() ? `Timer cancelado, ${nomeUsuario}.` : `Não há nenhum timer ativo, ${nomeUsuario}.`);
-                        }
-                        else if (statusTimerMatch) {
-                            if (timerId) {
-                                const restante = (timerEndsAt - Date.now()) / 1000;
-                                const m = Math.floor(restante / 60);
-                                const s = Math.ceil(restante % 60);
-                                responderComoUltron(`Faltam ${m} minutos e ${s} segundos. ${timerLabel}, ${nomeUsuario}.`);
-                            } else {
-                                responderComoUltron(`Não há nenhum timer ativo, ${nomeUsuario}.`);
-                            }
-                        }
-                        else if (alarmeInfo) {
-                            ativarTimer(alarmeInfo.timestamp, `seu ${alarmeInfo.label}`);
-                            responderComoUltron(`Alarme definido, ${nomeUsuario}: ${alarmeInfo.label}. O contador está no painel superior.`);
-                        }
-                        else if (timerInfo) {
-                            ativarTimer(Date.now() + timerInfo.totalSeg * 1000, `o timer de ${timerInfo.minutos >= 60 ? Math.round(timerInfo.minutos / 60) + (timerInfo.minutos / 60 === 1 ? ' hora' : ' horas') : timerInfo.minutos + ' minutos'}`);
-                            responderComoUltron(`Timer definido, ${nomeUsuario}: ${timerInfo.minutos} minutos. O contador está no painel superior.`);
-                        }
-                        else if (desativarFaceMatch) {
-                            if (!isFaceActive) {
-                                responderComoUltron(`Já estou na forma de esfera, ${nomeUsuario}.`);
-                            } else {
-                                isFaceActive = false;
-                                localStorage.setItem('utron.face', 'off');
-                                responderComoUltron(`Revertendo à forma de esfera, ${nomeUsuario}.`);
-                            }
-                        }
-                        else if (ativarFaceMatch) {
-                            if (isFaceActive) {
-                                responderComoUltron(`O modo face human já está ativo, ${nomeUsuario}.`);
-                            } else {
-                                isFaceActive = true;
-                                localStorage.setItem('utron.face', 'on');
-                                responderComoUltron(`Ativando modo face human. Observe a transformação, ${nomeUsuario}.`);
-                            }
-                        }
-                        else if (desativarGenioMatch) {
-                            if (!isGenioActive) {
-                                responderComoUltron("O modo gênio já está desligado.");
-                            } else {
-                                isGenioActive = false;
-                                localStorage.setItem('utron.mode', 'normal');
-                                responderComoUltron("Desativando modo gênio. Retornando aos parâmetros normais.", () => {
-                                    corBaseAlvo.copy(corBaseNormal);
-                                    corAtivaAlvo.copy(corAtivaNormal);
-                                });
-                            }
-                        }
-                        else if (ativarGenioMatch) {
-                            if (isGenioActive) {
-                                responderComoUltron(`O modo gênio já está ligado, ${nomeUsuario}.`);
-                            } else {
-                                isGenioActive = true;
-                                localStorage.setItem('utron.mode', 'genio');
-                                responderComoUltron("Ativando modo gênio.", () => {
-                                    corBaseAlvo.copy(corBaseGenio);
-                                    corAtivaAlvo.copy(corAtivaGenio);
-                                    setTimeout(() => { responderComoUltron("Modo gênio ativado."); }, 1200);
-                                });
-                            }
-                        }
-                        else if (salvarFatoMatch) {
-                            const frase = salvarFatoMatch[1].trim().replace(/[.?!]+$/, '');
-                            fatos.push({ frase, data: new Date().toLocaleString('pt-BR') });
-                            fatos = fatos.slice(0, 30);
-                            localStorage.setItem('utron.fatos.v1', JSON.stringify(fatos));
-                            responderComoUltron(`Memorizado, ${nomeUsuario}. Eu disse: ${frase}.`);
-                        }
-                        else if (limparMemoriaMatch) {
-                            fatos = [];
-                            localStorage.setItem('utron.fatos.v1', JSON.stringify(fatos));
-                            responderComoUltron(`Memória de fatos apagada, ${nomeUsuario}.`);
-                        }
-                        else if (repetirMatch) {
-                            responderComoUltron(memoria.ultimoResumo ? `Última informação: ${memoria.ultimoResumo}` : `Não há nada anterior para repetir, ${nomeUsuario}.`);
-                        }
-                        else if (registroMatch) {
-                            let novaTarefa = registroMatch[1].trim();
-                            novaTarefa = novaTarefa.charAt(0).toUpperCase() + novaTarefa.slice(1);
-                            tarefas.push(novaTarefa);
-                            atualizarListaTarefas();
-                            sideMenu.classList.add('open');
-                            openTasksPanel();
-                            responderComoUltron(`Anotado, ${nomeUsuario}. Registrei a seguinte tarefa: ${novaTarefa}.`);
-                        }
-                        else if (leituraMatch) {
-                            sideMenu.classList.add('open');
-                            openTasksPanel();
-                            if (tarefas.length === 0) {
-                                responderComoUltron(`${nomeUsuario}, você não tem nenhuma tarefa ou compromisso registrado para hoje.`);
-                            } else {
-                                let textoTarefas = tarefas.join(". ");
-                                let plural = tarefas.length === 1 ? 'tarefa registrada' : 'tarefas registradas';
-                                responderComoUltron(`Você tem ${tarefas.length} ${plural}. São elas: ${textoTarefas}.`);
-                            }
-                        }
-                        else if (nomeMatch) {
-                            nomeUsuario = nomeMatch[1].charAt(0).toUpperCase() + nomeMatch[1].slice(1);
-                            localStorage.setItem('utron.name', nomeUsuario);
-                            responderComoUltron(`Entendido. A partir de agora, o chamarei de ${nomeUsuario}.`);
-                        }
-                        else if (transcript.includes('capacidade máxima') || transcript.includes('capacidade maxima')) {
-                            responderComoUltron(`${nomeUsuario}, meus sistemas atuais: esfera com efeitos de plasma e modo face human, internet aberta para pesquisa sob comando, alarmes de hora, timers, tarefas, memória local de fatos e interrupção de voz. Tudo rodando no seu dispositivo.`);
-                        }
-                        else if (transcript.includes('horas') || transcript.includes('hora')) {
-                            const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                            responderComoUltron(`Agora são exatamente ${time}, ${nomeUsuario}.`);
-                        }
-                        else if (mathMatch) {
-                            let num1 = parseFloat(mathMatch[1].replace(',', '.'));
-                            let num2 = parseFloat(mathMatch[3].replace(',', '.'));
-                            let operador = mathMatch[2].toLowerCase();
-                            let resultado;
-
-                            if (operador.includes('mais') || operador.includes('somad') || operador === '+') {
-                                resultado = num1 + num2;
-                            } else if (operador.includes('menos') || operador === '-') {
-                                resultado = num1 - num2;
-                            } else if (operador.includes('vezes') || operador.includes('multiplicado') || operador === '*' || operador === 'x') {
-                                resultado = num1 * num2;
-                            } else if (operador.includes('dividido') || operador === '/') {
-                                if (num2 === 0) {
-                                    responderComoUltron(`Não é possível dividir por zero, ${nomeUsuario}.`);
-                                    return;
-                                }
-                                resultado = num1 / num2;
-                            }
-
-                            if (resultado !== undefined) {
-                                if (!Number.isInteger(resultado)) resultado = resultado.toFixed(2);
-                                responderComoUltron(`${num1} ${operador} ${num2} é igual a ${resultado}.`);
-                            }
-                        }
-                        else if (transcript.includes('ultron') || transcript.includes('outro') || transcript.includes('olá') || transcript.includes('ola')) {
-                            responderComoUltron(`Olá, ${nomeUsuario}. O que deseja hoje? Todos os sistemas estão operacionais.`);
-                        }
-                        // ---- BASE DE CONHECIMENTO LOCAL (antes da internet) ----
-                        else {
-                            const daBase = consultarBase(transcript);
-                            if (daBase) {
-                                salvarPesquisa({ pergunta: transcript, fonte: 'Base local', titulo: daBase.slice(0, 60), url: '', lista: [] });
-                                responderComoUltron(`Da minha base local, ${nomeUsuario}: ${daBase}`);
-                            }
-                            else {
-                                const fato = consultarFatos(transcript);
-                                if (fato) {
-                                    responderComoUltron(`Você me ensinou antes, ${nomeUsuario}: ${fato}.`);
-                                }
-                                else if (temGatilhoBusca(transcript)) {
-                                    await processarPesquisa(limparConsulta(transcript));
-                                }
-                                else {
-                                    // CONTEXTO: continuação da conversa / relato de problema
-                                    const contexto = detectarContexto(transcript);
-                                    if (contexto) {
-                                        await processarPesquisa(contexto.consulta, contexto.prefixo);
-                                    }
-                                    else if (/^(ok|okay|t(a|á)m?|entendi|entendido|combinado|show|perfeito|ótimo|otimo|legal|valeu|obrigado|obrigada|beleza|show de bola|pode ser|fechado|isso|sim|nao)$|^o k$/i.test(transcript)) {
-                                        responderComoUltron(/obrigad/i.test(transcript) ? `Sempre à disposição, ${nomeUsuario}.` : `Às ordens, ${nomeUsuario}.`);
-                                    }
-                                    else {
-                                        const respostasErro = [
-                                            "Desculpe, não entendi o comando. Poderia repetir?",
-                                            "Perdão, não tenho resposta para isso no momento.",
-                                            "Não compreendi, senhor. Pode reformular a instrução?"
-                                        ];
-                                        responderComoUltron(respostasErro[Math.floor(Math.random() * respostasErro.length)]);
-                                    }
-                                }
-                            }
-                        }
+                        await processarComando(transcript);
                     };
 
                     recognition.onend = () => {
@@ -1220,9 +1625,8 @@
         controls.maxDistance = 20;
 
         // ==========================================
-        // ESFERA DE PLASMA — shader de GPU (leve e bonito)
-        // Rim glow (fresnel), ruído simplex animado,
-        // anéis de pulso na fala, sparkles e cores em fluxo.
+        // ESFERA — anéis ondulados ciano + núcleo escuro
+        // (shader de GPU, inspirado na referência)
         // ==========================================
         const NOISE_GLSL = `
         vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -1302,44 +1706,42 @@
 
                 void main() {
                     vec3 dir = normalize(position);
-                    float t = uTime * 0.35;
+                    float t = uTime;
 
-                    float n1 = snoise(dir * 1.6 + vec3(0.0, t, t * 0.7));
-                    float n2 = snoise(dir * 3.4 - vec3(t * 0.6, 0.0, t));
-                    float noise01 = (n1 * 0.65 + n2 * 0.35) * 0.5 + 0.5;
+                    // ondulação orgânica lenta
+                    float n  = snoise(dir * 2.8 + vec3(0.0, t * 0.18, t * 0.12));
+                    float n2 = snoise(dir * 5.0 - vec3(t * 0.1, 0.0, t * 0.14));
 
-                    float disp = 0.05 + 0.10 * noise01 + uPulse * 0.12 * max(0.0, n2);
-                    disp *= (1.0 - uFace * 0.85);
-                    vec3 p = position + dir * disp;
+                    // duas famílias de anéis concêntricos ondulados
+                    float r1 = sin(dir.y * 17.0 - t * 1.1 + n * 1.2);
+                    float r2 = sin(dot(dir, vec3(0.6, 0.45, 0.66)) * 13.0 + t * 0.8 + n2 * 1.4);
+                    float line = (1.0 - smoothstep(0.0, 0.055, abs(r1))) * 0.85
+                               + (1.0 - smoothstep(0.0, 0.075, abs(r2))) * 0.55;
+
+                    // respiração muito suave (sem pulso constante)
+                    float disp = 0.04 + 0.07 * n + uPulse * 0.03;
+                    vec3 p = dir * (2.2 + disp * (1.0 - uFace * 0.85));
 
                     vec4 mv = modelViewMatrix * vec4(p, 1.0);
 
+                    // centro escuro, bordas brilhantes
                     vec3 nView = normalize(normalMatrix * dir);
                     vec3 vView = normalize(-mv.xyz);
-                    float fres = pow(1.0 - abs(dot(nView, vView)), 2.0);
+                    float centerFres = abs(dot(nView, vView));
+                    float edge = 1.0 - centerFres * centerFres;
 
-                    vec3 deep = mix(vec3(0.06, 0.01, 0.18), vec3(0.0, 0.06, 0.02), uGenio);
-                    vec3 mid  = mix(vec3(0.48, 0.12, 0.85), vec3(0.0, 0.40, 0.08), uGenio);
-                    vec3 hot  = mix(vec3(0.20, 0.85, 1.00), vec3(0.30, 1.00, 0.35), uGenio);
+                    // paleta ciano/teal (verde no modo gênio)
+                    vec3 dark  = mix(vec3(0.05, 0.30, 0.40), vec3(0.02, 0.30, 0.12), uGenio);
+                    vec3 bright = mix(vec3(0.45, 0.85, 0.95), vec3(0.30, 1.00, 0.45), uGenio);
+                    vec3 col = mix(dark, bright, 0.25 + 0.75 * line);
 
-                    float bands = smoothstep(0.25, 0.8, noise01);
-                    vec3 base = mix(deep, mid, bands);
-                    base = mix(base, hot, smoothstep(0.72, 0.97, noise01) * (0.55 + uPulse * 0.6));
+                    float intensity = (0.05 + line * (0.30 + 0.70 * edge)) * (1.0 + uPulse * 0.3) * (1.0 - uFace);
 
-                    float ring = pow(max(0.0, sin(dir.y * 5.0 - uTime * 7.0 + n1 * 2.0)), 6.0) * uPulse * 0.9;
-                    float spark = step(0.985, fract(aRand * 91.7 + sin(uTime * 3.0 + aRand * 40.0) * 0.02))
-                                  * (0.5 + 0.5 * sin(uTime * 9.0 + aRand * 100.0));
+                    vColor = col * (0.9 + 0.15 * n2);
+                    vAlpha = clamp(intensity, 0.0, 1.0);
 
-                    vec3 col = base * (0.55 + 0.6 * noise01);
-                    col += hot * (fres * (0.9 + uPulse * 1.2));
-                    col += hot * ring;
-                    col += vec3(1.0) * spark * 0.9;
-
-                    vColor = col;
-                    vAlpha = clamp((0.35 + 0.65 * fres + ring * 0.5 + spark) * (1.0 - uFace), 0.0, 1.0);
-
-                    float size = (1.6 + 2.6 * aRand) * (1.0 + uPulse * 0.5);
-                    gl_PointSize = size * (140.0 / -mv.z);
+                    float size = (0.8 + 1.5 * aRand) * (1.0 + uPulse * 0.3);
+                    gl_PointSize = size * (60.0 / -mv.z);
                     gl_Position = projectionMatrix * mv;
                 }
             `,
@@ -1360,7 +1762,7 @@
         const esfera = new THREE.Points(esferaGeometry, esferaMaterial);
         scene.add(esfera);
 
-        // ---- Poeira orbital sutil (profundidade, sem peso) ----
+        // ---- Fluxo de partículas: nascem no núcleo e fluem para fora ----
         function criarTexturaSuave() {
             const c = document.createElement('canvas');
             c.width = c.height = 64;
@@ -1376,15 +1778,39 @@
         }
         const softTex = criarTexturaSuave();
 
-        const D = 320;
+        const F = 650;
+        const flowPos = new Float32Array(F * 3);
+        const flowCol = new Float32Array(F * 3);
+        const flowDirX = new Float32Array(F), flowDirY = new Float32Array(F), flowDirZ = new Float32Array(F);
+        const flowSeed = new Float32Array(F);
+        const flowT = new Float32Array(F);
+        for (let i = 0; i < F; i++) {
+            let dx = Math.random() * 2 - 1, dy = Math.random() * 2 - 1, dz = Math.random() * 2 - 1;
+            const l = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
+            flowDirX[i] = dx / l; flowDirY[i] = dy / l; flowDirZ[i] = dz / l;
+            flowSeed[i] = Math.random();
+            flowT[i] = Math.random();
+        }
+        const flowGeometry = new THREE.BufferGeometry();
+        flowGeometry.setAttribute('position', new THREE.BufferAttribute(flowPos, 3));
+        flowGeometry.setAttribute('color', new THREE.BufferAttribute(flowCol, 3));
+        const flowMaterial = new THREE.PointsMaterial({
+            size: 0.045, map: softTex, vertexColors: true,
+            blending: THREE.AdditiveBlending, transparent: true, opacity: 0.9, depthWrite: false
+        });
+        const flow = new THREE.Points(flowGeometry, flowMaterial);
+        scene.add(flow);
+
+        // ---- Poeira orbital sutil ----
+        const D = 300;
         const dustPos = new Float32Array(D * 3);
         const dustCol = new Float32Array(D * 3);
-        const dustPalette = [[0.45, 0.20, 0.90], [0.25, 0.50, 0.95], [0.70, 0.30, 0.85]];
+        const dustPalette = [[0.20, 0.55, 0.65], [0.15, 0.45, 0.60], [0.30, 0.60, 0.70]];
         for (let i = 0; i < D; i++) {
             let dx = Math.random() * 2 - 1, dy = Math.random() * 2 - 1, dz = Math.random() * 2 - 1;
             const l = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
             dx /= l; dy /= l; dz /= l;
-            const r = 2.7 + Math.random() * 1.0;
+            const r = 2.8 + Math.random() * 1.0;
             dustPos[i * 3] = dx * r; dustPos[i * 3 + 1] = dy * r; dustPos[i * 3 + 2] = dz * r;
             const pc = dustPalette[Math.floor(Math.random() * dustPalette.length)];
             const b = 0.5 + Math.random() * 0.5;
@@ -1395,7 +1821,7 @@
         dustGeometry.setAttribute('color', new THREE.BufferAttribute(dustCol, 3));
         const dustMaterial = new THREE.PointsMaterial({
             size: 0.07, map: softTex, vertexColors: true,
-            blending: THREE.AdditiveBlending, transparent: true, opacity: 0.22, depthWrite: false
+            blending: THREE.AdditiveBlending, transparent: true, opacity: 0.12, depthWrite: false
         });
         const dust = new THREE.Points(dustGeometry, dustMaterial);
         scene.add(dust);
@@ -1421,19 +1847,8 @@
         const stars = new THREE.Points(starGeometry, starMaterial);
         scene.add(stars);
 
-        // ---- Glow central ----
-        const glowMaterial = new THREE.SpriteMaterial({
-            map: softTex, color: 0x8a2be2, transparent: true, opacity: 0.22,
-            blending: THREE.AdditiveBlending, depthWrite: false
-        });
-        const glow = new THREE.Sprite(glowMaterial);
-        glow.scale.set(5.0, 5.0, 1);
-        scene.add(glow);
-        const whiteColor = new THREE.Color(1, 1, 1);
-
         // ==========================================
-        // FACE HUMAN — partículas que condensam no rosto
-        // (só visível e processado durante o modo face)
+        // FACE HUMAN — holograma de perfil (referência)
         // ==========================================
         const N = 3200;
         const positions = new Float32Array(N * 3);
@@ -1444,9 +1859,7 @@
         const delays = new Float32Array(N);
         const faceTX = new Float32Array(N), faceTY = new Float32Array(N), faceTZ = new Float32Array(N);
         const nebCR = new Float32Array(N), nebCG = new Float32Array(N), nebCB = new Float32Array(N);
-        const faceCR = new Float32Array(N), faceCG = new Float32Array(N), faceCB = new Float32Array(N);
-        const parts = new Uint8Array(N);
-        const eyeCY = new Float32Array(N);
+        const parts = new Uint8Array(N); // 0 contorno | 1 preenchimento | 2 grade | 3 olho | 4 orelha
 
         const palette = [
             [0.54, 0.17, 0.89],
@@ -1457,24 +1870,56 @@
             [0.23, 0.26, 0.72]
         ];
 
-        const _fo = { x: 0, y: 0, z: 0 };
-        function faceOutline(t) {
-            const x0 = Math.cos(t), y0 = Math.sin(t);
-            let x = 1.0 * x0;
-            let y = 1.35 * y0;
-            if (y0 < 0) {
-                const jaw = Math.pow(-y0, 1.3);
-                x *= (1 - 0.52 * jaw);
-                y *= (1 - 0.10 * jaw);
-            } else {
-                x *= 1 + 0.06 * y0;
+        // Perfil do rosto (vista lateral, olhando para +X)
+        const PROFILE = [
+            [ 0.20,  1.40], [ 0.55,  1.25], [ 0.72,  0.95], [ 0.78,  0.65], [ 0.68,  0.52],
+            [ 0.72,  0.42], [ 0.90,  0.20], [ 0.72,  0.10], [ 0.75,  0.00], [ 0.80, -0.10],
+            [ 0.72, -0.20], [ 0.65, -0.45], [ 0.42, -0.85], [ 0.12, -1.08], [-0.28, -1.02],
+            [-0.60, -0.65], [-0.80, -0.10], [-0.78,  0.50], [-0.58,  1.08]
+        ];
+
+        function dentroDoPerfil(x, y) {
+            let inside = false;
+            for (let i = 0, j = PROFILE.length - 1; i < PROFILE.length; j = i++) {
+                const xi = PROFILE[i][0], yi = PROFILE[i][1];
+                const xj = PROFILE[j][0], yj = PROFILE[j][1];
+                if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside;
             }
-            const z = 0.34 * (1 - (y / 1.35) * (y / 1.35)) * 0.9;
-            _fo.x = x; _fo.y = y; _fo.z = z;
-            return _fo;
+            return inside;
+        }
+
+        function larguraPerfil(y) {
+            let fMax = -Infinity, bMin = Infinity;
+            for (let i = 0; i < PROFILE.length; i++) {
+                const a = PROFILE[i], b = PROFILE[(i + 1) % PROFILE.length];
+                const y0 = a[1], y1 = b[1];
+                if (y < Math.min(y0, y1) || y > Math.max(y0, y1)) continue;
+                const t = (y - y0) / ((y1 - y0) || 1e-9);
+                const x = a[0] + (b[0] - a[0]) * t;
+                if (x > fMax) fMax = x;
+                if (x < bMin) bMin = x;
+            }
+            if (fMax === -Infinity || bMin === Infinity) return { cx: 0, half: 0 };
+            return { cx: (fMax + bMin) / 2, half: (fMax - bMin) / 2 };
+        }
+
+        function pontoNoCabeco() {
+            for (let k = 0; k < 10; k++) {
+                const x = (Math.random() * 2 - 1) * 0.9;
+                const y = -1.1 + Math.random() * 2.5;
+                if (!dentroDoPerfil(x, y)) continue;
+                const w = larguraPerfil(y);
+                const fy = Math.sqrt(Math.max(0.05, 1 - (y / 1.45) * (y / 1.45)));
+                const ex = Math.max(0.1, w.half);
+                const ez = 0.78 * fy * (0.35 + 0.65 * Math.sqrt(Math.max(0.05, 1 - ((x - w.cx) / ex) * ((x - w.cx) / ex))));
+                const z = (Math.random() * 2 - 1) * ez;
+                return { x, y, z };
+            }
+            return { x: 0, y: 0.2, z: 0 };
         }
 
         for (let i = 0; i < N; i++) {
+            // posição "de nebulosa" (ponto de partida da transição)
             let dx, dy, dz;
             do {
                 dx = Math.random() * 2 - 1;
@@ -1498,52 +1943,68 @@
             nebCG[i] = pc[1] * bright;
             nebCB[i] = pc[2] * bright;
 
+            // alvo no holograma de perfil
             const roll = Math.random();
-            if (roll < 0.45) {
-                parts[i] = 0;
-                const t = Math.random() * Math.PI * 2;
-                const f = faceOutline(t);
-                faceTX[i] = f.x; faceTY[i] = f.y; faceTZ[i] = f.z;
-                faceCR[i] = 0.62; faceCG[i] = 0.42; faceCB[i] = 1.0;
-            } else if (roll < 0.58) {
-                parts[i] = 1;
-                const side = Math.random() < 0.5 ? -1 : 1;
-                const a = Math.random() * Math.PI * 2;
-                const ex = Math.cos(a) * 0.30, ey = Math.sin(a) * 0.10;
-                const tilt = 0.14 * side;
-                const xr = ex * Math.cos(tilt) - ey * Math.sin(tilt);
-                const yr = ex * Math.sin(tilt) + ey * Math.cos(tilt);
-                faceTX[i] = side * 0.44 + xr;
-                faceTY[i] = 0.38 + yr;
-                faceTZ[i] = 0.34;
-                eyeCY[i] = 0.38;
-                faceCR[i] = 0.30; faceCG[i] = 0.95; faceCB[i] = 1.0;
-            } else if (roll < 0.65) {
-                parts[i] = 2;
-                let ny = 0.30 - Math.random() * 0.40;
-                let nx = (Math.random() - 0.5) * 0.05;
-                if (ny < -0.02) {
-                    nx = (Math.random() < 0.5 ? -1 : 1) * (0.03 + Math.random() * 0.07);
-                    ny = -0.08 - Math.random() * 0.08;
+            if (roll < 0.30) {
+                parts[i] = 0; // contorno do perfil (borda brilhante)
+                const segs = PROFILE.length;
+                const idx = Math.floor(Math.random() * segs);
+                const a = PROFILE[idx], b = PROFILE[(idx + 1) % segs];
+                const t = Math.random();
+                const x = a[0] + (b[0] - a[0]) * t;
+                const y = a[1] + (b[1] - a[1]) * t;
+                const w = larguraPerfil(y);
+                const z = (Math.random() - 0.5) * 2 * (0.12 + 0.30 * Math.min(1, w.half));
+                faceTX[i] = x; faceTY[i] = y; faceTZ[i] = z;
+            } else if (roll < 0.60) {
+                parts[i] = 2; // grade holográfica (latitudes + meridianos)
+                let ok = false;
+                if (Math.random() < 0.6) {
+                    const ys = [-0.8, -0.4, 0.0, 0.4, 0.8, 1.2];
+                    const y = ys[Math.floor(Math.random() * ys.length)];
+                    const phi = Math.random() * Math.PI * 2;
+                    const w = larguraPerfil(y);
+                    const rx = Math.max(0.1, w.half * 0.96);
+                    const rz = 0.82 * (1 - 0.25 * (y / 1.4) * (y / 1.4));
+                    const x = w.cx + Math.cos(phi) * rx;
+                    const z = Math.sin(phi) * rz;
+                    if (dentroDoPerfil(x, y)) {
+                        faceTX[i] = x; faceTY[i] = y; faceTZ[i] = z;
+                        ok = true;
+                    }
+                } else {
+                    const theta = [0, 0.785, 1.57, 2.356][Math.floor(Math.random() * 4)];
+                    const y = (Math.random() * 2 - 1) * 1.15;
+                    const f = Math.sqrt(Math.max(0.05, 1 - (y / 1.45) * (y / 1.45)));
+                    const x = Math.cos(theta) * 0.92 * f;
+                    const z = Math.sin(theta) * 0.82 * f;
+                    if (dentroDoPerfil(x, y)) {
+                        faceTX[i] = x; faceTY[i] = y; faceTZ[i] = z;
+                        ok = true;
+                    }
                 }
-                faceTX[i] = nx; faceTY[i] = ny; faceTZ[i] = 0.36;
-                faceCR[i] = 0.55; faceCG[i] = 0.45; faceCB[i] = 0.95;
-            } else if (roll < 0.74) {
-                parts[i] = 3;
-                const u = (Math.random() * 2 - 1) * 0.32;
-                faceTX[i] = u;
-                faceTY[i] = -0.62 + 0.035 * (1 - (u / 0.32) * (u / 0.32)) + (Math.random() - 0.5) * 0.02;
-                faceTZ[i] = 0.33;
-                faceCR[i] = 0.70; faceCG[i] = 0.50; faceCB[i] = 1.0;
+                if (!ok) {
+                    const p = pontoNoCabeco();
+                    faceTX[i] = p.x; faceTY[i] = p.y; faceTZ[i] = p.z;
+                }
+            } else if (roll < 0.90) {
+                parts[i] = 1; // preenchimento interno (escuro)
+                const p = pontoNoCabeco();
+                faceTX[i] = p.x; faceTY[i] = p.y; faceTZ[i] = p.z;
+            } else if (roll < 0.97) {
+                parts[i] = 3; // olho (brilhante, ambos os lados)
+                const lado = Math.random() < 0.5 ? -1 : 1;
+                const a = Math.random() * Math.PI * 2;
+                faceTX[i] = 0.60 + Math.cos(a) * 0.10;
+                faceTY[i] = 0.47 + Math.sin(a) * 0.055;
+                faceTZ[i] = lado * (0.45 + Math.abs(Math.sin(a)) * 0.12);
             } else {
-                parts[i] = 4;
-                const t = Math.random() * Math.PI * 2;
-                const s = Math.pow(Math.random(), 0.65);
-                const f = faceOutline(t);
-                faceTX[i] = f.x * s;
-                faceTY[i] = f.y * s * 0.92;
-                faceTZ[i] = f.z * s * 0.55 + 0.05;
-                faceCR[i] = 0.21; faceCG[i] = 0.15; faceCB[i] = 0.37;
+                parts[i] = 4; // orelha (sutil)
+                const lado = Math.random() < 0.5 ? -1 : 1;
+                const a = Math.random() * Math.PI * 2;
+                faceTX[i] = -0.05 + Math.cos(a) * 0.07;
+                faceTY[i] = 0.05 + Math.sin(a) * 0.16;
+                faceTZ[i] = lado * (0.72 + Math.cos(a) * 0.05);
             }
         }
 
@@ -1551,12 +2012,30 @@
         faceGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         faceGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         const faceMaterial = new THREE.PointsMaterial({
-            size: 0.055, map: softTex, vertexColors: true,
+            size: 0.05, map: softTex, vertexColors: true,
             blending: THREE.AdditiveBlending, transparent: true, opacity: 0, depthWrite: false
         });
         const facePoints = new THREE.Points(faceGeometry, faceMaterial);
         facePoints.visible = false;
+        facePoints.rotation.y = -Math.PI / 2; // perfil virado para a câmera
         scene.add(facePoints);
+
+        // Cores por parte: [contorno, preenchimento, grade, olho, orelha]
+        const FACE_BASE = [
+            [0.55, 0.95, 1.00],
+            [0.14, 0.42, 0.52],
+            [0.30, 0.75, 0.90],
+            [0.85, 1.00, 1.00],
+            [0.25, 0.65, 0.80]
+        ];
+        const FACE_GENIO = [
+            [0.40, 1.00, 0.55],
+            [0.12, 0.48, 0.24],
+            [0.30, 0.90, 0.45],
+            [0.85, 1.00, 0.75],
+            [0.20, 0.70, 0.35]
+        ];
+        const FACE_BR = [1.0, 0.6, 0.9, 1.3, 0.6];
 
         // ==========================================
         // LOOP DE ANIMAÇÃO
@@ -1566,6 +2045,7 @@
         let genioBlend = isGenioActive ? 1 : 0;
         let nebAngleY = 0, nebAngleX = 0;
         let prevFaceBlend = isFaceActive ? 1 : 0;
+        let timeAcc = 0;
 
         function wrapAngle(a) {
             while (a > Math.PI) a -= 2 * Math.PI;
@@ -1599,8 +2079,9 @@
             smoothedVolume += (currentVolume - smoothedVolume) * 0.15;
             const activeVolume = Math.min(1.0, smoothedVolume * 2.5);
 
-            // ---- Uniforms do shader da esfera ----
-            esferaUniforms.uTime.value = time;
+            // ---- Esfera: drift lento (acelera levemente com a voz, sem pulso) ----
+            timeAcc += dt * (1 + activeVolume * 0.8);
+            esferaUniforms.uTime.value = timeAcc;
             esferaUniforms.uPulse.value = activeVolume;
             esferaUniforms.uFace.value = morph;
             esferaUniforms.uGenio.value = genioBlend;
@@ -1608,48 +2089,65 @@
             const inFace = faceBlend >= 0.5;
             if (!inFace) {
                 if (prevFaceBlend >= 0.5) { nebAngleY = esfera.rotation.y; nebAngleX = esfera.rotation.x; }
-                nebAngleY += dt * 0.12;
-                nebAngleX += dt * 0.08;
+                nebAngleY += dt * 0.10;
+                nebAngleX += dt * 0.06;
                 esfera.rotation.y = nebAngleY;
                 esfera.rotation.x = nebAngleX;
             } else {
                 esfera.rotation.y += wrapAngle(esfera.rotation.y) * -0.06;
                 esfera.rotation.x += esfera.rotation.x * -0.06;
-                esfera.rotation.y += Math.sin(time * 0.25) * 0.0012;
-                esfera.rotation.x += Math.sin(time * 0.17) * 0.0009;
             }
             prevFaceBlend = faceBlend;
 
-            // Esfera dissolvida/encolhida durante a face
             const escalaEsfera = 1 - 0.4 * faceBlend;
             esfera.scale.setScalar(escalaEsfera);
             esfera.visible = faceBlend < 0.999;
 
-            // Poeira e estrelas
-            dust.rotation.y = time * 0.03;
-            dust.rotation.z = time * 0.012;
-            dustMaterial.opacity = 0.22 * (1 - faceBlend * 0.85);
-            stars.rotation.y = time * 0.004;
-            glowMaterial.opacity = (0.14 + activeVolume * 0.35) * (1 - faceBlend * 0.7);
-            glowMaterial.color.copy(corAtivaAtual).lerp(whiteColor, 0.4);
+            // ---- Fluxo de partículas do núcleo ----
+            flow.visible = faceBlend < 0.999;
+            if (faceBlend < 0.999) {
+                for (let i = 0; i < F; i++) {
+                    flowT[i] += dt * (0.07 + 0.10 * flowSeed[i]) * (1 + activeVolume * 1.5);
+                    if (flowT[i] > 1) flowT[i] -= 1;
+                    const t = flowT[i];
+                    const r = 0.15 + t * 2.3;
+                    const al = Math.sin(Math.PI * t);
+                    const i3 = i * 3;
+                    flowPos[i3] = flowDirX[i] * r;
+                    flowPos[i3 + 1] = flowDirY[i] * r;
+                    flowPos[i3 + 2] = flowDirZ[i] * r;
+                    flowCol[i3] = 0.35 * al * 0.6;
+                    flowCol[i3 + 1] = 0.80 * al * 0.6;
+                    flowCol[i3 + 2] = 0.90 * al * 0.6;
+                }
+                flowGeometry.attributes.position.needsUpdate = true;
+                flowGeometry.attributes.color.needsUpdate = true;
+                flowMaterial.opacity = 0.9 * (1 - faceBlend);
+                flow.rotation.y = time * 0.02;
+            }
 
-            // ---- Partículas da face (só quando morfas) ----
+            dust.rotation.y = time * 0.03;
+            dustMaterial.opacity = 0.12 * (1 - faceBlend * 0.85);
+            stars.rotation.y = time * 0.004;
+
+            // ---- Holograma de perfil ----
             facePoints.visible = morph > 0.01;
             if (morph > 0.01) {
                 faceMaterial.opacity = faceBlend;
+
+                if (inFace) {
+                    facePoints.rotation.y += wrapAngle(-Math.PI / 2 - facePoints.rotation.y) * 0.06;
+                    facePoints.rotation.x += (0 - facePoints.rotation.x) * 0.06;
+                    facePoints.rotation.y += Math.sin(time * 0.2) * 0.0008;
+                    facePoints.rotation.x += Math.sin(time * 0.14) * 0.0005;
+                }
+
                 const posAttr = faceGeometry.attributes.position;
                 const colAttr = faceGeometry.attributes.color;
                 const nebAmp = 1 - 0.85 * faceBlend;
 
-                const eyeR = 0.30;
-                const eyeG = 0.95 + 0.05 * genioBlend;
-                const eyeB = 1.0 - 0.70 * genioBlend;
-
-                let blinkScale = 1;
-                const cyc = time % 4.5;
-                if (cyc < 0.22 && faceBlend > 0.7) {
-                    blinkScale = 1 - Math.sin(Math.PI * cyc / 0.22) * 0.92;
-                }
+                // linha de varredura holográfica
+                const scanY = -1.2 + ((time * 0.22) % 1) * 2.7;
 
                 for (let i = 0; i < N; i++) {
                     const i3 = i * 3;
@@ -1684,23 +2182,18 @@
                         py += (fy - py) * e;
                         pz += (fz - pz) * e;
 
+                        // espiral de convergência
                         const sw = (1 - e) * (s1 - 0.5) * 1.6;
                         const cs = Math.cos(sw), sn = Math.sin(sw);
                         const rx = px * cs - pz * sn;
                         pz = px * sn + pz * cs;
                         px = rx;
 
-                        const jit = Math.sin(time * 1.6 + s1 * 9.0) * 0.008 * e;
+                        // micro-jitter de vida
+                        const jit = Math.sin(time * 1.6 + s1 * 9.0) * 0.007 * e;
                         px += jit;
                         py += jit * 0.7;
                         pz += jit;
-
-                        if (parts[i] === 1) {
-                            py = eyeCY[i] + (py - eyeCY[i]) * blinkScale;
-                        }
-                        if (parts[i] === 3 && activeVolume > 0.02) {
-                            py += Math.sin(time * 11 + s1 * 12) * 0.018 * activeVolume;
-                        }
                     }
 
                     posAttr.setXYZ(i, px, py, pz);
@@ -1714,17 +2207,25 @@
                     cr += en * 0.25; cg += en * 0.40; cb += en * 0.50;
 
                     if (e > 0) {
-                        let fcr = faceCR[i], fcg = faceCG[i], fcb = faceCB[i];
-                        if (parts[i] === 1) {
-                            const og = 0.85 + activeVolume * 0.6;
-                            fcr = eyeR * og; fcg = eyeG * og; fcb = eyeB * og;
-                        } else if (parts[i] === 3) {
-                            const mg = 1 + activeVolume * 0.4;
-                            fcr *= mg; fcg *= mg; fcb *= mg;
-                        } else if (parts[i] === 4) {
-                            const fl = 0.7 + 0.3 * Math.sin(time * 2 + s1 * 20);
-                            fcr *= fl; fcg *= fl; fcb *= fl;
+                        const bp = parts[i];
+                        const cbA = FACE_BASE[bp], cgA = FACE_GENIO[bp];
+                        let fcr = cbA[0] + (cgA[0] - cbA[0]) * genioBlend;
+                        let fcg = cbA[1] + (cgA[1] - cbA[1]) * genioBlend;
+                        let fcb = cbA[2] + (cgA[2] - cbA[2]) * genioBlend;
+                        fcr *= FACE_BR[bp]; fcg *= FACE_BR[bp]; fcb *= FACE_BR[bp];
+
+                        if (bp === 3) {
+                            const og = 0.85 + activeVolume * 0.7;
+                            fcr *= og; fcg *= og; fcb *= og;
                         }
+
+                        // varredura holográfica
+                        const dd = Math.abs(faceTY[i] - scanY);
+                        if (dd < 0.15) {
+                            const boost = (1 - dd / 0.15) * 0.45;
+                            fcr += boost; fcg += boost; fcb += boost;
+                        }
+
                         cr += (fcr - cr) * e;
                         cg += (fcg - cg) * e;
                         cb += (fcb - cb) * e;
