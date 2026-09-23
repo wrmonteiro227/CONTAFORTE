@@ -455,6 +455,118 @@
             font-size: 16px;
             cursor: pointer;
         }
+
+        /* Centro de controle: estado real do nucleo, nao apenas decoracao. */
+        #control-deck {
+            position: fixed;
+            top: 88px;
+            right: 24px;
+            width: min(330px, calc(100vw - 48px));
+            z-index: 8;
+            color: var(--ink);
+            animation: deckIn 0.7s ease both;
+        }
+        .deck-kicker {
+            color: var(--accent);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .deck-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            margin: 4px 0 12px;
+        }
+        .deck-heading h1 {
+            margin: 0;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 25px;
+            letter-spacing: -0.3px;
+        }
+        .deck-time { color: var(--muted); font: 500 12px monospace; }
+        .deck-panel {
+            background: rgba(4, 13, 18, 0.76);
+            border: 1px solid rgba(125, 211, 232, 0.25);
+            border-radius: 10px;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 14px;
+        }
+        .deck-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #a9f4c5;
+            font-size: 12px;
+            margin-bottom: 14px;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #64e89a;
+            border-radius: 50%;
+            box-shadow: 0 0 12px #64e89a;
+        }
+        .deck-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .deck-metric {
+            min-height: 62px;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 7px;
+            background: rgba(255, 255, 255, 0.035);
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .deck-metric small {
+            display: block;
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+        .deck-metric strong {
+            display: block;
+            color: var(--ink);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            margin-top: 5px;
+        }
+        .deck-confidence { margin-top: 13px; }
+        .deck-line { display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; }
+        .confidence-track { height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 6px; overflow: hidden; }
+        #confidence-fill { display: block; width: 10%; height: 100%; background: var(--accent); transition: width 0.3s ease; }
+        .deck-command {
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.35;
+            margin-top: 13px;
+            min-height: 30px;
+        }
+        #deck-last-command { color: var(--ink); }
+        .deck-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 12px; }
+        .deck-action {
+            border: 1px solid rgba(125, 211, 232, 0.22);
+            border-radius: 6px;
+            background: rgba(125, 211, 232, 0.06);
+            color: var(--cyan);
+            cursor: pointer;
+            font: 600 10px 'DM Sans', sans-serif;
+            padding: 8px 4px;
+        }
+        .deck-action:hover { background: rgba(255, 107, 74, 0.15); color: #ffd2c8; }
+        @keyframes deckIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 700px) {
+            #control-deck { top: auto; right: 12px; bottom: 116px; left: 12px; width: auto; }
+            #control-deck .deck-panel { padding: 10px; }
+            .deck-heading { margin-bottom: 7px; }
+            .deck-heading h1 { font-size: 19px; }
+            .deck-status, .deck-confidence, .deck-command { display: none; }
+            .deck-metric { min-height: 47px; padding: 7px; }
+            .deck-metric strong { font-size: 14px; margin-top: 2px; }
+            .deck-actions { margin-top: 7px; }
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -467,6 +579,33 @@
 
     <header id="app-header">Sexta-Feira</header>
     <button id="menu-btn" aria-label="Abrir Menu">☰</button>
+
+    <section id="control-deck" aria-label="Centro de controle">
+        <div class="deck-kicker">Núcleo local / controle de missão</div>
+        <div class="deck-heading">
+            <h1>Centro de controle</h1>
+            <span class="deck-time" id="deck-clock">--:--</span>
+        </div>
+        <div class="deck-panel">
+            <div class="deck-status"><span class="status-dot"></span><span id="deck-status">Sistemas operacionais</span></div>
+            <div class="deck-grid">
+                <div class="deck-metric"><small>Modo</small><strong id="deck-mode">LOCAL</strong></div>
+                <div class="deck-metric"><small>Personalidade</small><strong id="deck-personality">OBJETIVA</strong></div>
+                <div class="deck-metric"><small>Memórias</small><strong id="deck-memory-count">0</strong></div>
+                <div class="deck-metric"><small>Sincronização</small><strong id="deck-sync">LOCAL</strong></div>
+            </div>
+            <div class="deck-confidence">
+                <div class="deck-line"><span>Confiança da interpretação</span><strong id="confidence-label">aguardando</strong></div>
+                <div class="confidence-track"><span id="confidence-fill"></span></div>
+            </div>
+            <div class="deck-command">Último comando: <span id="deck-last-command">nenhum ainda</span></div>
+            <div class="deck-actions">
+                <button class="deck-action" data-command="comandos">Capacidades</button>
+                <button class="deck-action" data-command="o que você sabe sobre mim">Memória</button>
+                <button class="deck-action" data-command="abrir chat">Console</button>
+            </div>
+        </div>
+    </section>
 
     <div id="side-menu">
         <div class="menu-header">
@@ -575,6 +714,16 @@
         const chatSend = document.getElementById('chat-send');
         const chatClose = document.getElementById('chat-close');
         const chatActions = document.querySelectorAll('.chat-action');
+        const deckActions = document.querySelectorAll('.deck-action');
+        const deckClock = document.getElementById('deck-clock');
+        const deckStatus = document.getElementById('deck-status');
+        const deckMode = document.getElementById('deck-mode');
+        const deckPersonality = document.getElementById('deck-personality');
+        const deckMemoryCount = document.getElementById('deck-memory-count');
+        const deckSync = document.getElementById('deck-sync');
+        const confidenceLabel = document.getElementById('confidence-label');
+        const confidenceFill = document.getElementById('confidence-fill');
+        const deckLastCommand = document.getElementById('deck-last-command');
 
         // Migração suave de Ultron para Sexta-Feira sem perder os dados do localStorage
         let tarefas = JSON.parse(localStorage.getItem('sexta_feira.tasks.v1') || localStorage.getItem('utron.tasks.v1')) || [];
@@ -788,6 +937,11 @@
             chatInput.value = action.dataset.command || '';
             enviarChat();
         }));
+        deckActions.forEach((action) => action.addEventListener('click', () => {
+            chatInput.value = action.dataset.command || '';
+            abrirChat();
+            enviarChat();
+        }));
 
         // ==========================================
         // ESTADO GLOBAL
@@ -809,6 +963,25 @@
         let nomeUsuario = localStorage.getItem('sexta_feira.name') || localStorage.getItem('utron.name') || "senhor";
         let isGenioActive = (localStorage.getItem('sexta_feira.mode') || localStorage.getItem('utron.mode')) === 'genio';
 
+        function atualizarCentroControle(confianca) {
+            const personalidade = localStorage.getItem('sexta_feira.personality') || 'objetiva';
+            deckClock.textContent = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            deckMode.textContent = isGenioActive ? 'GÊNIO' : 'LOCAL';
+            deckPersonality.textContent = personalidade.toUpperCase();
+            deckMemoryCount.textContent = String(fatos.length);
+            deckSync.textContent = window.SEXTA_CONFIG && window.SEXTA_CONFIG.sincronizarSupabase ? 'SUPABASE' : 'LOCAL';
+            deckLastCommand.textContent = memoria.ultimoComando || 'nenhum ainda';
+            if (typeof confianca === 'number') {
+                const percentual = Math.round(Math.max(0.05, Math.min(1, confianca)) * 100);
+                confidenceFill.style.width = percentual + '%';
+                confidenceLabel.textContent = window.SextaInterpreter
+                    ? `${percentual}% / ${SextaInterpreter.confidenceLabel(confianca)}`
+                    : percentual + '%';
+            }
+        }
+        setInterval(atualizarCentroControle, 1000);
+        atualizarCentroControle();
+
         // Memória de conversa (contexto)
         let memoria = { ultimoTopico: '', ultimoResumo: '', ultimoComando: '', ultimoTs: 0 };
 
@@ -827,6 +1000,7 @@
         function registrarComando(transcript) {
             memoria.ultimoComando = transcript;
             memoria.ultimoTs = Date.now();
+            atualizarCentroControle();
         }
 
         // ==========================================
@@ -1320,12 +1494,13 @@
         const CHAT_CLOSE_RE = /fechar chat|fecha o chat|fecha o painel|sair do chat|desativar chat|fecha a tela|fecha a janela/i;
         const COMANDOS_RE = /quais (s[ãa]o os )?comandos|lista de comandos|me mostra os comandos|^comandos$|o que voc[eê] (faz|sabe fazer|pode fazer|consegue fazer|consegue)|em que voc[eê] (consegue )?me ajud|o que eu posso falar|me ensina o que voc[eê] faz/i;
 
-        const LISTA_COMANDOS = `Aqui está tudo que eu posso fazer. Tarefas: diga "anote comprar pão" e depois "quais são as tarefas". Internet: diga "pesquisa sobre tal coisa" ou "acha pra mim". OSINT: "localizar estação espacial" para abrir o mapa global. Clima: "qual o clima em sua cidade". Tempo: "timer de cinco minutos", "alarme das sete da manhã", e "cancelar timer". Chat: "abrir chat" para conversar por texto. Memória: "salve na memória que tal coisa", "repete" e "apague minha memória". Modo gênio: "ativar modo gênio" para respostas mais longas. Extras: "que horas são", contas como "cinco mais três", e "me chamo seu nome" para eu te chamar pelo nome. Isso é tudo o que eu sei fazer por enquanto.`;
+        const LISTA_COMANDOS = `Atualizei o centro de controle com minhas capacidades. Tarefas: "anote comprar pão", "quais são as tarefas", "remova comprar pão" ou "apague todas as tarefas". Comandos compostos: "anote estudar e depois crie um timer de dez minutos". Memória explicável: "salve na memória que gosto de música", "o que você sabe sobre mim", "repete" ou "apague minha memória". Aprendizado: diga "você entendeu errado, corrija para tarefa". Personalidade: "mude sua personalidade para investigadora", técnica, acolhedora ou objetiva. Pesquisa: "pesquise sobre tal coisa", "acha na internet" ou "qual o clima em São Paulo". Investigação OSINT: "localizar estação espacial" e depois "fechar o globo". Tempo: "timer de cinco minutos", "alarme das sete da manhã", "quanto tempo falta" e "cancelar timer". Sistema: "ativar modo gênio", "abrir chat", "que horas são", "que dia é hoje" e contas como "cinco mais três". Minha interpretação é local, com confiança e memória no dispositivo.`;
 
         async function processarComando(transcript) {
             console.log("Comando detectado:", transcript);
             registrarComando(transcript);
             const intencaoLocal = window.SextaInterpreter ? SextaInterpreter.classify(transcript) : { intent: 'unknown', confidence: 0 };
+            atualizarCentroControle(intencaoLocal.confidence);
 
             const etapas = transcript.split(/\s+(?:e depois|depois disso|em seguida)\s+/i).map((etapa) => etapa.trim()).filter(Boolean);
             if (etapas.length > 1) {
@@ -1441,11 +1616,13 @@
                 responderComoSextaFeira('Chat fechado.');
             }
             else if (comandosMatch) {
+                deckStatus.textContent = 'Capacidades exibidas';
                 responderComoSextaFeira(LISTA_COMANDOS);
             }
             else if (personalidadeMatch) {
                 const personalidade = personalidadeMatch[1].toLowerCase().replace('é', 'e');
                 localStorage.setItem('sexta_feira.personality', personalidade);
+                atualizarCentroControle(intencaoLocal.confidence);
                 responderComoSextaFeira(`Personalidade configurada para o modo ${personalidade}.`);
             }
             else if (correcaoMatch) {
@@ -1481,6 +1658,7 @@
                 } else {
                     isGenioActive = false;
                     localStorage.setItem('sexta_feira.mode', 'normal');
+                    atualizarCentroControle(intencaoLocal.confidence);
                     responderComoSextaFeira('Modo gênio desativado.', () => {
                         corBaseAlvo.copy(corBaseNormal);
                         corAtivaAlvo.copy(corAtivaNormal);
@@ -1494,6 +1672,7 @@
                 } else {
                     isGenioActive = true;
                     localStorage.setItem('sexta_feira.mode', 'genio');
+                    atualizarCentroControle(intencaoLocal.confidence);
                     responderComoSextaFeira('Modo gênio ativado.', () => {
                         corBaseAlvo.copy(corBaseGenio);
                         corAtivaAlvo.copy(corAtivaGenio);
@@ -1507,12 +1686,14 @@
                 fatos = fatos.slice(0, 30);
                 localStorage.setItem('sexta_feira.fatos.v1', JSON.stringify(fatos));
                 persistirFatos();
+                atualizarCentroControle(intencaoLocal.confidence);
                 responderComoSextaFeira('Memorizado.');
                 hudFlash('🧠', 'MEMORIZADO', frase.slice(0, 34) + (frase.length > 34 ? '…' : ''));
             }
             else if (limparMemoriaMatch) {
                 fatos = [];
                 localStorage.setItem('sexta_feira.fatos.v1', JSON.stringify(fatos));
+                atualizarCentroControle(intencaoLocal.confidence);
                 responderComoSextaFeira('Memória de fatos apagada.');
             }
             else if (repetirMatch) {
