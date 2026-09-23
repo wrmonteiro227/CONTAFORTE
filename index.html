@@ -4,12 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sexta-Feira - Visualizador de IA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --ink: #e8f1f5;
+            --muted: #8ca6b0;
+            --panel: rgba(7, 18, 24, 0.94);
+            --line: rgba(125, 211, 232, 0.2);
+            --cyan: #7dd3e8;
+            --accent: #ff6b4a;
+        }
         body {
             margin: 0;
             overflow: hidden;
-            background-color: #05020a;
-            font-family: sans-serif;
+            background: radial-gradient(circle at 50% 42%, #102d35 0%, #071218 32%, #030609 76%);
+            color: var(--ink);
+            font-family: 'DM Sans', sans-serif;
         }
         canvas { display: block; }
 
@@ -22,11 +34,12 @@
             justify-content: center;
             align-items: center;
             color: #ffffff;
-            font-size: 18px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
             font-weight: 800;
             letter-spacing: 4px;
             text-transform: uppercase;
-            background: rgba(5, 2, 12, 0.6);
+            background: rgba(3, 10, 14, 0.72);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -104,9 +117,9 @@
             position: absolute;
             top: 0; left: -320px;
             width: 300px; height: 100vh;
-            background: rgba(10, 5, 20, 0.95);
+            background: var(--panel);
             backdrop-filter: blur(15px);
-            border-right: 2px solid rgba(138, 43, 226, 0.3);
+            border-right: 1px solid var(--line);
             z-index: 20;
             transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             color: white;
@@ -138,7 +151,7 @@
 
         #main-nav { list-style: none; padding: 0; margin: 0; }
         .nav-item {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(125, 211, 232, 0.06);
             padding: 15px;
             margin-bottom: 10px;
             border-radius: 8px;
@@ -311,10 +324,10 @@
             position: fixed;
             left: 0; right: 0; bottom: 0;
             height: 72vh;
-            background: rgba(6, 3, 14, 0.93);
+            background: rgba(4, 13, 18, 0.96);
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
-            border-top: 1px solid rgba(64, 220, 255, 0.35);
+            border-top: 1px solid var(--line);
             box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
             z-index: 18;
             transform: translateY(105%);
@@ -331,6 +344,32 @@
             padding: 12px 16px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
+        .chat-subtitle {
+            display: block;
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            margin-top: 3px;
+        }
+        .chat-actions {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding: 9px 14px 0;
+            scrollbar-width: none;
+        }
+        .chat-actions::-webkit-scrollbar { display: none; }
+        .chat-action {
+            flex: 0 0 auto;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: rgba(125, 211, 232, 0.06);
+            color: var(--cyan);
+            cursor: pointer;
+            font: 600 11px 'DM Sans', sans-serif;
+            padding: 7px 9px;
+        }
+        .chat-action:hover { background: rgba(125, 211, 232, 0.14); }
         .chat-title {
             font-size: 13px;
             letter-spacing: 3px;
@@ -373,8 +412,8 @@
         }
         .msg.user {
             align-self: flex-end;
-            background: rgba(138, 43, 226, 0.35);
-            border: 1px solid rgba(138, 43, 226, 0.5);
+            background: rgba(255, 107, 74, 0.16);
+            border: 1px solid rgba(255, 107, 74, 0.42);
             border-bottom-right-radius: 2px;
         }
         .msg.ai {
@@ -419,6 +458,10 @@
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/interpreter.js"></script>
 </head>
 <body>
 
@@ -460,8 +503,17 @@
     <!-- CHAT -->
     <div id="chat-panel">
         <div id="chat-header">
-            <span class="chat-title">◈ CHAT SEXTA-FEIRA</span>
+            <div>
+                <span class="chat-title">◈ CHAT SEXTA-FEIRA</span>
+                <span class="chat-subtitle">Núcleo local • memória no dispositivo</span>
+            </div>
             <button id="chat-close" aria-label="Fechar Chat">✖</button>
+        </div>
+        <div class="chat-actions" aria-label="Ações rápidas">
+            <button class="chat-action" data-command="comandos">Comandos</button>
+            <button class="chat-action" data-command="pesquisa sobre inteligência artificial">Pesquisar</button>
+            <button class="chat-action" data-command="quais são as tarefas">Tarefas</button>
+            <button class="chat-action" data-command="que horas são">Horário</button>
         </div>
         <div id="chat-msgs">
             <div id="chat-empty">SISTEMA DE COMUNICAÇÃO POR TEXTO ATIVO</div>
@@ -522,11 +574,39 @@
         const chatInput = document.getElementById('chat-input');
         const chatSend = document.getElementById('chat-send');
         const chatClose = document.getElementById('chat-close');
+        const chatActions = document.querySelectorAll('.chat-action');
 
         // Migração suave de Ultron para Sexta-Feira sem perder os dados do localStorage
         let tarefas = JSON.parse(localStorage.getItem('sexta_feira.tasks.v1') || localStorage.getItem('utron.tasks.v1')) || [];
         let pesquisas = JSON.parse(localStorage.getItem('sexta_feira.pesquisas.v1') || localStorage.getItem('utron.pesquisas.v1')) || [];
         let fatos = JSON.parse(localStorage.getItem('sexta_feira.fatos.v1') || localStorage.getItem('utron.fatos.v1')) || [];
+
+        function persistirTarefas() {
+            if (!window.SextaStorage) return;
+            SextaStorage.replaceAll('tasks', tarefas.map((texto) => ({
+                id: SextaStorage.newId(),
+                text: texto,
+                completed: false
+            }))).then(() => SextaStorage.syncAll()).catch((error) => console.warn('Sincronizacao de tarefas falhou:', error));
+        }
+        function persistirFatos() {
+            if (!window.SextaStorage) return;
+            SextaStorage.replaceAll('memories', fatos.map((fato) => ({
+                id: SextaStorage.newId(),
+                kind: 'fact',
+                content: fato.frase || String(fato),
+                source: 'user',
+                confidence: 1
+            }))).then(() => SextaStorage.syncAll()).catch((error) => console.warn('Sincronizacao de memoria falhou:', error));
+        }
+        SextaStorage.init().then(async () => {
+            const storedTasks = await SextaStorage.readAll('tasks');
+            const storedMemories = await SextaStorage.readAll('memories');
+            if (!tarefas.length && storedTasks.length) tarefas = storedTasks.map((item) => item.text).filter(Boolean);
+            if (!fatos.length && storedMemories.length) fatos = storedMemories.map((item) => ({ frase: item.content, data: item.created_at || '' }));
+            atualizarListaTarefas();
+            atualizarListaPesquisas();
+        }).catch((error) => console.warn('Memoria local indisponivel:', error));
 
         // ---- Menu ----
         function openSideMenu() {
@@ -564,6 +644,7 @@
                 });
             }
             localStorage.setItem('sexta_feira.tasks.v1', JSON.stringify(tarefas));
+            persistirTarefas();
         }
         atualizarListaTarefas();
 
@@ -609,6 +690,7 @@
             });
             pesquisas = pesquisas.slice(0, 8);
             localStorage.setItem('sexta_feira.pesquisas.v1', JSON.stringify(pesquisas));
+            if (window.SextaStorage) SextaStorage.save('searches', p);
             atualizarListaPesquisas();
         }
 
@@ -702,6 +784,10 @@
         chatSend.addEventListener('click', enviarChat);
         chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') enviarChat(); });
         chatClose.addEventListener('click', fecharChat);
+        chatActions.forEach((action) => action.addEventListener('click', () => {
+            chatInput.value = action.dataset.command || '';
+            enviarChat();
+        }));
 
         // ==========================================
         // ESTADO GLOBAL
@@ -897,12 +983,32 @@
                 const t = d.RelatedTopics.find(x => x && x.Text);
                 if (t) resumo = t.Text;
             }
-            if (!resumo) return null;
+            if (!resumo && !d.Heading && !d.AbstractURL) return null;
             return {
                 fonte: 'DuckDuckGo',
                 titulo: d.Heading || consulta,
-                resumo: resumo,
+                resumo: resumo || `A busca não trouxe um resumo instantâneo, mas encontrei uma página relacionada para você consultar.`,
                 url: d.AbstractURL || `https://duckduckgo.com/?q=${q}`,
+                lista: []
+            };
+        }
+
+        async function buscarRede(consulta) {
+            const tentativas = [
+                () => buscarWikipedia(consulta),
+                () => buscarDuckDuckGo(consulta)
+            ];
+            for (const buscar of tentativas) {
+                try {
+                    const resultado = await buscar();
+                    if (resultado) return resultado;
+                } catch (e) {}
+            }
+            return {
+                fonte: 'Busca na web',
+                titulo: consulta,
+                resumo: 'Não consegui extrair um resumo automático. Abri uma busca ampla para você continuar a investigação.',
+                url: `https://www.google.com/search?q=${encodeURIComponent(consulta)}`,
                 lista: []
             };
         }
@@ -999,14 +1105,8 @@
                     try { resultado = await buscarClima(cidade); } catch (e) { resultado = null; }
                     if (token !== searchToken) return;
                 }
-                if (!resultado) {
-                    try { resultado = await buscarWikipedia(consulta); } catch (e) { resultado = null; }
-                    if (token !== searchToken) return;
-                }
-                if (!resultado) {
-                    try { resultado = await buscarDuckDuckGo(consulta); } catch (e) { resultado = null; }
-                    if (token !== searchToken) return;
-                }
+                if (!resultado) resultado = await buscarRede(consulta);
+                if (token !== searchToken) return;
 
                 if (resultado) {
                     const tamanho = isGenioActive ? 700 : 400;
@@ -1225,6 +1325,13 @@
         async function processarComando(transcript) {
             console.log("Comando detectado:", transcript);
             registrarComando(transcript);
+            const intencaoLocal = window.SextaInterpreter ? SextaInterpreter.classify(transcript) : { intent: 'unknown', confidence: 0 };
+
+            const etapas = transcript.split(/\s+(?:e depois|depois disso|em seguida)\s+/i).map((etapa) => etapa.trim()).filter(Boolean);
+            if (etapas.length > 1) {
+                for (const etapa of etapas) await processarComando(etapa);
+                return;
+            }
 
             // ---- Intents duros ----
             const cancelarTimerMatch = transcript.match(/cancelar (o )?(timer|alarme|cron[oó]metro)|pare (o )?(timer|alarme)|desligue (o )?(timer|alarme)/i);
@@ -1245,6 +1352,9 @@
 
             const salvarFatoMatch = transcript.match(/(?:salve na mem[óo]ria|salvar na mem[óo]ria|guarde que|aprenda que|memorize que|memorize)\s+(.+)/i);
             const limparMemoriaMatch = transcript.match(/apague (minha|sua) mem[óo]ria|limpe a mem[óo]ria|esvazie a mem[óo]ria/i);
+            const explicarMemoriaMatch = /(?:o que voc[eê] sabe sobre mim|mostre minhas mem[óo]rias|listar mem[óo]rias|quais fatos voc[eê] sabe)/i.test(transcript);
+            const personalidadeMatch = transcript.match(/(?:mude|altere|ative|use) (?:sua )?personalidade para (objetiva|t[eé]cnica|acolhedora|investigadora)/i);
+            const correcaoMatch = transcript.match(/(?:voc[eê] entendeu errado|n[aã]o foi isso|corrija isso)(?:,?\s*(?:era|para|o correto [ée]))?\s*(.+)?/i);
             const repetirMatch = transcript.match(/repete|diga de novo|o que (voce|voc[eê]) disse/i);
 
             const registroRegex = /(?:registrar|salvar|anotar|registre|anote|salve)(?:\s+(?:nova tarefa|tarefa|compromissos?|que|um compromisso|uma tarefa))?\s+(.+)/i;
@@ -1252,6 +1362,8 @@
 
             const leituraTarefasRegex = /quais (?:s[ãa]o as )?tarefas|o que tenho para fazer|o que h[áa] para hoje|ler tarefas|meus compromissos/i;
             const leituraMatch = transcript.match(leituraTarefasRegex);
+            const limparTarefasMatch = transcript.match(/(?:apague|limpe|remova|exclua|delete) (?:todas? )?(?:as )?(?:minhas )?(?:tarefas|compromissos)/i);
+            const removerTarefaMatch = transcript.match(/(?:apague|remova|exclua|delete|conclua) (?:a |a tarefa |o compromisso )?(.+)/i);
 
             const nomeRegex = /(?:meu nome [ée]|me chamo)\s+([a-zàáâãéèêíïóôõöúçñ]+)/i;
             const nomeMatch = transcript.match(nomeRegex);
@@ -1331,6 +1443,38 @@
             else if (comandosMatch) {
                 responderComoSextaFeira(LISTA_COMANDOS);
             }
+            else if (personalidadeMatch) {
+                const personalidade = personalidadeMatch[1].toLowerCase().replace('é', 'e');
+                localStorage.setItem('sexta_feira.personality', personalidade);
+                responderComoSextaFeira(`Personalidade configurada para o modo ${personalidade}.`);
+            }
+            else if (correcaoMatch) {
+                const textoCorrecao = correcaoMatch[1] || transcript;
+                const corrigidoPara = /tarefa|agenda|compromisso|lembrete/i.test(textoCorrecao) ? 'criar_tarefa'
+                    : /pesquis|internet|busca/i.test(textoCorrecao) ? 'pesquisar'
+                    : /mem[óo]ria|guardar|lembrar/i.test(textoCorrecao) ? 'salvar_memoria' : 'unknown';
+                if (corrigidoPara !== 'unknown' && window.SextaInterpreter) {
+                    SextaInterpreter.learn(transcript, intencaoLocal.intent, corrigidoPara);
+                    responderComoSextaFeira('Entendido. Registrei essa correção e vou considerar esse padrão nas próximas vezes.');
+                } else {
+                    responderComoSextaFeira('Entendi que minha resposta ficou errada. Diga, por exemplo: corrija para tarefa.');
+                }
+            }
+            else if (explicarMemoriaMatch) {
+                if (!fatos.length) {
+                    responderComoSextaFeira('Ainda não tenho fatos pessoais salvos na memória local.');
+                } else {
+                    responderComoSextaFeira(`Tenho ${fatos.length} ${fatos.length === 1 ? 'memória' : 'memórias'} locais: ${fatos.map((fato) => fato.frase).join('. ')}.`);
+                }
+            }
+            else if (intencaoLocal.intent === 'informar_data') {
+                const data = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                responderComoSextaFeira(`Hoje é ${data}.`);
+            }
+            else if (intencaoLocal.intent === 'informar_horario') {
+                const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                responderComoSextaFeira(`Agora são exatamente ${time}.`);
+            }
             else if (desativarGenioMatch) {
                 if (!isGenioActive) {
                     responderComoSextaFeira('O modo gênio já está desligado.');
@@ -1362,6 +1506,7 @@
                 fatos.push({ frase, data: new Date().toLocaleString('pt-BR') });
                 fatos = fatos.slice(0, 30);
                 localStorage.setItem('sexta_feira.fatos.v1', JSON.stringify(fatos));
+                persistirFatos();
                 responderComoSextaFeira('Memorizado.');
                 hudFlash('🧠', 'MEMORIZADO', frase.slice(0, 34) + (frase.length > 34 ? '…' : ''));
             }
@@ -1393,6 +1538,23 @@
                     responderComoSextaFeira(`Você tem ${tarefas.length} ${plural}. São elas: ${textoTarefas}.`);
                 }
             }
+            else if (limparTarefasMatch) {
+                const total = tarefas.length;
+                tarefas = [];
+                atualizarListaTarefas();
+                responderComoSextaFeira(total ? `Apaguei ${total} ${total === 1 ? 'tarefa' : 'tarefas'}.` : 'Não havia tarefas para apagar.');
+            }
+            else if (removerTarefaMatch && tarefas.length) {
+                const alvo = normalizar(removerTarefaMatch[1].replace(/[.!?]+$/, '').trim());
+                const indice = tarefas.findIndex(tarefa => normalizar(tarefa).includes(alvo) || alvo.includes(normalizar(tarefa)));
+                if (indice >= 0) {
+                    const removida = tarefas.splice(indice, 1)[0];
+                    atualizarListaTarefas();
+                    responderComoSextaFeira(`Removi a tarefa: ${removida}.`);
+                } else {
+                    responderComoSextaFeira('Não encontrei uma tarefa com esse nome.');
+                }
+            }
             else if (nomeMatch) {
                 nomeUsuario = nomeMatch[1].charAt(0).toUpperCase() + nomeMatch[1].slice(1);
                 localStorage.setItem('sexta_feira.name', nomeUsuario);
@@ -1400,6 +1562,10 @@
             }
             else if (transcript.includes('capacidade máxima') || transcript.includes('capacidade maxima')) {
                 responderComoSextaFeira('Meus sistemas atuais: núcleo de processamento holográfico expansível com integração OSINT, chat de texto e voz, pesquisa pública web, gestão de alarmes e tarefas, memória local e interrupção fluida. Diga "comandos" para listar minhas capacidades.');
+            }
+            else if (/(?:que dia é hoje|qual a data|data de hoje|hoje é que dia)/i.test(transcript)) {
+                const data = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                responderComoSextaFeira(`Hoje é ${data}.`);
             }
             else if (transcript.includes('horas') || transcript.includes('hora')) {
                 const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
