@@ -25,7 +25,7 @@ Para iniciar o console em desenvolvimento:
 ```bash
 cd gods-eye-view
 npm install
-npm run dev -- --port 4174
+GEV_ALLOW_EMBED=1 npm run dev -- --port 4174
 ```
 
 Depois, mantenha a Sexta-Feira aberta e diga `ativar olho de deus`. Para encerrar,

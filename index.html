@@ -402,6 +402,22 @@
         @keyframes mapIn { from { opacity: 0; transform: scale(.97) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
         @media (max-width: 700px) { #map-panel { inset: 72px 10px 110px; border-radius: 16px; } .map-toolbar { top: 10px; left: 10px; right: 10px; } }
 
+        #gods-eye-frame-panel {
+            position: fixed;
+            inset: 18px;
+            z-index: 27;
+            display: none;
+            overflow: hidden;
+            border: 1px solid rgba(105, 226, 255, 0.45);
+            border-radius: 18px;
+            background: #050b10;
+            box-shadow: 0 25px 100px rgba(0, 0, 0, 0.82), 0 0 45px rgba(47, 193, 255, 0.2);
+        }
+        #gods-eye-frame-panel.open { display: block; animation: mapIn 0.3s ease both; }
+        #gods-eye-frame { width: 100%; height: 100%; border: 0; display: block; background: #050b10; }
+        #gods-eye-frame-close { position: absolute; top: 12px; right: 12px; z-index: 2; border: 1px solid rgba(255,255,255,.28); border-radius: 10px; padding: 7px 12px; background: rgba(4,18,27,.94); color: white; cursor: pointer; font-size: 20px; line-height: 1; }
+        @media (max-width: 700px) { #gods-eye-frame-panel { inset: 8px; border-radius: 12px; } }
+
         /* ==========================================
            CHAT
            ========================================== */
@@ -756,6 +772,11 @@
         </div>
     </section>
 
+    <section id="gods-eye-frame-panel" aria-label="Console original God’s Eye View">
+        <button id="gods-eye-frame-close" aria-label="Fechar console God’s Eye View">×</button>
+        <iframe id="gods-eye-frame" title="Console original God’s Eye View" allow="fullscreen; geolocation; microphone"></iframe>
+    </section>
+
     <!-- CHAT -->
     <div id="chat-panel">
         <div id="chat-header">
@@ -833,6 +854,9 @@
         const hudLabel = document.getElementById('hud-label');
         const mapPanel = document.getElementById('map-panel');
         const mapClose = document.getElementById('map-close');
+        const godsEyeFramePanel = document.getElementById('gods-eye-frame-panel');
+        const godsEyeFrame = document.getElementById('gods-eye-frame');
+        const godsEyeFrameClose = document.getElementById('gods-eye-frame-close');
         let fleetMap = null;
         let fleetMapMarkers = [];
 
@@ -1066,8 +1090,10 @@
             }
             godsEyeWindow = window.open(url, 'sexta-feira-gods-eye-view', 'popup=yes,width=1440,height=920');
             if (!godsEyeWindow) {
-                hudAlert('⚠️', 'CONSOLE BLOQUEADO', 'permita pop-ups para abrir o God’s Eye View');
-                return false;
+                godsEyeFrame.src = url;
+                godsEyeFramePanel.classList.add('open');
+                hudFlash('🛰️', 'CONSOLE INCORPORADO', 'God’s Eye View aberto na Sexta-Feira', 4500);
+                return true;
             }
             hudFlash('🛰️', 'CONSOLE ORIGINAL', 'God’s Eye View conectado', 4500);
             return true;
@@ -1076,7 +1102,11 @@
         function fecharGodsEyeView() {
             if (godsEyeWindow && !godsEyeWindow.closed) godsEyeWindow.close();
             godsEyeWindow = null;
+            godsEyeFramePanel.classList.remove('open');
+            godsEyeFrame.src = 'about:blank';
         }
+
+        godsEyeFrameClose.addEventListener('click', fecharGodsEyeView);
 
         openGlobeBtn.addEventListener('click', () => {
             isGlobeMode = true;

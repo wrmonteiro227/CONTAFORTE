@@ -11,6 +11,7 @@ export function createBrowserViteConfig({
   port = 4173,
   command,
 } = {}) {
+  const allowEmbed = process.env.GEV_ALLOW_EMBED === '1';
   return {
     plugins: [cesium(), applicationHtmlPlugin(), ...plugins],
     ...(publicDir === undefined ? {} : { publicDir }),
@@ -40,8 +41,10 @@ export function createBrowserViteConfig({
       },
       // These headers protect the document containing Provider Settings.
       headers: {
-        'X-Frame-Options': 'DENY',
-        'Content-Security-Policy': "frame-ancestors 'none'",
+        ...(allowEmbed ? {} : { 'X-Frame-Options': 'DENY' }),
+        'Content-Security-Policy': allowEmbed
+          ? "frame-ancestors 'self' http://localhost:* http://127.0.0.1:*"
+          : "frame-ancestors 'none'",
       },
     },
     define: {
