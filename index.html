@@ -722,8 +722,8 @@
             <button class="panel-back-btn" id="back-sistemas-btn">⬅ Voltar</button>
             <div class="system-card">
                 <h3>Olho de Deus</h3>
-                <p>Visualização global para operações autorizadas. O localizador trabalha somente com veículos cadastrados nesta instalação.</p>
-                <button class="system-button" id="open-globe-btn">Ativar visualização</button>
+                <p>Abre o console original God’s Eye View, com globo 3D, voos, satélites, terremotos, câmeras públicas e camadas de inteligência espacial.</p>
+                <button class="system-button" id="open-globe-btn">Abrir console original</button>
             </div>
             <div class="system-card">
                 <h3>Localizar veículo</h3>
@@ -863,6 +863,7 @@
             { id: 'CF-02', placa: 'DEMO-002', nome: 'Veículo de demonstração 2', lat: -22.9068, lon: -43.1729, status: 'parado' }
         ];
         let veiculoSelecionado = null;
+        let godsEyeWindow = null;
 
         function persistirTarefas() {
             if (!window.SextaStorage) return;
@@ -1057,10 +1058,29 @@
             openSistemasPanel();
         }
 
+        function abrirGodsEyeView() {
+            const url = (window.SEXTA_CONFIG && window.SEXTA_CONFIG.godsEyeViewUrl) || 'http://localhost:4174';
+            if (godsEyeWindow && !godsEyeWindow.closed) {
+                godsEyeWindow.focus();
+                return true;
+            }
+            godsEyeWindow = window.open(url, 'sexta-feira-gods-eye-view', 'popup=yes,width=1440,height=920');
+            if (!godsEyeWindow) {
+                hudAlert('⚠️', 'CONSOLE BLOQUEADO', 'permita pop-ups para abrir o God’s Eye View');
+                return false;
+            }
+            hudFlash('🛰️', 'CONSOLE ORIGINAL', 'God’s Eye View conectado', 4500);
+            return true;
+        }
+
+        function fecharGodsEyeView() {
+            if (godsEyeWindow && !godsEyeWindow.closed) godsEyeWindow.close();
+            godsEyeWindow = null;
+        }
+
         openGlobeBtn.addEventListener('click', () => {
             isGlobeMode = true;
-            hudFlash('🌐', 'OLHO DE DEUS', 'visualização autorizada', 3500);
-            abrirMapaFrota();
+            abrirGodsEyeView();
         });
         locateVehicleBtn.addEventListener('click', () => {
             const resultado = localizarVeiculo(vehicleSearch.value);
@@ -1832,6 +1852,7 @@
             else if (osintClose) {
                 if (isGlobeMode) {
                     isGlobeMode = false;
+                    fecharGodsEyeView();
                     responderComoSextaFeira('Monitoramento global desativado. Voltando ao modo de repouso.');
                     hudEsconder();
                 } else {
@@ -1855,9 +1876,10 @@
             }
             else if (olhoDeDeusMatch) {
                 isGlobeMode = true;
-                hudFlash('🌐', 'OLHO DE DEUS', 'visualização autorizada', 3500);
-                abrirMapaFrota();
-                responderComoSextaFeira('Olho de Deus ativado. Visualização global autorizada em operação.');
+                const consoleAberto = abrirGodsEyeView();
+                responderComoSextaFeira(consoleAberto
+                    ? 'God’s Eye View original ativado. O console real foi aberto com camadas de inteligência espacial.'
+                    : 'Não consegui abrir o God’s Eye View. Permita pop-ups e confirme se o console está rodando em localhost:4174.');
             }
             else if (diagnosticoMatch) {
                 abrirSistemas();
