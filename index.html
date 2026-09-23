@@ -1926,7 +1926,7 @@
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
+        renderer.setPixelRatio(Math.min(1.5, window.devicePixelRatio));
         document.body.appendChild(renderer.domElement);
 
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -1988,7 +1988,7 @@
         }
         `;
 
-        const esferaGeometry = new THREE.IcosahedronGeometry(2.2, 7);
+        const esferaGeometry = new THREE.IcosahedronGeometry(2.2, 2);
         const vCount = esferaGeometry.attributes.position.count;
         const randArr = new Float32Array(vCount);
         for (let i = 0; i < vCount; i++) randArr[i] = Math.random();
@@ -2073,8 +2073,8 @@
         esfera.visible = false;
 
         // Membrana celular: uma capa leve que ondula em conjunto como tecido ao vento.
-        const cellCols = 34;
-        const cellRows = 23;
+        const cellCols = 29;
+        const cellRows = 20;
         const cellCount = cellCols * cellRows;
         const cellPositions = new Float32Array(cellCount * 3);
         const cellCoords = new Float32Array(cellCount * 2);
@@ -2091,7 +2091,7 @@
         cellGeometry.setAttribute('position', new THREE.BufferAttribute(cellPositions, 3));
         cellGeometry.setAttribute('aCoord', new THREE.BufferAttribute(cellCoords, 2));
         cellGeometry.setAttribute('aRandom', new THREE.BufferAttribute(cellRandom, 1));
-        const cellUniforms = { uTime: { value: 0 }, uPulse: { value: 0 } };
+        const cellUniforms = { uTime: { value: 0 }, uPulse: { value: 0 }, uMouthOpen: { value: 0 } };
         const cellMaterial = new THREE.ShaderMaterial({
             uniforms: cellUniforms,
             transparent: true,
@@ -2100,27 +2100,51 @@
             vertexShader: `
                 uniform float uTime;
                 uniform float uPulse;
+                uniform float uMouthOpen;
                 attribute vec2 aCoord;
                 attribute float aRandom;
                 varying float vEnergy;
+                varying vec2 vCoord;
                 void main() {
-                    float edge = smoothstep(0.0, 0.18, aCoord.x) * smoothstep(1.0, 0.82, aCoord.x);
-                    edge *= smoothstep(0.0, 0.16, aCoord.y) * smoothstep(1.0, 0.84, aCoord.y);
+                    vCoord = aCoord;
+                    vec2 face = aCoord - 0.5;
+                    face.x /= 0.47;
+                    face.y /= 0.56;
+                    float edge = 1.0 - smoothstep(0.62, 1.0, length(face));
                     float breath = sin(uTime * 0.75 + aCoord.x * 5.0 + aCoord.y * 3.0 + aRandom * 6.28);
-                    vEnergy = 0.35 + 0.35 * edge + 0.18 * breath + uPulse * 0.25;
+                    vEnergy = 0.28 + 0.42 * edge + 0.16 * breath + uPulse * 0.25;
                     vec3 p = position;
                     p.z += sin(aCoord.x * 8.0 + uTime * 0.72) * 0.20;
                     p.z += cos(aCoord.y * 10.0 - uTime * 0.54) * 0.15;
                     p.x += sin(uTime * 0.38 + aCoord.y * 5.0) * 0.11;
                     p.y += cos(uTime * 0.31 + aCoord.x * 4.0) * 0.08;
                     vec4 mv = modelViewMatrix * vec4(p, 1.0);
-                    gl_PointSize = (3.2 + aRandom * 3.0 + uPulse * 2.0) * (54.0 / -mv.z);
+                    gl_PointSize = (1.45 + aRandom * 1.25 + uPulse * 0.8) * (38.0 / -mv.z);
                     gl_Position = projectionMatrix * mv;
                 }
             `,
             fragmentShader: `
                 varying float vEnergy;
+                varying vec2 vCoord;
+                uniform float uMouthOpen;
                 void main() {
+                    vec2 face = vCoord - 0.5;
+                    face.x /= 0.47;
+                    face.y /= 0.56;
+                    if (dot(face, face) > 1.0) discard;
+
+                    vec2 leftEye = vCoord - vec2(0.34, 0.38);
+                    leftEye.x *= 1.45;
+                    vec2 rightEye = vCoord - vec2(0.66, 0.38);
+                    rightEye.x *= 1.45;
+                    if (dot(leftEye, leftEye) < 0.012 || dot(rightEye, rightEye) < 0.012) discard;
+
+                    vec2 mouth = vCoord - vec2(0.50, 0.69);
+                    mouth.x *= 0.78;
+                    float mouthHeight = 0.026 + uMouthOpen * 0.065;
+                    mouth.y /= mouthHeight;
+                    if (dot(mouth, mouth) < 1.0) discard;
+
                     vec2 cell = gl_PointCoord - 0.5;
                     float distanceFromCenter = length(cell) * 2.0;
                     float rim = 1.0 - smoothstep(0.34, 0.92, distanceFromCenter);
@@ -2164,7 +2188,7 @@
         }
         const softTex = criarTexturaSuave();
 
-        const F = 650;
+        const F = 360;
         const flowPos = new Float32Array(F * 3);
         const flowCol = new Float32Array(F * 3);
         const flowDirX = new Float32Array(F), flowDirY = new Float32Array(F), flowDirZ = new Float32Array(F);
@@ -2188,7 +2212,7 @@
         scene.add(flow);
 
         // ---- Poeira orbital sutil ----
-        const D = 300;
+        const D = 140;
         const dustPos = new Float32Array(D * 3);
         const dustCol = new Float32Array(D * 3);
         const dustPalette = [[0.72, 0.42, 0.04], [0.95, 0.68, 0.12], [1.00, 0.84, 0.30]];
@@ -2213,7 +2237,7 @@
         scene.add(dust);
 
         // ---- Estrelas de fundo ----
-        const S = 550;
+        const S = 260;
         const starPos = new Float32Array(S * 3);
         const starCol = new Float32Array(S * 3);
         for (let i = 0; i < S; i++) {
@@ -2294,6 +2318,9 @@
             esferaUniforms.uGenio.value = genioBlend;
             cellUniforms.uTime.value = timeAcc;
             cellUniforms.uPulse.value = activeVolume;
+            cellUniforms.uMouthOpen.value = isSextaFeiraSpeaking
+                ? 0.45 + 0.55 * (Math.sin(time * 13.0) * 0.5 + 0.5)
+                : 0;
 
             nebAngleY += dt * 0.10;
             nebAngleX += dt * 0.06;
