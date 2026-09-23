@@ -7,7 +7,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
         :root {
             --ink: #fff8d7;
@@ -217,9 +216,6 @@
             width: 100%; margin-top: 8px; padding: 9px; border: 0; border-radius: 6px;
             background: #f5c338; color: #080704; cursor: pointer; font-weight: 700;
         }
-        #vehicle-list { list-style: none; padding: 0; margin: 10px 0 0; }
-        #vehicle-list li { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 12px; }
-        #vehicle-list .vehicle-meta { display: block; color: rgba(255,255,255,0.5); margin-top: 3px; }
         .panel-back-btn {
             background: rgba(255,255,255,0.1);
             border: none;
@@ -359,64 +355,6 @@
             #hud-content { left: 104px; }
             #hud-time { font-size: 16px; }
         }
-
-        /* Mapa real para leitura operacional da frota autorizada. */
-        #map-panel {
-            position: fixed;
-            inset: 8vh 8vw;
-            z-index: 25;
-            display: none;
-            overflow: hidden;
-            border: 1px solid rgba(105, 226, 255, 0.45);
-            border-radius: 20px;
-            background: #07131b;
-            box-shadow: 0 25px 100px rgba(0, 0, 0, 0.75), 0 0 45px rgba(47, 193, 255, 0.18);
-        }
-        #map-panel.open { display: block; animation: mapIn 0.35s ease both; }
-        #fleet-map { position: absolute; inset: 0; background: #10242d; }
-        .map-toolbar {
-            position: absolute;
-            top: 16px; left: 16px; right: 16px;
-            z-index: 500;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            pointer-events: none;
-        }
-        .map-title {
-            padding: 10px 14px;
-            border: 1px solid rgba(105, 226, 255, 0.35);
-            border-radius: 12px;
-            background: rgba(4, 18, 27, 0.9);
-            color: #d9f7ff;
-            font: 700 12px 'Space Grotesk', sans-serif;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            box-shadow: 0 8px 25px rgba(0,0,0,.25);
-        }
-        #map-close { pointer-events: auto; border: 1px solid rgba(255,255,255,.25); border-radius: 10px; padding: 9px 12px; background: rgba(4,18,27,.92); color: white; cursor: pointer; font-size: 18px; }
-        .leaflet-container { font-family: 'DM Sans', sans-serif; }
-        .fleet-marker { width: 18px; height: 18px; border: 3px solid #eaffff; border-radius: 50%; background: #28cfff; box-shadow: 0 0 0 7px rgba(40, 207, 255, .2), 0 0 22px #28cfff; }
-        .fleet-marker.selected { background: #ffd34e; box-shadow: 0 0 0 8px rgba(255, 211, 78, .25), 0 0 25px #ffd34e; }
-        @keyframes mapIn { from { opacity: 0; transform: scale(.97) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-        @media (max-width: 700px) { #map-panel { inset: 72px 10px 110px; border-radius: 16px; } .map-toolbar { top: 10px; left: 10px; right: 10px; } }
-
-        #gods-eye-frame-panel {
-            position: fixed;
-            inset: 18px;
-            z-index: 27;
-            display: none;
-            overflow: hidden;
-            border: 1px solid rgba(105, 226, 255, 0.45);
-            border-radius: 18px;
-            background: #050b10;
-            box-shadow: 0 25px 100px rgba(0, 0, 0, 0.82), 0 0 45px rgba(47, 193, 255, 0.2);
-        }
-        #gods-eye-frame-panel.open { display: block; animation: mapIn 0.3s ease both; }
-        #gods-eye-frame { width: 100%; height: 100%; border: 0; display: block; background: #050b10; }
-        #gods-eye-frame-close { position: absolute; top: 12px; right: 12px; z-index: 2; border: 1px solid rgba(255,255,255,.28); border-radius: 10px; padding: 7px 12px; background: rgba(4,18,27,.94); color: white; cursor: pointer; font-size: 20px; line-height: 1; }
-        @media (max-width: 700px) { #gods-eye-frame-panel { inset: 8px; border-radius: 12px; } }
 
         /* ==========================================
            CHAT
@@ -677,7 +615,6 @@
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <script src="js/storage.js"></script>
@@ -724,7 +661,7 @@
         <ul id="main-nav">
             <li class="nav-item" id="nav-tarefas-btn">📝 Tarefas Diárias</li>
             <li class="nav-item" id="nav-pesquisas-btn">🌐 Buscas Recentes</li>
-            <li class="nav-item" id="nav-sistemas-btn">⚙️ Sistemas e Frota</li>
+            <li class="nav-item" id="nav-sistemas-btn">🛰️ Olho de Deus</li>
         </ul>
         <div id="tasks-panel">
             <button id="back-nav-btn">⬅ Voltar</button>
@@ -741,13 +678,6 @@
                 <p>Abre o console original God’s Eye View, com globo 3D, voos, satélites, terremotos, câmeras públicas e camadas de inteligência espacial.</p>
                 <button class="system-button" id="open-globe-btn">Abrir console original</button>
             </div>
-            <div class="system-card">
-                <h3>Localizar veículo</h3>
-                <p>Informe a placa ou identificador de um veículo autorizado.</p>
-                <input class="system-input" id="vehicle-search" placeholder="Ex.: CF-01 ou ABC1D23" autocomplete="off">
-                <button class="system-button" id="locate-vehicle-btn">Localizar na frota</button>
-                <ul id="vehicle-list"></ul>
-            </div>
         </div>
     </div>
 
@@ -763,19 +693,6 @@
             <div id="hud-label">STANDBY</div>
         </div>
     </div>
-
-    <section id="map-panel" aria-label="Mapa da frota autorizada">
-        <div id="fleet-map"></div>
-        <div class="map-toolbar">
-            <div class="map-title">Olho de Deus · frota autorizada</div>
-            <button id="map-close" aria-label="Fechar mapa">×</button>
-        </div>
-    </section>
-
-    <section id="gods-eye-frame-panel" aria-label="Console original God’s Eye View">
-        <button id="gods-eye-frame-close" aria-label="Fechar console God’s Eye View">×</button>
-        <iframe id="gods-eye-frame" title="Console original God’s Eye View" allow="fullscreen; geolocation; microphone"></iframe>
-    </section>
 
     <!-- CHAT -->
     <div id="chat-panel">
@@ -843,22 +760,12 @@
         const backSistemasBtn = document.getElementById('back-sistemas-btn');
         const sistemasPanel = document.getElementById('sistemas-panel');
         const openGlobeBtn = document.getElementById('open-globe-btn');
-        const vehicleSearch = document.getElementById('vehicle-search');
-        const locateVehicleBtn = document.getElementById('locate-vehicle-btn');
-        const vehicleListEl = document.getElementById('vehicle-list');
 
         const hudEl = document.getElementById('hud-center');
         const hudFg = document.getElementById('hud-fg');
         const hudIcon = document.getElementById('hud-icon');
         const hudTime = document.getElementById('hud-time');
         const hudLabel = document.getElementById('hud-label');
-        const mapPanel = document.getElementById('map-panel');
-        const mapClose = document.getElementById('map-close');
-        const godsEyeFramePanel = document.getElementById('gods-eye-frame-panel');
-        const godsEyeFrame = document.getElementById('gods-eye-frame');
-        const godsEyeFrameClose = document.getElementById('gods-eye-frame-close');
-        let fleetMap = null;
-        let fleetMapMarkers = [];
 
         const chatPanel = document.getElementById('chat-panel');
         const chatMsgs = document.getElementById('chat-msgs');
@@ -881,12 +788,6 @@
         let tarefas = JSON.parse(localStorage.getItem('sexta_feira.tasks.v1') || localStorage.getItem('utron.tasks.v1')) || [];
         let pesquisas = JSON.parse(localStorage.getItem('sexta_feira.pesquisas.v1') || localStorage.getItem('utron.pesquisas.v1')) || [];
         let fatos = JSON.parse(localStorage.getItem('sexta_feira.fatos.v1') || localStorage.getItem('utron.fatos.v1')) || [];
-        const FROTA_KEY = 'sexta_feira.frota.autorizada.v1';
-        const frotaAutorizada = JSON.parse(localStorage.getItem(FROTA_KEY) || 'null') || [
-            { id: 'CF-01', placa: 'DEMO-001', nome: 'Veículo de demonstração', lat: -23.5505, lon: -46.6333, status: 'em operação' },
-            { id: 'CF-02', placa: 'DEMO-002', nome: 'Veículo de demonstração 2', lat: -22.9068, lon: -43.1729, status: 'parado' }
-        ];
-        let veiculoSelecionado = null;
         let godsEyeWindow = null;
 
         function persistirTarefas() {
@@ -941,7 +842,6 @@
             tasksPanel.style.display = 'none';
             pesquisasPanel.style.display = 'none';
             sistemasPanel.style.display = 'block';
-            renderVehicleList();
         }
         menuBtn.addEventListener('click', openSideMenu);
         closeBtn.addEventListener('click', () => sideMenu.classList.remove('open'));
@@ -1014,74 +914,6 @@
             atualizarListaPesquisas();
         }
 
-        function renderVehicleList(resultado) {
-            const vehicles = resultado ? [resultado] : frotaAutorizada;
-            vehicleListEl.innerHTML = '';
-            vehicles.forEach((veiculo) => {
-                const item = document.createElement('li');
-                item.textContent = `${veiculo.id} • ${veiculo.placa}`;
-                const meta = document.createElement('span');
-                meta.className = 'vehicle-meta';
-                meta.textContent = `${veiculo.nome} • ${veiculo.status} • ${veiculo.lat.toFixed(4)}, ${veiculo.lon.toFixed(4)}`;
-                item.appendChild(meta);
-                vehicleListEl.appendChild(item);
-            });
-        }
-
-        function criarMarcadorVeiculo(veiculo, selecionado) {
-            const icon = L.divIcon({ className: '', html: `<div class="fleet-marker${selecionado ? ' selected' : ''}"></div>`, iconSize: [24, 24], iconAnchor: [12, 12] });
-            return L.marker([veiculo.lat, veiculo.lon], { icon })
-                .bindPopup(`<strong>${veiculo.id} · ${veiculo.placa}</strong><br>${veiculo.nome}<br><small>${veiculo.status} · ${veiculo.lat.toFixed(4)}, ${veiculo.lon.toFixed(4)}</small>`);
-        }
-
-        function abrirMapaFrota(selecionado) {
-            if (!window.L) {
-                hudAlert('⚠️', 'MAPA INDISPONÍVEL', 'conexão cartográfica não carregada');
-                return;
-            }
-            mapPanel.classList.add('open');
-            requestAnimationFrame(() => {
-                if (!fleetMap) {
-                    fleetMap = L.map('fleet-map', { zoomControl: true, worldCopyJump: true }).setView([-14.2, -51.9], 4);
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(fleetMap);
-                }
-                fleetMapMarkers.forEach((marker) => marker.remove());
-                fleetMapMarkers = frotaAutorizada.map((veiculo) => {
-                    const marker = criarMarcadorVeiculo(veiculo, selecionado && selecionado.id === veiculo.id).addTo(fleetMap);
-                    return marker;
-                });
-                const pontos = frotaAutorizada.map((veiculo) => [veiculo.lat, veiculo.lon]);
-                if (selecionado) {
-                    fleetMap.setView([selecionado.lat, selecionado.lon], 13, { animate: true });
-                    const markerIndex = frotaAutorizada.findIndex((veiculo) => veiculo.id === selecionado.id);
-                    if (fleetMapMarkers[markerIndex]) fleetMapMarkers[markerIndex].openPopup();
-                } else if (pontos.length) {
-                    fleetMap.fitBounds(pontos, { padding: [60, 60], maxZoom: 8 });
-                }
-                setTimeout(() => fleetMap.invalidateSize(), 80);
-            });
-        }
-
-        function fecharMapaFrota() { mapPanel.classList.remove('open'); }
-        mapClose.addEventListener('click', fecharMapaFrota);
-
-        function localizarVeiculo(identificador) {
-            const termo = normalizar(identificador || '').replace(/\s+/g, '');
-            const resultado = frotaAutorizada.find((veiculo) => [veiculo.id, veiculo.placa, veiculo.nome]
-                .some((campo) => normalizar(campo).replace(/\s+/g, '').includes(termo)));
-            if (!resultado) return null;
-            veiculoSelecionado = resultado;
-            isGlobeMode = true;
-            renderVehicleList(resultado);
-            hudFlash('🚗', resultado.id, `${resultado.lat.toFixed(2)} / ${resultado.lon.toFixed(2)}`, 5000);
-            return resultado;
-        }
-
-        function abrirSistemas() {
-            sideMenu.classList.add('open');
-            openSistemasPanel();
-        }
-
         function abrirGodsEyeView() {
             const url = (window.SEXTA_CONFIG && window.SEXTA_CONFIG.godsEyeViewUrl) || 'http://localhost:4174';
             if (godsEyeWindow && !godsEyeWindow.closed) {
@@ -1090,9 +922,7 @@
             }
             godsEyeWindow = window.open(url, 'sexta-feira-gods-eye-view', 'popup=yes,width=1440,height=920');
             if (!godsEyeWindow) {
-                godsEyeFrame.src = url;
-                godsEyeFramePanel.classList.add('open');
-                hudFlash('🛰️', 'CONSOLE INCORPORADO', 'God’s Eye View aberto na Sexta-Feira', 4500);
+                window.location.assign(url);
                 return true;
             }
             hudFlash('🛰️', 'CONSOLE ORIGINAL', 'God’s Eye View conectado', 4500);
@@ -1102,23 +932,11 @@
         function fecharGodsEyeView() {
             if (godsEyeWindow && !godsEyeWindow.closed) godsEyeWindow.close();
             godsEyeWindow = null;
-            godsEyeFramePanel.classList.remove('open');
-            godsEyeFrame.src = 'about:blank';
         }
-
-        godsEyeFrameClose.addEventListener('click', fecharGodsEyeView);
 
         openGlobeBtn.addEventListener('click', () => {
             isGlobeMode = true;
             abrirGodsEyeView();
-        });
-        locateVehicleBtn.addEventListener('click', () => {
-            const resultado = localizarVeiculo(vehicleSearch.value);
-            if (!resultado) hudFlash('⚠️', 'NÃO ENCONTRADO', 'veículo não cadastrado', 3000);
-            else abrirMapaFrota(resultado);
-        });
-        vehicleSearch.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') locateVehicleBtn.click();
         });
 
         // ---- HUD central ----
@@ -1771,7 +1589,7 @@
         const CHAT_CLOSE_RE = /fechar chat|fecha o chat|fecha o painel|sair do chat|desativar chat|fecha a tela|fecha a janela/i;
         const COMANDOS_RE = /quais (s[ãa]o os )?comandos|lista de comandos|me mostra os comandos|^comandos$|o que voc[eê] (faz|sabe fazer|pode fazer|consegue fazer|consegue)|em que voc[eê] (consegue )?me ajud|o que eu posso falar|me ensina o que voc[eê] faz/i;
 
-        const LISTA_COMANDOS = `Atualizei o centro de controle com minhas capacidades. Tarefas: "anote comprar pão", "quais são as tarefas", "remova comprar pão" ou "apague todas as tarefas". Comandos compostos: "anote estudar e depois crie um timer de dez minutos". Memória explicável: "salve na memória que gosto de música", "o que você sabe sobre mim", "repete" ou "apague minha memória". Aprendizado: diga "você entendeu errado, corrija para tarefa". Personalidade: "mude sua personalidade para investigadora", técnica, acolhedora ou objetiva. Pesquisa: "pesquise sobre tal coisa", "acha na internet" ou "qual o clima em São Paulo". Investigação: "abrir o Olho de Deus", "mostrar a frota", "localizar veículo CF-01" e "fechar o globo". Tempo: "timer de cinco minutos", "alarme das sete da manhã", "quanto tempo falta" e "cancelar timer". Sistema: "diagnóstico do sistema", "ativar modo gênio", "abrir chat", "que horas são", "que dia é hoje" e contas como "cinco mais três". Minha interpretação é local, com confiança e memória no dispositivo.`;
+        const LISTA_COMANDOS = `Atualizei o centro de controle com minhas capacidades. Tarefas: "anote comprar pão", "quais são as tarefas", "remova comprar pão" ou "apague todas as tarefas". Comandos compostos: "anote estudar e depois crie um timer de dez minutos". Memória explicável: "salve na memória que gosto de música", "o que você sabe sobre mim", "repete" ou "apague minha memória". Aprendizado: diga "você entendeu errado, corrija para tarefa". Personalidade: "mude sua personalidade para investigadora", técnica, acolhedora ou objetiva. Pesquisa: "pesquise sobre tal coisa", "acha na internet" ou "qual o clima em São Paulo". Investigação: "ativar o Olho de Deus" e "fechar o globo". Tempo: "timer de cinco minutos", "alarme das sete da manhã", "quanto tempo falta" e "cancelar timer". Sistema: "diagnóstico do sistema", "ativar modo gênio", "abrir chat", "que horas são", "que dia é hoje" e contas como "cinco mais três". Minha interpretação é local, com confiança e memória no dispositivo.`;
 
         async function processarComando(transcript) {
             console.log("Comando detectado:", transcript);
@@ -1795,9 +1613,7 @@
             const osintISS = transcript.match(/(?:localizar|rastrear|monitorar|mostrar)\s+(?:a|o)?\s*(esta[çc][ãa]o espacial|iss|sat[ée]lite)/i);
             const osintClose = transcript.match(/(?:fechar|parar|cancelar|sair|voltar)\s+(?:o|a)?\s*(?:rastreio|monitoramento|mapa|globo|osint)/i);
             const olhoDeDeusMatch = /(?:abrir|ativar|mostrar|ligar) (?:o )?(?:olho de deus|globo|visualiza[çc][ãa]o global)/i.test(transcript);
-            const frotaMatch = /(?:abrir|mostrar|listar|ver) (?:a )?(?:frota|veiculos|veículos)/i.test(transcript);
-            const localizarVeiculoMatch = transcript.match(/(?:localizar|rastrear|encontrar|mostrar) (?:o )?(?:veiculo|veículo|carro|automovel|automóvel)\s+(.+)/i);
-            const diagnosticoMatch = /(?:diagn[oó]stico|status|situa[çc][ãa]o) (?:do |da )?(?:sistema|n[uú]cleo|frota)/i.test(transcript);
+            const diagnosticoMatch = /(?:diagn[oó]stico|status|situa[çc][ãa]o) (?:do |da )?(?:sistema|n[uú]cleo)/i.test(transcript);
 
             const chatOpenMatch = CHAT_OPEN_RE.test(transcript);
             const chatCloseMatch = CHAT_CLOSE_RE.test(transcript);
@@ -1889,21 +1705,6 @@
                     responderComoSextaFeira('O monitoramento já está desativado.');
                 }
             }
-            else if (localizarVeiculoMatch) {
-                const resultado = localizarVeiculo(localizarVeiculoMatch[1].replace(/[.!?]+$/, '').trim());
-                abrirSistemas();
-                if (resultado) {
-                    abrirMapaFrota(resultado);
-                    responderComoSextaFeira(`Veículo autorizado ${resultado.id} localizado. Status: ${resultado.status}. Coordenadas: latitude ${resultado.lat.toFixed(4)}, longitude ${resultado.lon.toFixed(4)}.`);
-                } else {
-                    responderComoSextaFeira('Não encontrei esse veículo na frota autorizada. Posso localizar apenas identificadores cadastrados.');
-                }
-            }
-            else if (frotaMatch) {
-                abrirSistemas();
-                renderVehicleList();
-                responderComoSextaFeira(`Frota autorizada aberta. Existem ${frotaAutorizada.length} veículos cadastrados.`);
-            }
             else if (olhoDeDeusMatch) {
                 isGlobeMode = true;
                 const consoleAberto = abrirGodsEyeView();
@@ -1912,8 +1713,7 @@
                     : 'Não consegui abrir o God’s Eye View. Permita pop-ups e confirme se o console está rodando em localhost:4174.');
             }
             else if (diagnosticoMatch) {
-                abrirSistemas();
-                responderComoSextaFeira(`Diagnóstico concluído. Núcleo local operacional, memória com ${fatos.length} registros, ${tarefas.length} tarefas e frota autorizada com ${frotaAutorizada.length} veículos.`);
+                responderComoSextaFeira(`Diagnóstico concluído. Núcleo local operacional, memória com ${fatos.length} registros e ${tarefas.length} tarefas.`);
                 hudFlash('⚙️', 'SISTEMAS OK', 'diagnóstico concluído', 3500);
             }
             else if (chatOpenMatch) {
@@ -2578,12 +2378,6 @@
             new THREE.MeshBasicMaterial({ color: 0x0b5d96, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false })
         );
         scene.add(globeSurface);
-        const vehicleMarker = new THREE.Mesh(
-            new THREE.SphereGeometry(0.12, 12, 12),
-            new THREE.MeshBasicMaterial({ color: 0xff4d6d, transparent: true, opacity: 0 })
-        );
-        scene.add(vehicleMarker);
-
         let isGlobeMode = false;
 
         // ==========================================
@@ -2624,18 +2418,6 @@
             globe.scale.setScalar( globe.scale.x + (targetGlobeScale - globe.scale.x) * 0.05 );
             globe.rotation.y = time * 0.05;
             globe.rotation.x = time * 0.02;
-            const targetMarkerOpacity = isGlobeMode && veiculoSelecionado ? 1 : 0;
-            vehicleMarker.material.opacity += (targetMarkerOpacity - vehicleMarker.material.opacity) * 0.08;
-            if (veiculoSelecionado) {
-                const latitude = veiculoSelecionado.lat * Math.PI / 180;
-                const longitude = veiculoSelecionado.lon * Math.PI / 180;
-                vehicleMarker.position.set(
-                    2.75 * Math.cos(latitude) * Math.cos(longitude),
-                    2.75 * Math.sin(latitude),
-                    2.75 * Math.cos(latitude) * Math.sin(longitude)
-                );
-            }
-
             // ---- Esfera: drift lento (acelera levemente com a voz) ----
             timeAcc += dt * (1 + activeVolume * 0.8);
             esferaUniforms.uTime.value = timeAcc;
