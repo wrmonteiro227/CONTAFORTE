@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
         :root {
             --ink: #fff8d7;
@@ -268,23 +269,43 @@
             position: fixed;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 150px; height: 150px;
+            width: min(390px, calc(100vw - 32px));
+            min-height: 112px;
             z-index: 12;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.45s ease;
+            transition: opacity 0.35s ease, transform 0.35s ease;
         }
-        #hud-center.active { opacity: 1; }
+        #hud-center.active { opacity: 1; transform: translate(-50%, -50%) translateY(-4px); }
         #hud-center svg {
             position: absolute;
-            inset: 0;
+            left: 14px; top: 14px;
+            width: 84px; height: 84px;
             transform: rotate(-90deg);
         }
-        .hud-bg { fill: none; stroke: rgba(245, 195, 56, 0.14); stroke-width: 2; }
+        #hud-center::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 1px solid rgba(105, 226, 255, 0.35);
+            border-radius: 22px;
+            background: linear-gradient(115deg, rgba(6, 25, 38, 0.97), rgba(8, 12, 21, 0.95));
+            box-shadow: 0 20px 70px rgba(0, 0, 0, 0.55), 0 0 34px rgba(42, 193, 255, 0.16), inset 0 0 28px rgba(39, 184, 255, 0.08);
+            z-index: -1;
+        }
+        #hud-center::after {
+            content: '';
+            position: absolute;
+            left: 18px; right: 18px; bottom: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #4fddff, transparent);
+            box-shadow: 0 0 12px #4fddff;
+        }
+        .hud-bg { fill: none; stroke: rgba(127, 222, 255, 0.13); stroke-width: 3; }
         .hud-fg {
             fill: none;
-            stroke: rgba(64, 220, 255, 0.9);
-            stroke-width: 2.5;
+            stroke: rgba(79, 221, 255, 0.98);
+            stroke-width: 4;
             stroke-linecap: round;
             stroke-dasharray: 326.73;
             stroke-dashoffset: 0;
@@ -292,29 +313,30 @@
         }
         #hud-content {
             position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 2px;
+            left: 112px; right: 18px; top: 17px; bottom: 15px;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto 1fr;
+            align-content: center;
+            gap: 3px;
         }
-        #hud-icon { font-size: 14px; }
+        #hud-icon { font-size: 17px; position: absolute; left: -92px; top: 34px; width: 84px; text-align: center; filter: drop-shadow(0 0 8px #4fddff); }
         #hud-time {
-            font-family: 'Courier New', monospace;
-            font-size: 24px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 19px;
             font-weight: 800;
-            letter-spacing: 2px;
+            letter-spacing: 0.4px;
             color: #cfeeff;
             text-shadow: 0 0 12px rgba(64, 220, 255, 0.9);
+            white-space: nowrap;
         }
         #hud-label {
-            font-size: 9px;
-            letter-spacing: 2px;
+            font-size: 11px;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
             color: rgba(160, 220, 240, 0.75);
-            text-align: center;
-            padding: 0 14px;
+            text-align: left;
+            line-height: 1.3;
         }
         #hud-center.alert .hud-fg {
             stroke: rgba(255, 77, 106, 0.95);
@@ -322,7 +344,7 @@
             animation: hudPulse 0.8s infinite;
         }
         #hud-center.alert #hud-time {
-            font-size: 13px;
+            font-size: 16px;
             letter-spacing: 1px;
             color: #ffd7de;
             text-shadow: 0 0 14px rgba(255, 77, 106, 0.9);
@@ -332,6 +354,53 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.35; }
         }
+        @media (max-width: 520px) {
+            #hud-center { min-height: 104px; }
+            #hud-content { left: 104px; }
+            #hud-time { font-size: 16px; }
+        }
+
+        /* Mapa real para leitura operacional da frota autorizada. */
+        #map-panel {
+            position: fixed;
+            inset: 8vh 8vw;
+            z-index: 25;
+            display: none;
+            overflow: hidden;
+            border: 1px solid rgba(105, 226, 255, 0.45);
+            border-radius: 20px;
+            background: #07131b;
+            box-shadow: 0 25px 100px rgba(0, 0, 0, 0.75), 0 0 45px rgba(47, 193, 255, 0.18);
+        }
+        #map-panel.open { display: block; animation: mapIn 0.35s ease both; }
+        #fleet-map { position: absolute; inset: 0; background: #10242d; }
+        .map-toolbar {
+            position: absolute;
+            top: 16px; left: 16px; right: 16px;
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            pointer-events: none;
+        }
+        .map-title {
+            padding: 10px 14px;
+            border: 1px solid rgba(105, 226, 255, 0.35);
+            border-radius: 12px;
+            background: rgba(4, 18, 27, 0.9);
+            color: #d9f7ff;
+            font: 700 12px 'Space Grotesk', sans-serif;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 8px 25px rgba(0,0,0,.25);
+        }
+        #map-close { pointer-events: auto; border: 1px solid rgba(255,255,255,.25); border-radius: 10px; padding: 9px 12px; background: rgba(4,18,27,.92); color: white; cursor: pointer; font-size: 18px; }
+        .leaflet-container { font-family: 'DM Sans', sans-serif; }
+        .fleet-marker { width: 18px; height: 18px; border: 3px solid #eaffff; border-radius: 50%; background: #28cfff; box-shadow: 0 0 0 7px rgba(40, 207, 255, .2), 0 0 22px #28cfff; }
+        .fleet-marker.selected { background: #ffd34e; box-shadow: 0 0 0 8px rgba(255, 211, 78, .25), 0 0 25px #ffd34e; }
+        @keyframes mapIn { from { opacity: 0; transform: scale(.97) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        @media (max-width: 700px) { #map-panel { inset: 72px 10px 110px; border-radius: 16px; } .map-toolbar { top: 10px; left: 10px; right: 10px; } }
 
         /* ==========================================
            CHAT
@@ -592,6 +661,7 @@
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <script src="js/storage.js"></script>
@@ -678,6 +748,14 @@
         </div>
     </div>
 
+    <section id="map-panel" aria-label="Mapa da frota autorizada">
+        <div id="fleet-map"></div>
+        <div class="map-toolbar">
+            <div class="map-title">Olho de Deus · frota autorizada</div>
+            <button id="map-close" aria-label="Fechar mapa">×</button>
+        </div>
+    </section>
+
     <!-- CHAT -->
     <div id="chat-panel">
         <div id="chat-header">
@@ -753,6 +831,10 @@
         const hudIcon = document.getElementById('hud-icon');
         const hudTime = document.getElementById('hud-time');
         const hudLabel = document.getElementById('hud-label');
+        const mapPanel = document.getElementById('map-panel');
+        const mapClose = document.getElementById('map-close');
+        let fleetMap = null;
+        let fleetMapMarkers = [];
 
         const chatPanel = document.getElementById('chat-panel');
         const chatMsgs = document.getElementById('chat-msgs');
@@ -921,6 +1003,43 @@
             });
         }
 
+        function criarMarcadorVeiculo(veiculo, selecionado) {
+            const icon = L.divIcon({ className: '', html: `<div class="fleet-marker${selecionado ? ' selected' : ''}"></div>`, iconSize: [24, 24], iconAnchor: [12, 12] });
+            return L.marker([veiculo.lat, veiculo.lon], { icon })
+                .bindPopup(`<strong>${veiculo.id} · ${veiculo.placa}</strong><br>${veiculo.nome}<br><small>${veiculo.status} · ${veiculo.lat.toFixed(4)}, ${veiculo.lon.toFixed(4)}</small>`);
+        }
+
+        function abrirMapaFrota(selecionado) {
+            if (!window.L) {
+                hudAlert('⚠️', 'MAPA INDISPONÍVEL', 'conexão cartográfica não carregada');
+                return;
+            }
+            mapPanel.classList.add('open');
+            requestAnimationFrame(() => {
+                if (!fleetMap) {
+                    fleetMap = L.map('fleet-map', { zoomControl: true, worldCopyJump: true }).setView([-14.2, -51.9], 4);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(fleetMap);
+                }
+                fleetMapMarkers.forEach((marker) => marker.remove());
+                fleetMapMarkers = frotaAutorizada.map((veiculo) => {
+                    const marker = criarMarcadorVeiculo(veiculo, selecionado && selecionado.id === veiculo.id).addTo(fleetMap);
+                    return marker;
+                });
+                const pontos = frotaAutorizada.map((veiculo) => [veiculo.lat, veiculo.lon]);
+                if (selecionado) {
+                    fleetMap.setView([selecionado.lat, selecionado.lon], 13, { animate: true });
+                    const markerIndex = frotaAutorizada.findIndex((veiculo) => veiculo.id === selecionado.id);
+                    if (fleetMapMarkers[markerIndex]) fleetMapMarkers[markerIndex].openPopup();
+                } else if (pontos.length) {
+                    fleetMap.fitBounds(pontos, { padding: [60, 60], maxZoom: 8 });
+                }
+                setTimeout(() => fleetMap.invalidateSize(), 80);
+            });
+        }
+
+        function fecharMapaFrota() { mapPanel.classList.remove('open'); }
+        mapClose.addEventListener('click', fecharMapaFrota);
+
         function localizarVeiculo(identificador) {
             const termo = normalizar(identificador || '').replace(/\s+/g, '');
             const resultado = frotaAutorizada.find((veiculo) => [veiculo.id, veiculo.placa, veiculo.nome]
@@ -941,10 +1060,12 @@
         openGlobeBtn.addEventListener('click', () => {
             isGlobeMode = true;
             hudFlash('🌐', 'OLHO DE DEUS', 'visualização autorizada', 3500);
+            abrirMapaFrota();
         });
         locateVehicleBtn.addEventListener('click', () => {
             const resultado = localizarVeiculo(vehicleSearch.value);
             if (!resultado) hudFlash('⚠️', 'NÃO ENCONTRADO', 'veículo não cadastrado', 3000);
+            else abrirMapaFrota(resultado);
         });
         vehicleSearch.addEventListener('keydown', (event) => {
             if (event.key === 'Enter') locateVehicleBtn.click();
@@ -1721,6 +1842,7 @@
                 const resultado = localizarVeiculo(localizarVeiculoMatch[1].replace(/[.!?]+$/, '').trim());
                 abrirSistemas();
                 if (resultado) {
+                    abrirMapaFrota(resultado);
                     responderComoSextaFeira(`Veículo autorizado ${resultado.id} localizado. Status: ${resultado.status}. Coordenadas: latitude ${resultado.lat.toFixed(4)}, longitude ${resultado.lon.toFixed(4)}.`);
                 } else {
                     responderComoSextaFeira('Não encontrei esse veículo na frota autorizada. Posso localizar apenas identificadores cadastrados.');
@@ -1734,6 +1856,7 @@
             else if (olhoDeDeusMatch) {
                 isGlobeMode = true;
                 hudFlash('🌐', 'OLHO DE DEUS', 'visualização autorizada', 3500);
+                abrirMapaFrota();
                 responderComoSextaFeira('Olho de Deus ativado. Visualização global autorizada em operação.');
             }
             else if (diagnosticoMatch) {
@@ -2263,6 +2386,7 @@
                 }
             `,
             fragmentShader: `
+                uniform float uTime;
                 varying float vEnergy;
                 void main() {
                     vec2 cell = gl_PointCoord - 0.5;
@@ -2271,8 +2395,9 @@
                     float core = 1.0 - smoothstep(0.0, 0.42, distanceFromCenter);
                     float alpha = (rim * 0.58 + core * 0.82) * clamp(vEnergy, 0.08, 1.0);
                     if (alpha < 0.02) discard;
-                    vec3 gold = mix(vec3(0.60, 0.30, 0.02), vec3(1.0, 0.90, 0.38), core + vEnergy * 0.40);
-                    gl_FragColor = vec4(gold, alpha);
+                    float shimmer = 0.72 + 0.28 * sin(vEnergy * 16.0 + uTime * 4.0);
+                    vec3 electricBlue = mix(vec3(0.02, 0.25, 0.72), vec3(0.35, 0.92, 1.0), core + vEnergy * 0.55);
+                    gl_FragColor = vec4(electricBlue * shimmer, alpha);
                 }
             `
         });
@@ -2285,8 +2410,12 @@
                 const index = row * cellCols + col;
                 const angle = index * 2.399963;
                 const radius = Math.sqrt((index + 0.5) / cellCount);
-                const x = Math.cos(angle) * radius * 3.0;
-                const y = Math.sin(angle) * radius * 2.35;
+                let x = Math.cos(angle) * radius * 2.72;
+                let y = Math.sin(angle) * radius * 2.18;
+                // Dois hemisférios e um sulco central aproximam uma silhueta cerebral.
+                const fissure = Math.max(0, 1 - Math.abs(x) / 0.62) * Math.max(0, y / 2.2);
+                x += (x < 0 ? -1 : 1) * fissure * 0.42;
+                y += Math.sin(radius * Math.PI) * 0.12;
                 cellPositions[index * 3] = x;
                 cellPositions[index * 3 + 1] = y;
                 cellPositions[index * 3 + 2] = Math.sin(x * 1.1) * 0.42 + Math.cos(y * 1.4) * 0.28 + (cellRandom[index] - 0.5) * 0.9;
@@ -2392,6 +2521,11 @@
         });
         const globe = new THREE.Mesh(globeGeometry, globeMaterial);
         scene.add(globe);
+        const globeSurface = new THREE.Mesh(
+            new THREE.SphereGeometry(2.56, 40, 40),
+            new THREE.MeshBasicMaterial({ color: 0x0b5d96, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false })
+        );
+        scene.add(globeSurface);
         const vehicleMarker = new THREE.Mesh(
             new THREE.SphereGeometry(0.12, 12, 12),
             new THREE.MeshBasicMaterial({ color: 0xff4d6d, transparent: true, opacity: 0 })
@@ -2434,6 +2568,7 @@
             const targetGlobeOpacity = isGlobeMode ? 0.4 : 0.0;
             const targetGlobeScale = isGlobeMode ? 1.0 : 0.1;
             globeMaterial.opacity += (targetGlobeOpacity - globeMaterial.opacity) * 0.05;
+            globeSurface.material.opacity += ((isGlobeMode ? 0.18 : 0) - globeSurface.material.opacity) * 0.05;
             globe.scale.setScalar( globe.scale.x + (targetGlobeScale - globe.scale.x) * 0.05 );
             globe.rotation.y = time * 0.05;
             globe.rotation.x = time * 0.02;
