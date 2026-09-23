@@ -81,7 +81,7 @@
         }
         .bar {
             width: 4px;
-            background-color: #ff0000;
+            background-color: #f5c338;
             animation: soundWave 0s infinite ease-in-out alternate;
         }
         .bar:nth-child(1) { height: 12px; animation-duration: 0.4s; }
@@ -957,6 +957,7 @@
 
         let nomeUsuario = localStorage.getItem('sexta_feira.name') || localStorage.getItem('utron.name') || "senhor";
         let isGenioActive = (localStorage.getItem('sexta_feira.mode') || localStorage.getItem('utron.mode')) === 'genio';
+        let memoria = { ultimoTopico: '', ultimoResumo: '', ultimoComando: '', ultimoTs: 0 };
 
         function atualizarCentroControle(confianca) {
             const personalidade = localStorage.getItem('sexta_feira.personality') || 'objetiva';
@@ -977,18 +978,15 @@
         setInterval(atualizarCentroControle, 1000);
         atualizarCentroControle();
 
-        // Memória de conversa (contexto)
-        let memoria = { ultimoTopico: '', ultimoResumo: '', ultimoComando: '', ultimoTs: 0 };
-
         const corBaseNormal = new THREE.Color(0x8f6810);
         const corAtivaNormal = new THREE.Color(0xffd34e);
         const corBaseGenio = new THREE.Color(0x6f4b06);
         const corAtivaGenio = new THREE.Color(0xffee8a);
 
-        const corBaseAlvo = new THREE.Color(isGenioActive ? 0x004d00 : 0x8a2be2);
-        const corAtivaAlvo = new THREE.Color(isGenioActive ? 0x33ff33 : 0xff0000);
-        const corBaseAtual = new THREE.Color(isGenioActive ? 0x004d00 : 0x8a2be2);
-        const corAtivaAtual = new THREE.Color(isGenioActive ? 0x33ff33 : 0xff0000);
+        const corBaseAlvo = new THREE.Color(isGenioActive ? 0x6f4b06 : 0x8f6810);
+        const corAtivaAlvo = new THREE.Color(isGenioActive ? 0xffee8a : 0xffd34e);
+        const corBaseAtual = new THREE.Color(isGenioActive ? 0x6f4b06 : 0x8f6810);
+        const corAtivaAtual = new THREE.Color(isGenioActive ? 0xffee8a : 0xffd34e);
 
         window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 
