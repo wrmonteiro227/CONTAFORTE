@@ -1,6 +1,6 @@
 /* Interpretador local: regras, exemplos aprendidos e nivel de confianca. */
 (function () {
-    const STOPWORDS = new Set(['a', 'o', 'as', 'os', 'de', 'da', 'do', 'das', 'dos', 'e', 'um', 'uma', 'para', 'pra', 'me', 'eu', 'que', 'na', 'no', 'em']);
+    const STOPWORDS = new Set(['a', 'o', 'as', 'os', 'de', 'da', 'do', 'das', 'dos', 'e', 'um', 'uma', 'para', 'pra', 'me', 'eu', 'que', 'na', 'no', 'em', 'por', 'favor', 'sobre', 'com', 'como']);
     const EXAMPLES_KEY = 'sexta_feira.interpreter.examples.v1';
 
     function normalize(text) {
@@ -40,12 +40,15 @@
     function classify(text) {
         const normalized = normalize(text);
         const patterns = [
-            { intent: 'criar_tarefa', confidence: 0.93, test: /^(anote|adicionar?|adicione|coloque|registre|me lembre|lembre[- ]me|na minha agenda)/ },
-            { intent: 'listar_tarefas', confidence: 0.96, test: /(minhas tarefas|meus compromissos|o que tenho para fazer|quais tarefas)/ },
-            { intent: 'pesquisar', confidence: 0.92, test: /(pesquis|busc|procur|achar|na internet|na web)/ },
-            { intent: 'salvar_memoria', confidence: 0.97, test: /(salve|guarde|memorize|aprenda) (isso|que|na memoria)/ },
-            { intent: 'informar_horario', confidence: 0.98, test: /(que horas|qual o horario|horario atual)/ },
-            { intent: 'informar_data', confidence: 0.98, test: /(que dia|qual a data|data de hoje)/ }
+            { intent: 'criar_tarefa', confidence: 0.93, test: /^(anote|adicionar?|adicione|coloque|registre|me lembre|lembre[- ]me|na minha agenda|crie uma tarefa|preciso lembrar)/ },
+            { intent: 'listar_tarefas', confidence: 0.96, test: /(minhas tarefas|meus compromissos|o que tenho para fazer|quais tarefas|o que preciso fazer|minha agenda)/ },
+            { intent: 'pesquisar', confidence: 0.92, test: /(pesquis|busc|procur|achar|encontr|na internet|na web|me explica|me fale sobre|me conta sobre|quem foi|o que significa|qual a diferenca)/ },
+            { intent: 'salvar_memoria', confidence: 0.97, test: /(salve|guarde|memorize|aprenda|lembre) (isso|que|na memoria|para mim)/ },
+            { intent: 'informar_horario', confidence: 0.98, test: /(que horas|qual o horario|horario atual|horas sao)/ },
+            { intent: 'informar_data', confidence: 0.98, test: /(que dia|qual a data|data de hoje|dia e hoje)/ },
+            { intent: 'listar_comandos', confidence: 0.94, test: /(quais comandos|o que voce faz|como posso falar|suas capacidades|me ajuda com)/ },
+            { intent: 'abrir_sistemas', confidence: 0.95, test: /(olho de deus|abrir sistemas|mostrar a frota|listar frota|diagnostico do sistema)/ },
+            { intent: 'localizar_veiculo', confidence: 0.95, test: /(localizar|rastrear|encontrar) (o )?(veiculo|carro|automovel)/ }
         ];
         const learned = learnedExamples()
             .map((example) => ({ ...example, confidence: similarity(text, example.phrase) * 0.9 }))
