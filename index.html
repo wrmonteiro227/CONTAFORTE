@@ -9,17 +9,17 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --ink: #e8f1f5;
-            --muted: #8ca6b0;
-            --panel: rgba(7, 18, 24, 0.94);
-            --line: rgba(125, 211, 232, 0.2);
-            --cyan: #7dd3e8;
-            --accent: #ff6b4a;
+            --ink: #fff8d7;
+            --muted: #a99e70;
+            --panel: rgba(12, 11, 5, 0.92);
+            --line: rgba(245, 193, 56, 0.24);
+            --cyan: #f5c338;
+            --accent: #ffd34e;
         }
         body {
             margin: 0;
             overflow: hidden;
-            background: radial-gradient(circle at 50% 42%, #102d35 0%, #071218 32%, #030609 76%);
+            background: radial-gradient(circle at 50% 45%, #211a07 0%, #090803 32%, #020202 72%);
             color: var(--ink);
             font-family: 'DM Sans', sans-serif;
         }
@@ -39,7 +39,7 @@
             font-weight: 800;
             letter-spacing: 4px;
             text-transform: uppercase;
-            background: rgba(3, 10, 14, 0.72);
+            background: rgba(3, 3, 2, 0.84);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -51,8 +51,8 @@
             bottom: 40px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: #8a2be2;
-            color: #ffffff;
+            background-color: #f5c338;
+            color: #080704;
             border: none;
             width: 60px; height: 60px;
             border-radius: 50%;
@@ -63,7 +63,7 @@
             align-items: center;
             z-index: 10;
             transition: background-color 0.3s, transform 0.2s;
-            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+            box-shadow: 0 4px 22px rgba(245, 195, 56, 0.38);
         }
         #mic-btn:active { transform: translateX(-50%) scale(0.9); }
 
@@ -82,11 +82,9 @@
         .bar {
             width: 4px;
             background-color: #ff0000;
-            border-radius: 2px;
             animation: soundWave 0s infinite ease-in-out alternate;
         }
         .bar:nth-child(1) { height: 12px; animation-duration: 0.4s; }
-        .bar:nth-child(2) { height: 28px; animation-duration: 0.25s; }
         .bar:nth-child(3) { height: 45px; animation-duration: 0.35s; }
         .bar:nth-child(4) { height: 22px; animation-duration: 0.2s; }
         .bar:nth-child(5) { height: 15px; animation-duration: 0.45s; }
@@ -106,9 +104,6 @@
             cursor: pointer;
             font-size: 22px;
             z-index: 15;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             transition: background 0.3s;
         }
         #menu-btn:hover { background: rgba(255, 255, 255, 0.15); }
@@ -151,7 +146,7 @@
 
         #main-nav { list-style: none; padding: 0; margin: 0; }
         .nav-item {
-            background: rgba(125, 211, 232, 0.06);
+            background: rgba(245, 195, 56, 0.06);
             padding: 15px;
             margin-bottom: 10px;
             border-radius: 8px;
@@ -163,7 +158,7 @@
             align-items: center;
             gap: 10px;
         }
-        .nav-item:hover { background: rgba(138, 43, 226, 0.3); }
+        .nav-item:hover { background: rgba(245, 195, 56, 0.16); }
 
         #tasks-panel { display: none; }
         #back-nav-btn {
@@ -264,7 +259,7 @@
             inset: 0;
             transform: rotate(-90deg);
         }
-        .hud-bg { fill: none; stroke: rgba(64, 220, 255, 0.14); stroke-width: 2; }
+        .hud-bg { fill: none; stroke: rgba(245, 195, 56, 0.14); stroke-width: 2; }
         .hud-fg {
             fill: none;
             stroke: rgba(64, 220, 255, 0.9);
@@ -324,7 +319,7 @@
             position: fixed;
             left: 0; right: 0; bottom: 0;
             height: 72vh;
-            background: rgba(4, 13, 18, 0.96);
+            background: rgba(5, 5, 3, 0.96);
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
             border-top: 1px solid var(--line);
@@ -412,14 +407,14 @@
         }
         .msg.user {
             align-self: flex-end;
-            background: rgba(255, 107, 74, 0.16);
-            border: 1px solid rgba(255, 107, 74, 0.42);
+            background: rgba(245, 195, 56, 0.14);
+            border: 1px solid rgba(245, 195, 56, 0.4);
             border-bottom-right-radius: 2px;
         }
         .msg.ai {
             align-self: flex-start;
-            background: rgba(64, 220, 255, 0.12);
-            border: 1px solid rgba(64, 220, 255, 0.3);
+            background: rgba(245, 195, 56, 0.08);
+            border: 1px solid rgba(245, 195, 56, 0.26);
             border-bottom-left-radius: 2px;
         }
         #chat-empty {
@@ -447,7 +442,7 @@
         }
         #chat-input:focus { border-color: rgba(64, 220, 255, 0.7); }
         #chat-send {
-            background: rgba(138, 43, 226, 0.6);
+            background: #f5c338;
             border: none;
             color: white;
             width: 44px;
@@ -488,7 +483,7 @@
         .deck-time { color: var(--muted); font: 500 12px monospace; }
         .deck-panel {
             background: rgba(4, 13, 18, 0.76);
-            border: 1px solid rgba(125, 211, 232, 0.25);
+            border: 1px solid rgba(245, 195, 56, 0.27);
             border-radius: 10px;
             box-shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
             backdrop-filter: blur(16px);
@@ -499,16 +494,16 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            color: #a9f4c5;
+            color: #ffe58b;
             font-size: 12px;
             margin-bottom: 14px;
         }
         .status-dot {
             width: 8px;
             height: 8px;
-            background: #64e89a;
+            background: #f5c338;
             border-radius: 50%;
-            box-shadow: 0 0 12px #64e89a;
+            box-shadow: 0 0 12px #f5c338;
         }
         .deck-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
         .deck-metric {
@@ -549,13 +544,13 @@
         .deck-action {
             border: 1px solid rgba(125, 211, 232, 0.22);
             border-radius: 6px;
-            background: rgba(125, 211, 232, 0.06);
+            background: rgba(245, 195, 56, 0.06);
             color: var(--cyan);
             cursor: pointer;
             font: 600 10px 'DM Sans', sans-serif;
             padding: 8px 4px;
         }
-        .deck-action:hover { background: rgba(255, 107, 74, 0.15); color: #ffd2c8; }
+        .deck-action:hover { background: rgba(245, 195, 56, 0.16); color: #fff1ae; }
         @keyframes deckIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
         @media (max-width: 700px) {
             #control-deck { top: auto; right: 12px; bottom: 116px; left: 12px; width: auto; }
@@ -985,10 +980,10 @@
         // Memória de conversa (contexto)
         let memoria = { ultimoTopico: '', ultimoResumo: '', ultimoComando: '', ultimoTs: 0 };
 
-        const corBaseNormal = new THREE.Color(0x8a2be2);
-        const corAtivaNormal = new THREE.Color(0xff0000);
-        const corBaseGenio = new THREE.Color(0x004d00);
-        const corAtivaGenio = new THREE.Color(0x33ff33);
+        const corBaseNormal = new THREE.Color(0x8f6810);
+        const corAtivaNormal = new THREE.Color(0xffd34e);
+        const corBaseGenio = new THREE.Color(0x6f4b06);
+        const corAtivaGenio = new THREE.Color(0xffee8a);
 
         const corBaseAlvo = new THREE.Color(isGenioActive ? 0x004d00 : 0x8a2be2);
         const corAtivaAlvo = new THREE.Color(isGenioActive ? 0x33ff33 : 0xff0000);
@@ -2077,6 +2072,83 @@
         });
         const esfera = new THREE.Points(esferaGeometry, esferaMaterial);
         scene.add(esfera);
+        esfera.visible = false;
+
+        // Membrana celular: uma capa leve que ondula em conjunto como tecido ao vento.
+        const cellCols = 34;
+        const cellRows = 23;
+        const cellCount = cellCols * cellRows;
+        const cellPositions = new Float32Array(cellCount * 3);
+        const cellCoords = new Float32Array(cellCount * 2);
+        const cellRandom = new Float32Array(cellCount);
+        for (let row = 0; row < cellRows; row++) {
+            for (let col = 0; col < cellCols; col++) {
+                const index = row * cellCols + col;
+                cellCoords[index * 2] = col / (cellCols - 1);
+                cellCoords[index * 2 + 1] = row / (cellRows - 1);
+                cellRandom[index] = Math.random();
+            }
+        }
+        const cellGeometry = new THREE.BufferGeometry();
+        cellGeometry.setAttribute('position', new THREE.BufferAttribute(cellPositions, 3));
+        cellGeometry.setAttribute('aCoord', new THREE.BufferAttribute(cellCoords, 2));
+        cellGeometry.setAttribute('aRandom', new THREE.BufferAttribute(cellRandom, 1));
+        const cellUniforms = { uTime: { value: 0 }, uPulse: { value: 0 } };
+        const cellMaterial = new THREE.ShaderMaterial({
+            uniforms: cellUniforms,
+            transparent: true,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+            vertexShader: `
+                uniform float uTime;
+                uniform float uPulse;
+                attribute vec2 aCoord;
+                attribute float aRandom;
+                varying float vEnergy;
+                void main() {
+                    float edge = smoothstep(0.0, 0.18, aCoord.x) * smoothstep(1.0, 0.82, aCoord.x);
+                    edge *= smoothstep(0.0, 0.16, aCoord.y) * smoothstep(1.0, 0.84, aCoord.y);
+                    float breath = sin(uTime * 0.75 + aCoord.x * 5.0 + aCoord.y * 3.0 + aRandom * 6.28);
+                    vEnergy = 0.35 + 0.35 * edge + 0.18 * breath + uPulse * 0.25;
+                    vec3 p = position;
+                    p.z += sin(aCoord.x * 8.0 + uTime * 0.72) * 0.20;
+                    p.z += cos(aCoord.y * 10.0 - uTime * 0.54) * 0.15;
+                    p.x += sin(uTime * 0.38 + aCoord.y * 5.0) * 0.11;
+                    p.y += cos(uTime * 0.31 + aCoord.x * 4.0) * 0.08;
+                    vec4 mv = modelViewMatrix * vec4(p, 1.0);
+                    gl_PointSize = (3.2 + aRandom * 3.0 + uPulse * 2.0) * (54.0 / -mv.z);
+                    gl_Position = projectionMatrix * mv;
+                }
+            `,
+            fragmentShader: `
+                varying float vEnergy;
+                void main() {
+                    vec2 cell = gl_PointCoord - 0.5;
+                    float distanceFromCenter = length(cell) * 2.0;
+                    float rim = 1.0 - smoothstep(0.34, 0.92, distanceFromCenter);
+                    float core = 1.0 - smoothstep(0.0, 0.42, distanceFromCenter);
+                    float alpha = (rim * 0.58 + core * 0.82) * clamp(vEnergy, 0.08, 1.0);
+                    if (alpha < 0.02) discard;
+                    vec3 gold = mix(vec3(0.72, 0.42, 0.04), vec3(1.0, 0.86, 0.30), core + vEnergy * 0.35);
+                    gl_FragColor = vec4(gold, alpha);
+                }
+            `
+        });
+        const cellMembrane = new THREE.Points(cellGeometry, cellMaterial);
+        cellMembrane.position.set(-0.45, 0.05, 0.15);
+        cellMembrane.rotation.set(-0.12, -0.18, 0.04);
+        scene.add(cellMembrane);
+        for (let row = 0; row < cellRows; row++) {
+            for (let col = 0; col < cellCols; col++) {
+                const index = row * cellCols + col;
+                const x = (col / (cellCols - 1) - 0.5) * 5.7;
+                const y = (row / (cellRows - 1) - 0.5) * 3.75;
+                cellPositions[index * 3] = x;
+                cellPositions[index * 3 + 1] = y;
+                cellPositions[index * 3 + 2] = Math.sin(x * 1.1) * 0.18 + Math.cos(y * 1.4) * 0.12;
+            }
+        }
+        cellGeometry.attributes.position.needsUpdate = true;
 
         // ---- Fluxo de partículas: nascem no núcleo e fluem para fora ----
         function criarTexturaSuave() {
@@ -2121,7 +2193,7 @@
         const D = 300;
         const dustPos = new Float32Array(D * 3);
         const dustCol = new Float32Array(D * 3);
-        const dustPalette = [[0.20, 0.55, 0.65], [0.15, 0.45, 0.60], [0.30, 0.60, 0.70]];
+        const dustPalette = [[0.72, 0.42, 0.04], [0.95, 0.68, 0.12], [1.00, 0.84, 0.30]];
         for (let i = 0; i < D; i++) {
             let dx = Math.random() * 2 - 1, dy = Math.random() * 2 - 1, dz = Math.random() * 2 - 1;
             const l = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
@@ -2168,7 +2240,7 @@
         // ==========================================
         const globeGeometry = new THREE.SphereGeometry(2.6, 32, 32);
         const globeMaterial = new THREE.MeshBasicMaterial({
-            color: 0x40dcff,
+            color: 0xf5c338,
             wireframe: true,
             transparent: true,
             opacity: 0,
@@ -2222,11 +2294,15 @@
             esferaUniforms.uTime.value = timeAcc;
             esferaUniforms.uPulse.value = activeVolume;
             esferaUniforms.uGenio.value = genioBlend;
+            cellUniforms.uTime.value = timeAcc;
+            cellUniforms.uPulse.value = activeVolume;
 
             nebAngleY += dt * 0.10;
             nebAngleX += dt * 0.06;
             esfera.rotation.y = nebAngleY;
             esfera.rotation.x = nebAngleX;
+            cellMembrane.rotation.y = -0.18 + Math.sin(time * 0.18) * 0.08;
+            cellMembrane.rotation.x = -0.12 + Math.cos(time * 0.14) * 0.04;
 
             // ---- Fluxo de partículas do núcleo ----
             for (let i = 0; i < F; i++) {
@@ -2239,9 +2315,9 @@
                 flowPos[i3] = flowDirX[i] * r;
                 flowPos[i3 + 1] = flowDirY[i] * r;
                 flowPos[i3 + 2] = flowDirZ[i] * r;
-                flowCol[i3] = 0.35 * al * 0.6;
-                flowCol[i3 + 1] = 0.80 * al * 0.6;
-                flowCol[i3 + 2] = 0.90 * al * 0.6;
+                flowCol[i3] = 1.00 * al * 0.7;
+                flowCol[i3 + 1] = 0.63 * al * 0.7;
+                flowCol[i3 + 2] = 0.08 * al * 0.7;
             }
             flowGeometry.attributes.position.needsUpdate = true;
             flowGeometry.attributes.color.needsUpdate = true;
