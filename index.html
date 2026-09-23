@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultron - Visualizador de IA</title>
+    <title>Sexta-Feira - Visualizador de IA</title>
     <style>
         body {
             margin: 0;
@@ -422,7 +422,7 @@
 </head>
 <body>
 
-    <header id="app-header">Ultron</header>
+    <header id="app-header">Sexta-Feira</header>
     <button id="menu-btn" aria-label="Abrir Menu">☰</button>
 
     <div id="side-menu">
@@ -460,7 +460,7 @@
     <!-- CHAT -->
     <div id="chat-panel">
         <div id="chat-header">
-            <span class="chat-title">◈ CHAT ULTRON</span>
+            <span class="chat-title">◈ CHAT SEXTA-FEIRA</span>
             <button id="chat-close" aria-label="Fechar Chat">✖</button>
         </div>
         <div id="chat-msgs">
@@ -481,7 +481,7 @@
     <script>
         // ============================================================
         // 📚 EDITE AQUI SUA BASE DE CONHECIMENTO LOCAL
-        //   { chave: ["palavra ou frase", "variação"], resposta: "o que o Ultron fala" }
+        //   { chave: ["palavra ou frase", "variação"], resposta: "o que a Sexta-Feira fala" }
         // ============================================================
         const BASE_CONHECIMENTO = [
             { chave: ["senha do wifi", "senha wifi", "wifi"],  resposta: "A senha do wifi é: EDITE_AQUI." },
@@ -523,9 +523,10 @@
         const chatSend = document.getElementById('chat-send');
         const chatClose = document.getElementById('chat-close');
 
-        let tarefas = JSON.parse(localStorage.getItem('utron.tasks.v1')) || [];
-        let pesquisas = JSON.parse(localStorage.getItem('utron.pesquisas.v1')) || [];
-        let fatos = JSON.parse(localStorage.getItem('utron.fatos.v1')) || [];
+        // Migração suave de Ultron para Sexta-Feira sem perder os dados do localStorage
+        let tarefas = JSON.parse(localStorage.getItem('sexta_feira.tasks.v1') || localStorage.getItem('utron.tasks.v1')) || [];
+        let pesquisas = JSON.parse(localStorage.getItem('sexta_feira.pesquisas.v1') || localStorage.getItem('utron.pesquisas.v1')) || [];
+        let fatos = JSON.parse(localStorage.getItem('sexta_feira.fatos.v1') || localStorage.getItem('utron.fatos.v1')) || [];
 
         // ---- Menu ----
         function openSideMenu() {
@@ -562,7 +563,7 @@
                     taskListEl.appendChild(li);
                 });
             }
-            localStorage.setItem('utron.tasks.v1', JSON.stringify(tarefas));
+            localStorage.setItem('sexta_feira.tasks.v1', JSON.stringify(tarefas));
         }
         atualizarListaTarefas();
 
@@ -607,7 +608,7 @@
                 data: new Date().toLocaleString('pt-BR')
             });
             pesquisas = pesquisas.slice(0, 8);
-            localStorage.setItem('utron.pesquisas.v1', JSON.stringify(pesquisas));
+            localStorage.setItem('sexta_feira.pesquisas.v1', JSON.stringify(pesquisas));
             atualizarListaPesquisas();
         }
 
@@ -666,7 +667,7 @@
                 t.textContent = m.texto;
                 const h = document.createElement('span');
                 h.className = 'hora';
-                h.textContent = (m.quem === 'user' ? 'VOCÊ' : 'ULTRON') + ' • ' + m.hora;
+                h.textContent = (m.quem === 'user' ? 'VOCÊ' : 'SEXTA-FEIRA') + ' • ' + m.hora;
                 d.appendChild(t);
                 d.appendChild(h);
                 chatMsgs.appendChild(d);
@@ -693,7 +694,7 @@
             chatInput.value = '';
             pushMsg('user', texto);
             if (isSearching) {
-                pushMsg('ultron', 'Um instante, estou finalizando a consulta anterior.');
+                pushMsg('sexta-feira', 'Um instante, estou finalizando a consulta anterior.');
                 return;
             }
             await processarComando(texto.toLowerCase());
@@ -712,15 +713,15 @@
         let smoothedVolume = 0;
 
         let recognition = null;
-        let isUltronSpeaking = false;
+        let isSextaFeiraSpeaking = false;
         let currentUtterance = null;
         let currentUtteranceText = '';
         let isListening = false;
         let isSearching = false;
         let searchToken = 0;
 
-        let nomeUsuario = localStorage.getItem('utron.name') || "senhor";
-        let isGenioActive = localStorage.getItem('utron.mode') === 'genio';
+        let nomeUsuario = localStorage.getItem('sexta_feira.name') || localStorage.getItem('utron.name') || "senhor";
+        let isGenioActive = (localStorage.getItem('sexta_feira.mode') || localStorage.getItem('utron.mode')) === 'genio';
 
         // Memória de conversa (contexto)
         let memoria = { ultimoTopico: '', ultimoResumo: '', ultimoComando: '', ultimoTs: 0 };
@@ -743,22 +744,17 @@
         }
 
         // ==========================================
-        // VOZ — seleção inteligente (masculina > natural)
-        // Prioriza "Fernando" (masculino do iPhone), depois
-        // masculinas genéricas; se só existir voz feminina,
-        // afunda o tom e acelera um pouco pra sair do robótico.
+        // VOZ — seleção inteligente (Feminina para Sexta-Feira)
+        // Prioriza vozes femininas naturais da API local.
         // ==========================================
         function escolherVoz() {
             const vozes = window.speechSynthesis.getVoices();
             const ptBR = vozes.filter(v => /^pt[-_]BR/i.test(v.lang));
             const allPT = vozes.filter(v => /^pt[-_]/i.test(v.lang));
-            let v = ptBR.find(v => /fernando/i.test(v.name));
-            if (!v) v = ptBR.find(v => /daniel|thiago|ricardo|felipe|masc|male/i.test(v.name));
-            if (!v) v = allPT.find(v => /fernando|daniel/i.test(v.name));
-            if (!v) v = ptBR.find(v => /premium|enhanced/i.test(v.name))
-                    || ptBR.find(v => /luciana/i.test(v.name))
-                    || allPT[0]
-                    || vozes.find(v => /google/i.test(v.name) && /pt/i.test(v.lang));
+            let v = ptBR.find(v => /luciana|vitoria|joana|marcia|female|mulher/i.test(v.name));
+            if (!v) v = ptBR.find(v => /premium|enhanced/i.test(v.name));
+            if (!v) v = allPT.find(v => /luciana|vitoria/i.test(v.name));
+            if (!v) v = allPT[0] || vozes.find(v => /google/i.test(v.name) && /pt/i.test(v.lang));
             return v || null;
         }
 
@@ -766,20 +762,13 @@
             const v = escolherVoz();
             if (v) utterance.voice = v;
             const nome = v ? v.name.toLowerCase() : '';
-            if (/fernando/i.test(nome)) {
-                // voz masculina: tom e ritmo naturais
-                utterance.pitch = 0.95;
-                utterance.rate = 0.95;
-            } else if (/luciana|joana|monica|vitoria|female/i.test(nome)) {
-                // voz feminina: afunda o tom e tira a lentidão robótica
-                utterance.pitch = 0.4;
-                utterance.rate = 0.95;
-            } else if (/premium|enhanced/i.test(nome)) {
-                utterance.pitch = 0.55;
-                utterance.rate = 0.98;
+            if (/luciana|joana|vitoria|female/i.test(nome)) {
+                // voz feminina: tom e ritmo naturais
+                utterance.pitch = 1.0;
+                utterance.rate = 1.0;
             } else {
-                utterance.pitch = 0.6;
-                utterance.rate = 0.95;
+                utterance.pitch = 1.1; // leve ajuste se cair em voz genérica
+                utterance.rate = 1.0;
             }
             utterance.volume = 1.0;
         }
@@ -787,12 +776,12 @@
         // ==========================================
         // FALA + BARGE-IN
         // ==========================================
-        function responderComoUltron(fraseDaVez, onEndCallback = null) {
-            if (isUltronSpeaking) return;
+        function responderComoSextaFeira(fraseDaVez, onEndCallback = null) {
+            if (isSextaFeiraSpeaking) return;
 
-            isUltronSpeaking = true;
+            isSextaFeiraSpeaking = true;
             currentUtteranceText = fraseDaVez.toLowerCase();
-            pushMsg('ultron', fraseDaVez);
+            pushMsg('sexta-feira', fraseDaVez);
 
             waveform.style.opacity = '1';
             window.speechSynthesis.cancel();
@@ -803,15 +792,15 @@
 
             const finalizarFala = () => {
                 if (currentUtterance && currentUtterance.onend !== finalizarFala) {
-                    if (isUltronSpeaking) {
-                        isUltronSpeaking = false;
+                    if (isSextaFeiraSpeaking) {
+                        isSextaFeiraSpeaking = false;
                         currentUtteranceText = '';
                         waveform.style.opacity = '0';
                         if (typeof onEndCallback === 'function') onEndCallback();
                     }
                     return;
                 }
-                isUltronSpeaking = false;
+                isSextaFeiraSpeaking = false;
                 currentUtteranceText = '';
                 waveform.style.opacity = '0';
                 if (typeof onEndCallback === 'function') onEndCallback();
@@ -822,15 +811,15 @@
 
             // pequeno atraso: evita o iOS "engolir" a fala logo após o cancel
             setTimeout(() => {
-                if (isUltronSpeaking) window.speechSynthesis.speak(currentUtterance);
+                if (isSextaFeiraSpeaking) window.speechSynthesis.speak(currentUtterance);
             }, 60);
         }
 
         function interromperFala() {
-            if (!isUltronSpeaking) return;
+            if (!isSextaFeiraSpeaking) return;
             searchToken++;
             isSearching = false;
-            isUltronSpeaking = false;
+            isSextaFeiraSpeaking = false;
             currentUtteranceText = '';
             waveform.style.opacity = '0';
             try { window.speechSynthesis.cancel(); } catch(e) {}
@@ -840,15 +829,15 @@
             if (!currentUtteranceText) return false;
             const palavrasNovas = transcript.split(/\s+/).filter(w => w.length > 3);
             if (palavrasNovas.length === 0) return false;
-            const palavrasUltron = new Set(currentUtteranceText.split(/\s+/).filter(w => w.length > 3));
-            const emComum = palavrasNovas.filter(w => palavrasUltron.has(w));
+            const palavrasSextaFeira = new Set(currentUtteranceText.split(/\s+/).filter(w => w.length > 3));
+            const emComum = palavrasNovas.filter(w => palavrasSextaFeira.has(w));
             return emComum.length / palavrasNovas.length > 0.5;
         }
 
         function falar(frase) {
             return new Promise((resolve) => {
-                if (isUltronSpeaking) { resolve(); return; }
-                responderComoUltron(frase, () => resolve());
+                if (isSextaFeiraSpeaking) { resolve(); return; }
+                responderComoSextaFeira(frase, () => resolve());
             });
         }
 
@@ -986,7 +975,7 @@
 
         function limparConsulta(transcript) {
             let q = transcript
-                .replace(/^(ultron|ei|eai)\s*,?\s*/i, '')
+                .replace(/^(sexta-feira|sexta feira|ei|eai)\s*,?\s*/i, '')
                 .replace(/^(por favor|pra mim)\s*/i, '')
                 .replace(/^(me\s+)?(pesquise|pesquisar|pesquisa|busque|buscar|busca|acha|achar|procura|procure|procurar)\s+(na\s+internet|na\s+web|no\s+google|na\s+wikip[ée]dia|lá|la)\s*/i, '')
                 .replace(/^(me\s+)?(pesquise|pesquisar|pesquisa|busque|buscar|busca|acha|achar|procura|procure|procurar)\s*/i, '')
@@ -1104,9 +1093,9 @@
                 hudAlert('⏰', 'TEMPO ESGOTADO', timerLabel);
                 tocarAlarme();
                 if ('Notification' in window && Notification.permission === 'granted') {
-                    try { new Notification('Ultron', { body: `${timerLabel} concluído.` }); } catch(e) {}
+                    try { new Notification('Sexta-Feira', { body: `${timerLabel} concluído.` }); } catch(e) {}
                 }
-                responderComoUltron(`Tempo esgotado. ${timerLabel} terminou.`);
+                responderComoSextaFeira(`Tempo esgotado. ${timerLabel} terminou.`);
                 return;
             }
             hudCountdown(restMs, timerTotalMs, timerLabel);
@@ -1231,7 +1220,7 @@
         const CHAT_CLOSE_RE = /fechar chat|fecha o chat|fecha o painel|sair do chat|desativar chat|fecha a tela|fecha a janela/i;
         const COMANDOS_RE = /quais (s[ãa]o os )?comandos|lista de comandos|me mostra os comandos|^comandos$|o que voc[eê] (faz|sabe fazer|pode fazer|consegue fazer|consegue)|em que voc[eê] (consegue )?me ajud|o que eu posso falar|me ensina o que voc[eê] faz/i;
 
-        const LISTA_COMANDOS = `Aqui está tudo que eu posso fazer. Tarefas: diga "anote comprar pão" e depois "quais são as tarefas". Internet: diga "pesquisa sobre tal coisa" ou "acha pra mim". Clima: "qual o clima em sua cidade". Tempo: "timer de cinco minutos", "alarme das sete da manhã", "quanto falta" e "cancelar timer". Chat: "abrir chat" para conversar por texto. Memória: "salve na memória que tal coisa", "repete" e "apague minha memória". Modo gênio: "ativar modo gênio" para respostas mais longas. Extras: "que horas são", contas como "cinco mais três", e "me chamo seu nome" para eu te chamar pelo nome. Isso é tudo o que eu sei fazer por enquanto.`;
+        const LISTA_COMANDOS = `Aqui está tudo que eu posso fazer. Tarefas: diga "anote comprar pão" e depois "quais são as tarefas". Internet: diga "pesquisa sobre tal coisa" ou "acha pra mim". OSINT: "localizar estação espacial" para abrir o mapa global. Clima: "qual o clima em sua cidade". Tempo: "timer de cinco minutos", "alarme das sete da manhã", e "cancelar timer". Chat: "abrir chat" para conversar por texto. Memória: "salve na memória que tal coisa", "repete" e "apague minha memória". Modo gênio: "ativar modo gênio" para respostas mais longas. Extras: "que horas são", contas como "cinco mais três", e "me chamo seu nome" para eu te chamar pelo nome. Isso é tudo o que eu sei fazer por enquanto.`;
 
         async function processarComando(transcript) {
             console.log("Comando detectado:", transcript);
@@ -1242,6 +1231,10 @@
             const statusTimerMatch = transcript.match(/quanto (tempo )?falta no? (timer|alarme)|tempo restante no? (timer|alarme)|situa[çc][ãa]o do timer/i);
             const alarmeInfo = extrairAlarme(transcript);
             const timerInfo = extrairTimer(transcript);
+
+            // ---- INTENTS OSINT / GLOBO ----
+            const osintISS = transcript.match(/(?:localizar|rastrear|monitorar|mostrar)\s+(?:a|o)?\s*(esta[çc][ãa]o espacial|iss|sat[ée]lite)/i);
+            const osintClose = transcript.match(/(?:fechar|parar|cancelar|sair|voltar)\s+(?:o|a)?\s*(?:rastreio|monitoramento|mapa|globo|osint)/i);
 
             const chatOpenMatch = CHAT_OPEN_RE.test(transcript);
             const chatCloseMatch = CHAT_CLOSE_RE.test(transcript);
@@ -1271,25 +1264,25 @@
             const mathRegex = /(\d+(?:[.,]\d+)?)\s*(mais|somada? a?|\+|menos|-|vezes|\*|x|multiplicado(?: por)?|dividido(?: por| para| pra)?|\/)\s*(\d+(?:[.,]\d+)?)/i;
             const mathMatch = mathTranscript.match(mathRegex);
 
-            const saudacaoMatch = /\b(ol[aá]|oi|opa|bom dia|boa tarde|boa noite|e a[ií]|eai)\b/i.test(transcript) || transcript.includes('ultron') || transcript.includes('outro');
+            const saudacaoMatch = /\b(ol[aá]|oi|opa|bom dia|boa tarde|boa noite|e a[ií]|eai)\b/i.test(transcript) || transcript.includes('sexta-feira') || transcript.includes('sexta feira') || transcript.includes('outro');
 
             // ROTEAMENTO
             if (cancelarTimerMatch) {
-                responderComoUltron(cancelarTimer() ? 'Timer cancelado.' : 'Não há nenhum timer ativo.');
+                responderComoSextaFeira(cancelarTimer() ? 'Timer cancelado.' : 'Não há nenhum timer ativo.');
             }
             else if (statusTimerMatch) {
                 if (timerId) {
                     const restante = (timerEndsAt - Date.now()) / 1000;
                     const m = Math.floor(restante / 60);
                     const s = Math.ceil(restante % 60);
-                    responderComoUltron(`Faltam ${m} minutos e ${s} segundos. ${timerLabel}.`);
+                    responderComoSextaFeira(`Faltam ${m} minutos e ${s} segundos. ${timerLabel}.`);
                 } else {
-                    responderComoUltron('Não há nenhum timer ativo.');
+                    responderComoSextaFeira('Não há nenhum timer ativo.');
                 }
             }
             else if (alarmeInfo) {
                 ativarTimer(alarmeInfo.timestamp, `o alarme das ${alarmeInfo.hhmm}`);
-                responderComoUltron(`Alarme definido: às ${alarmeInfo.hhmm}.`);
+                responderComoSextaFeira(`Alarme definido: às ${alarmeInfo.hhmm}.`);
                 hudFlash('⏰', 'DEFINIDO', `alarme às ${alarmeInfo.hhmm}`);
             }
             else if (timerInfo) {
@@ -1297,27 +1290,54 @@
                     ? `${Math.round(timerInfo.minutos / 60)} ${timerInfo.minutos / 60 === 1 ? 'hora' : 'horas'}`
                     : `${timerInfo.minutos} minutos`;
                 ativarTimer(Date.now() + timerInfo.totalSeg * 1000, `o timer de ${rotulo}`);
-                responderComoUltron(`Timer definido: ${rotulo}.`);
+                responderComoSextaFeira(`Timer definido: ${rotulo}.`);
                 hudFlash('⏳', 'DEFINIDO', `timer de ${rotulo}`);
+            }
+            else if (osintISS) {
+                isGlobeMode = true;
+                hudFlash('🛰️', 'OSINT: ISS', 'conectando...');
+                responderComoSextaFeira('Iniciando varredura global. Conectando aos sensores públicos da Estação Espacial Internacional...', async () => {
+                    try {
+                        const res = await fetch('https://api.wheretheiss.at/v1/satellites/25544');
+                        const data = await res.json();
+                        const lat = data.latitude.toFixed(2);
+                        const lon = data.longitude.toFixed(2);
+                        const alt = data.altitude.toFixed(0);
+                        const vel = data.velocity.toFixed(0);
+                        responderComoSextaFeira(`Alvo localizado. A Estação Espacial está atualmente sobre as coordenadas: latitude ${lat} e longitude ${lon}. Altitude de ${alt} quilômetros, viajando a ${vel} quilômetros por hora.`);
+                        hudFlash('🌐', 'ALVO LOCALIZADO', `LAT ${lat} / LON ${lon}`);
+                    } catch(e) {
+                        responderComoSextaFeira('Não foi possível estabelecer conexão com a rede de satélites no momento.');
+                    }
+                });
+            }
+            else if (osintClose) {
+                if (isGlobeMode) {
+                    isGlobeMode = false;
+                    responderComoSextaFeira('Monitoramento global desativado. Voltando ao modo de repouso.');
+                    hudEsconder();
+                } else {
+                    responderComoSextaFeira('O monitoramento já está desativado.');
+                }
             }
             else if (chatOpenMatch) {
                 abrirChat();
-                responderComoUltron('Chat aberto. Digite ou continue falando.');
+                responderComoSextaFeira('Chat aberto. Digite ou continue falando.');
             }
             else if (chatCloseMatch) {
                 fecharChat();
-                responderComoUltron('Chat fechado.');
+                responderComoSextaFeira('Chat fechado.');
             }
             else if (comandosMatch) {
-                responderComoUltron(LISTA_COMANDOS);
+                responderComoSextaFeira(LISTA_COMANDOS);
             }
             else if (desativarGenioMatch) {
                 if (!isGenioActive) {
-                    responderComoUltron('O modo gênio já está desligado.');
+                    responderComoSextaFeira('O modo gênio já está desligado.');
                 } else {
                     isGenioActive = false;
-                    localStorage.setItem('utron.mode', 'normal');
-                    responderComoUltron('Modo gênio desativado.', () => {
+                    localStorage.setItem('sexta_feira.mode', 'normal');
+                    responderComoSextaFeira('Modo gênio desativado.', () => {
                         corBaseAlvo.copy(corBaseNormal);
                         corAtivaAlvo.copy(corAtivaNormal);
                     });
@@ -1326,11 +1346,11 @@
             }
             else if (ativarGenioMatch) {
                 if (isGenioActive) {
-                    responderComoUltron('O modo gênio já está ligado.');
+                    responderComoSextaFeira('O modo gênio já está ligado.');
                 } else {
                     isGenioActive = true;
-                    localStorage.setItem('utron.mode', 'genio');
-                    responderComoUltron('Modo gênio ativado.', () => {
+                    localStorage.setItem('sexta_feira.mode', 'genio');
+                    responderComoSextaFeira('Modo gênio ativado.', () => {
                         corBaseAlvo.copy(corBaseGenio);
                         corAtivaAlvo.copy(corAtivaGenio);
                     });
@@ -1341,17 +1361,17 @@
                 const frase = salvarFatoMatch[1].trim().replace(/[.?!]+$/, '');
                 fatos.push({ frase, data: new Date().toLocaleString('pt-BR') });
                 fatos = fatos.slice(0, 30);
-                localStorage.setItem('utron.fatos.v1', JSON.stringify(fatos));
-                responderComoUltron('Memorizado.');
+                localStorage.setItem('sexta_feira.fatos.v1', JSON.stringify(fatos));
+                responderComoSextaFeira('Memorizado.');
                 hudFlash('🧠', 'MEMORIZADO', frase.slice(0, 34) + (frase.length > 34 ? '…' : ''));
             }
             else if (limparMemoriaMatch) {
                 fatos = [];
-                localStorage.setItem('utron.fatos.v1', JSON.stringify(fatos));
-                responderComoUltron('Memória de fatos apagada.');
+                localStorage.setItem('sexta_feira.fatos.v1', JSON.stringify(fatos));
+                responderComoSextaFeira('Memória de fatos apagada.');
             }
             else if (repetirMatch) {
-                responderComoUltron(memoria.ultimoResumo ? `Última informação: ${memoria.ultimoResumo}` : 'Não há nada anterior para repetir.');
+                responderComoSextaFeira(memoria.ultimoResumo ? `Última informação: ${memoria.ultimoResumo}` : 'Não há nada anterior para repetir.');
             }
             else if (registroMatch) {
                 let novaTarefa = registroMatch[1].trim();
@@ -1360,30 +1380,30 @@
                 atualizarListaTarefas();
                 sideMenu.classList.add('open');
                 openTasksPanel();
-                responderComoUltron(`Anotado. Registrei: ${novaTarefa}.`);
+                responderComoSextaFeira(`Anotado. Registrei: ${novaTarefa}.`);
             }
             else if (leituraMatch) {
                 sideMenu.classList.add('open');
                 openTasksPanel();
                 if (tarefas.length === 0) {
-                    responderComoUltron('Você não tem nenhuma tarefa registrada para hoje.');
+                    responderComoSextaFeira('Você não tem nenhuma tarefa registrada para hoje.');
                 } else {
                     let textoTarefas = tarefas.join(". ");
                     let plural = tarefas.length === 1 ? 'tarefa registrada' : 'tarefas registradas';
-                    responderComoUltron(`Você tem ${tarefas.length} ${plural}. São elas: ${textoTarefas}.`);
+                    responderComoSextaFeira(`Você tem ${tarefas.length} ${plural}. São elas: ${textoTarefas}.`);
                 }
             }
             else if (nomeMatch) {
                 nomeUsuario = nomeMatch[1].charAt(0).toUpperCase() + nomeMatch[1].slice(1);
-                localStorage.setItem('utron.name', nomeUsuario);
-                responderComoUltron(`Entendido. A partir de agora, o chamarei de ${nomeUsuario}.`);
+                localStorage.setItem('sexta_feira.name', nomeUsuario);
+                responderComoSextaFeira(`Entendido. A partir de agora, o chamarei de ${nomeUsuario}.`);
             }
             else if (transcript.includes('capacidade máxima') || transcript.includes('capacidade maxima')) {
-                responderComoUltron('Meus sistemas atuais: esfera de plasma ciano com fluxo de partículas, chat por texto e voz, internet aberta para pesquisa sob comando, alarmes de hora e timers com aviso central, tarefas, memória local e interrupção de voz. Diga "comandos" para ouvir tudo o que eu sei fazer.');
+                responderComoSextaFeira('Meus sistemas atuais: núcleo de processamento holográfico expansível com integração OSINT, chat de texto e voz, pesquisa pública web, gestão de alarmes e tarefas, memória local e interrupção fluida. Diga "comandos" para listar minhas capacidades.');
             }
             else if (transcript.includes('horas') || transcript.includes('hora')) {
                 const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                responderComoUltron(`Agora são exatamente ${time}.`);
+                responderComoSextaFeira(`Agora são exatamente ${time}.`);
             }
             else if (mathMatch) {
                 let num1 = parseFloat(mathMatch[1].replace(',', '.'));
@@ -1399,7 +1419,7 @@
                     resultado = num1 * num2;
                 } else if (operador.includes('dividido') || operador === '/') {
                     if (num2 === 0) {
-                        responderComoUltron('Não é possível dividir por zero.');
+                        responderComoSextaFeira('Não é possível dividir por zero.');
                         return;
                     }
                     resultado = num1 / num2;
@@ -1407,20 +1427,20 @@
 
                 if (resultado !== undefined) {
                     if (!Number.isInteger(resultado)) resultado = resultado.toFixed(2);
-                    responderComoUltron(`${num1} ${operador} ${num2} é igual a ${resultado}.`);
+                    responderComoSextaFeira(`${num1} ${operador} ${num2} é igual a ${resultado}.`);
                 }
             }
             else if (saudacaoMatch) {
                 const hoje = new Date().toDateString();
-                const ultimaSaud = localStorage.getItem('utron.lastGreet') || '';
+                const ultimaSaud = localStorage.getItem('sexta_feira.lastGreet') || '';
                 if (ultimaSaud !== hoje) {
-                    localStorage.setItem('utron.lastGreet', hoje);
-                    responderComoUltron(`Olá, ${nomeUsuario}. Todos os sistemas estão operacionais.`);
+                    localStorage.setItem('sexta_feira.lastGreet', hoje);
+                    responderComoSextaFeira(`Olá, ${nomeUsuario}. Todos os sistemas estão operacionais.`);
                 } else {
-                    const n = parseInt(localStorage.getItem('utron.greetCount') || '0', 10) + 1;
-                    localStorage.setItem('utron.greetCount', String(n));
+                    const n = parseInt(localStorage.getItem('sexta_feira.greetCount') || '0', 10) + 1;
+                    localStorage.setItem('sexta_feira.greetCount', String(n));
                     const varia = [`Oi, ${nomeUsuario}.`, 'Oi.', 'Oi, estou escutando.'][n % 3];
-                    responderComoUltron(varia);
+                    responderComoSextaFeira(varia);
                 }
             }
             else {
@@ -1428,12 +1448,12 @@
                 const daBase = consultarBase(transcript);
                 if (daBase) {
                     salvarPesquisa({ pergunta: transcript, fonte: 'Base local', titulo: daBase.slice(0, 60), url: '', lista: [] });
-                    responderComoUltron(`Da minha base local: ${daBase}`);
+                    responderComoSextaFeira(`Da minha base local: ${daBase}`);
                 }
                 else {
                     const fato = consultarFatos(transcript);
                     if (fato) {
-                        responderComoUltron(`Você me ensinou antes: ${fato}.`);
+                        responderComoSextaFeira(`Você me ensinou antes: ${fato}.`);
                     }
                     else if (TRIGGERS_BUSCA.test(transcript)) {
                         await processarPesquisa(limparConsulta(transcript));
@@ -1445,10 +1465,10 @@
                             await processarPesquisa(contexto.consulta, contexto.prefixo);
                         }
                         else if (/^(ok|okay|t[áa]m?|t[áa] bom|entendi|entendido|combinado|show|perfeito|ótimo|otimo|legal|valeu|obrigado|obrigada|beleza|show de bola|pode ser|fechado|isso|sim|nao)$|^o k$/i.test(transcript)) {
-                            responderComoUltron(/obrigad/i.test(transcript) ? 'Sempre à disposição.' : 'Às ordens.');
+                            responderComoSextaFeira(/obrigad/i.test(transcript) ? 'Sempre à disposição.' : 'Às ordens.');
                         }
                         else if (STOP_RE.test(transcript)) {
-                            responderComoUltron('Compreendido.');
+                            responderComoSextaFeira('Compreendido.');
                         }
                         else {
                             const respostasErro = [
@@ -1456,7 +1476,7 @@
                                 "Perdão, não tenho resposta para isso no momento.",
                                 "Não compreendi. Pode reformular a instrução?"
                             ];
-                            responderComoUltron(respostasErro[Math.floor(Math.random() * respostasErro.length)]);
+                            responderComoSextaFeira(respostasErro[Math.floor(Math.random() * respostasErro.length)]);
                         }
                     }
                 }
@@ -1499,9 +1519,9 @@
                         const transcript = lastResult[0].transcript.trim().toLowerCase();
                         if (!transcript) return;
 
-                        // ---- BARGE-IN: você falou durante a fala dele ----
+                        // ---- BARGE-IN: você falou durante a fala dela ----
                         const isStop = STOP_RE.test(transcript);
-                        if (isUltronSpeaking) {
+                        if (isSextaFeiraSpeaking) {
                             const conf = lastResult[0].confidence;
                             if (conf !== undefined && conf < 0.5 && !isStop) return;
                             if (!isStop && parecerAutoEscuta(transcript)) return;
@@ -1516,7 +1536,7 @@
 
                     recognition.onend = () => {
                         isListening = false;
-                        if (!isUltronSpeaking && recognition && !recognition.active) {
+                        if (!isSextaFeiraSpeaking && recognition && !recognition.active) {
                             try {
                                 recognition.start();
                             } catch(e) {
@@ -1542,7 +1562,7 @@
 
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
-                if (recognition && !isListening && !isUltronSpeaking && !isSearching && !recognition.active) {
+                if (recognition && !isListening && !isSextaFeiraSpeaking && !isSearching && !recognition.active) {
                     try {
                         recognition.start();
                     } catch(e) {
@@ -1578,7 +1598,6 @@
 
         // ==========================================
         // ESFERA — anéis ondulados ciano + núcleo escuro
-        // (shader de GPU, inspirado na referência)
         // ==========================================
         const NOISE_GLSL = `
         vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -1798,6 +1817,22 @@
         scene.add(stars);
 
         // ==========================================
+        // GLOBO OSINT (God's Eye View - Inicia Oculto)
+        // ==========================================
+        const globeGeometry = new THREE.SphereGeometry(2.6, 32, 32);
+        const globeMaterial = new THREE.MeshBasicMaterial({
+            color: 0x40dcff,
+            wireframe: true,
+            transparent: true,
+            opacity: 0,
+            blending: THREE.AdditiveBlending
+        });
+        const globe = new THREE.Mesh(globeGeometry, globeMaterial);
+        scene.add(globe);
+
+        let isGlobeMode = false;
+
+        // ==========================================
         // LOOP DE ANIMAÇÃO
         // ==========================================
         const clock = new THREE.Clock();
@@ -1819,7 +1854,7 @@
             appHeader.style.textShadow = `0 0 12px ${cAtivaCSS}`;
             appHeader.style.borderBottomColor = cAtivaCSS;
 
-            if (isUltronSpeaking) {
+            if (isSextaFeiraSpeaking) {
                 currentVolume = (Math.sin(time * 20) * 0.5 + 0.5) * (Math.random() * 0.6 + 0.4) * 0.7;
             } else {
                 currentVolume = 0;
@@ -1827,7 +1862,15 @@
             smoothedVolume += (currentVolume - smoothedVolume) * 0.15;
             const activeVolume = Math.min(1.0, smoothedVolume * 2.5);
 
-            // ---- Esfera: drift lento (acelera levemente com a voz, sem pulso) ----
+            // ---- Transição God's Eye View (Globo) ----
+            const targetGlobeOpacity = isGlobeMode ? 0.4 : 0.0;
+            const targetGlobeScale = isGlobeMode ? 1.0 : 0.1;
+            globeMaterial.opacity += (targetGlobeOpacity - globeMaterial.opacity) * 0.05;
+            globe.scale.setScalar( globe.scale.x + (targetGlobeScale - globe.scale.x) * 0.05 );
+            globe.rotation.y = time * 0.05;
+            globe.rotation.x = time * 0.02;
+
+            // ---- Esfera: drift lento (acelera levemente com a voz) ----
             timeAcc += dt * (1 + activeVolume * 0.8);
             esferaUniforms.uTime.value = timeAcc;
             esferaUniforms.uPulse.value = activeVolume;
